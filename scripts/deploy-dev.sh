@@ -32,6 +32,14 @@ fi
 echo "🔧 Generating Form.io configuration..."
 ./scripts/generate-formio-config.sh dev
 
+# Generate Frontend Configuration for development
+echo "🔧 Generating frontend configuration..."
+cat > app/config.js << JS_EOF
+// Generated during deployment - DO NOT EDIT
+window.API_BASE_URL = 'http://localhost:3001';
+window.SPA_ORIGIN = 'http://localhost:3000';
+JS_EOF
+
 # Stop any existing development containers
 echo "🛑 Stopping existing development containers..."
 docker-compose -f docker-compose.dev.yml down 2>/dev/null || true

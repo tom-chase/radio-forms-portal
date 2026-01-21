@@ -35,8 +35,13 @@ docker-compose -f docker-compose.dev.yml up -d --build
 
 3) Open:
 
+- API/Admin Portal: `http://localhost:3001`
+    - login: admin@dev.local / admin123
+    - create 'user' submission for SPA Admin
+    - assign role 'admin' to the user
+
 - SPA: `http://localhost:3000`
-- API: `http://localhost:3001`
+    - login with the user you created
 
 ## Production Deployment
 
