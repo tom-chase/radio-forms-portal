@@ -1,0 +1,11 @@
+# /etc/cron.d/mongo-backup
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Run backup script daily at 03:00 container time (default: UTC)
+0 3 * * * root /usr/local/bin/backup-mongo.sh >> /var/log/mongo-backup.log 2>&1
+
+# Run every 5 minutes for testing
+# */5 * * * * root /usr/local/bin/backup-mongo.sh >> /var/log/mongo-backup.log 2>&1
+

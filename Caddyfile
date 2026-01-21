@@ -1,0 +1,34 @@
+{
+    email example@your-domain.com
+}
+
+# 1. The Radio Forms Portal (Static SPA)
+forms.your-domain.com {
+    root * /var/www/html
+    encode gzip
+    file_server
+    
+    # Fallback for SPA client-side routing
+    try_files {path} /index.html
+
+    log {
+        output file /var/log/spa_access.log
+        format json
+    }
+}
+
+# 2. The Form.io API & Admin Portal
+api.forms.your-domain.com {
+    # Proxy all traffic directly to the formio container
+    reverse_proxy formio:3001 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote_host}
+    }
+
+    log {
+        output file /var/log/api_access.log
+        format json
+    }
+}

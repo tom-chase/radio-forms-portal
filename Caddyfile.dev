@@ -1,0 +1,25 @@
+# Development Caddyfile
+# Serves the SPA locally - Form.io API accessed directly on port 3001
+
+:80 {
+    # Enable CORS for development
+    header {
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization, x-jwt-token"
+    }
+
+    # Serve static SPA files
+    root * /srv
+    file_server
+    
+    # SPA fallback - serve index.html for non-existent routes
+    try_files {path} /index.html
+    
+    # Enable live reload for development
+    header {
+        Cache-Control "no-cache, no-store, must-revalidate"
+        Pragma "no-cache"
+        Expires "0"
+    }
+}

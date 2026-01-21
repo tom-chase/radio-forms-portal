@@ -1,0 +1,18 @@
+{
+  "mongo": "mongodb://${MONGO_USER}:${MONGO_PASS}@localhost:27017/formio?authSource=admin",
+  "port": 3001,
+  "host": "localhost",
+  "protocol": "http",
+  "cors": {
+    "origin": ["http://localhost:3000"]
+  },
+  "jwt": {
+    "secret": "CHANGE_THIS_SECRET"
+  },
+  "mongoSecret": "CHANGE_THIS_SECRET",
+  "actions": {
+    "updateLatestRoleLogId": "/app/src/actions/UpdateLatestRoleLogId.js"
+  },
+  "debug": "false",
+  "root": "admin@dev.local"
+}
