@@ -62,6 +62,20 @@
 - `app/js/features/tabulatorLists.js`: Transform and column rendering.
 - `config/bootstrap/default-template.json`: Defines `latestRoleLogId` as hidden field; departments/committees are not form components.
 
+### F. Post-Bootstrap Configuration
+**Status**: IMPLEMENTED (Jan 2026)
+**Problem**: Form.io generates new dynamic IDs for Resources/Roles on every fresh import, breaking hardcoded references in `groupPermissions` or `customConditional` logic.
+**Solution**: `scripts/post-bootstrap.js` runs automatically after the dev container starts.
+**Mechanism**:
+1.  **Authentication**: Authenticates as the root admin.
+2.  **Mapping**: Fetches all Forms and Roles to map machine names (e.g. `administrator`, `department`) to runtime IDs.
+3.  **Seeding**: Ensures required reference submissions exist (e.g. "Engineering" Department).
+4.  **Linking**: Updates `form.settings.groupPermissions` to point to these specific *Submission IDs* (not Form IDs).
+5.  **Logic Update**: Rewrites `customConditional` logic in forms (like `roleMgmt`) to use the correct runtime Role IDs.
+**Files**:
+- `scripts/post-bootstrap.js`: The configuration logic.
+- `scripts/deploy-dev.sh`: Triggers the script via `docker exec`.
+
 ## 4. Deployment Workflow
 
 ### "Tarball Push" (Production)

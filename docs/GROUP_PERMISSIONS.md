@@ -15,6 +15,12 @@ Group Permissions work by checking if a user's profile contains a reference to a
 
 To enable Group Permissions for a specific form, you must add a `groupPermissions` object to the form's **Custom Properties** or **Settings**.
 
+### ⚠️ Critical: Resource ID is a Submission ID
+
+**IMPORTANT**: The `resource` field must contain the `_id` of the specific **Submission** (e.g., the "Engineering" department entry), **NOT** the `_id` of the Department **Form** definition.
+*   **Correct**: `507f1f77...` (The ID of the submission where `name` = "Engineering")
+*   **Incorrect**: `64a1b2c3...` (The ID of the "Department" Form)
+
 ### 1. Form Settings JSON
 
 In the Form Builder, you can manually edit the form JSON or use a "Custom Property" if supported by your builder UI. The configuration is stored in `form.settings`.
@@ -138,3 +144,13 @@ We opted for the **Embedded Array** approach for the following reasons:
 - **Usage**: Always use `formioRequest()` from `formioService.js`.
 - **Payload**: Send request body in `data` option, not `body`.
 - **Example**: `formioRequest('/user/submission/123', { method: 'PUT', data: updatedData })`
+
+## Troubleshooting
+
+### Issue: Users cannot see a form despite being in the group
+1.  **Check User Profile**: Does the user have the Department/Committee assigned in their profile?
+2.  **Verify IDs**:
+    *   Inspect `form.settings.groupPermissions` in the database.
+    *   Compare the `resource` ID against the **Submission ID** of the Department/Committee.
+    *   **Common Error**: Pointing `resource` to the Form ID instead of the Submission ID.
+3.  **Check Field Name**: Ensure `fieldName` matches the property on the user object (e.g., `departments` vs `committees`).

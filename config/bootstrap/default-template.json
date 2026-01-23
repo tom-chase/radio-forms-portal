@@ -2455,7 +2455,7 @@
                 },
                 "groupPermissions": [
                     {
-                        "resource": "6972285a55cdef4e3a6fcb84",
+                        "resource": "department",
                         "fieldName": "departments",
                         "access": [
                             "read_all",
@@ -2463,7 +2463,7 @@
                         ]
                     },
                     {
-                        "resource": "6972287e55cdef4e3a6fcbc6",
+                        "resource": "committee",
                         "fieldName": "departments",
                         "access": [
                             "read_all",
@@ -4731,6 +4731,48 @@
                     "truncateMultipleSpaces": false
                 },
                 {
+                    "label": "Departments",
+                    "key": "departments",
+                    "type": "select",
+                    "input": true,
+                    "multiple": true,
+                    "dataSrc": "resource",
+                    "data": {
+                        "resource": "department"
+                    },
+                    "template": "<span>{{ item.data.name }}</span>",
+                    "valueProperty": "_id",
+                    "selectFields": "",
+                    "validate": {
+                        "required": false
+                    },
+                    "id": "edepartments",
+                    "placeholder": "Select departments...",
+                    "persistent": true,
+                    "tableView": true
+                },
+                {
+                    "label": "Committees",
+                    "key": "committees",
+                    "type": "select",
+                    "input": true,
+                    "multiple": true,
+                    "dataSrc": "resource",
+                    "data": {
+                        "resource": "committee"
+                    },
+                    "template": "<span>{{ item.data.name }}</span>",
+                    "valueProperty": "_id",
+                    "selectFields": "",
+                    "validate": {
+                        "required": false
+                    },
+                    "id": "ecommittees",
+                    "placeholder": "Select committees...",
+                    "persistent": true,
+                    "tableView": true
+                },
+                {
                     "label": "Submit",
                     "showValidations": false,
                     "tableView": false,
@@ -6962,7 +7004,7 @@
                 },
                 "groupPermissions": [
                     {
-                        "resource": "6972285a55cdef4e3a6fcb84",
+                        "resource": "department",
                         "fieldName": "departments",
                         "access": [
                             "read_all",
@@ -6970,7 +7012,7 @@
                         ]
                     },
                     {
-                        "resource": "6972287e55cdef4e3a6fcbc6",
+                        "resource": "committee",
                         "fieldName": "departments",
                         "access": [
                             "read_all",

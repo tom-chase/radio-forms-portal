@@ -50,12 +50,22 @@ docker-compose -f docker-compose.dev.yml up -d
 
 # Wait for services to be ready
 echo "⏳ Waiting for services to start..."
-sleep 10
+sleep 15
 
 # Check service health
 echo "🏥 Checking service health..."
 if docker-compose -f docker-compose.dev.yml ps | grep -q "Up"; then
     echo "✅ Development environment is running"
+    
+    # Run post-bootstrap configuration
+    echo "🔧 Running post-bootstrap configuration..."
+    if docker exec formio-dev node /app/post-bootstrap.js; then
+        echo "✅ Post-bootstrap configuration completed successfully"
+    else
+        echo "❌ Post-bootstrap configuration failed"
+        # We don't exit here to allow inspection, but we warn loudly
+    fi
+
     echo ""
     echo "🌐 Access your application:"
     echo "   SPA: http://localhost:3000"

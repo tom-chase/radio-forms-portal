@@ -31,6 +31,7 @@ services:
       - ./config/env:/app/config:ro
       - ./config/bootstrap/default-template.json:/app/default-template.json:ro
       - ./config/actions/UpdateLatestRoleLogId.js:/app/src/actions/UpdateLatestRoleLogId.js:ro
+      - ./scripts/post-bootstrap.js:/app/post-bootstrap.js:ro
     environment:
       NODE_ENV: development
       DEBUG: formio:*
