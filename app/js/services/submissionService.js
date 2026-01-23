@@ -13,8 +13,7 @@ import { log } from '../utils/logger.js';
 export class SubmissionService {
     static async loadSubmissions(formMeta, permissions, user) {
         const currentUser = user || await getCurrentUserWithRoles();
-        const userRoles = new Set(currentUser?.roles || []);
-        const perms = permissions || getSubmissionPermissions(userRoles, formMeta);
+        const perms = permissions || getSubmissionPermissions(currentUser, formMeta);
         
         // Use SDK Formio instance for better integration
         const Formio = window.Formio;

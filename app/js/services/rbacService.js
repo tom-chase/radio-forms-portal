@@ -69,7 +69,7 @@ export async function userIsAdmin(user) {
   }
 }
 
-export function getSubmissionPermissions(userRolesSet, formMeta, { isAdmin = false } = {}) {
+export function getSubmissionPermissions(userOrRoles, formMeta, { isAdmin = false, user = null } = {}) {
   if (isAdmin) {
     return {
       canCreateAll: true, canCreateOwn: true,
@@ -79,22 +79,90 @@ export function getSubmissionPermissions(userRolesSet, formMeta, { isAdmin = fal
     };
   }
 
+  // Normalize inputs
+  let userRolesSet;
+  let currentUser = user;
+
+  if (userOrRoles instanceof Set) {
+    userRolesSet = userOrRoles;
+  } else if (userOrRoles && typeof userOrRoles === 'object' && userOrRoles.roles) {
+    // It's a user object passed as first arg
+    currentUser = userOrRoles;
+    userRolesSet = new Set(currentUser.roles || []);
+  } else {
+    userRolesSet = new Set();
+  }
+
+  // 1. Standard Role-Based Access
   const accessArray = formMeta?.submissionAccess || formMeta?.access || [];
   const rules = accessArray.map((r) => ({
     type: r.type,
     roles: new Set(r.roles || []),
   }));
 
-  const has = (types) => rules.some((r) => types.includes(r.type) && intersects(userRolesSet, r.roles));
+  const hasRolePermission = (types) => rules.some((r) => types.includes(r.type) && intersects(userRolesSet, r.roles));
+
+  // 2. Resource-Based Access (Group Permissions)
+  // We check form.settings.groupPermissions (standardize on this location)
+  // Can be a single object or an array of objects.
+  let hasGroupPermission = (types) => false;
+
+  const groupSettingsRaw = formMeta?.settings?.groupPermissions;
+  
+  if (groupSettingsRaw && currentUser?.data) {
+    // Normalize to array
+    const groupSettingsList = Array.isArray(groupSettingsRaw) ? groupSettingsRaw : [groupSettingsRaw];
+    
+    // Check if user has permission via ANY of the configured groups
+    const userPermissionsFromGroups = new Set();
+    
+    for (const settings of groupSettingsList) {
+        if (!settings || !settings.resource) continue;
+        
+        const targetResourceId = settings.resource;
+        let userBelongsToGroup = false;
+
+        // Check specific fields if defined, otherwise scan logical fields
+        const fieldsToCheck = ['departments', 'committees', settings.fieldName].filter(Boolean);
+        
+        for (const key of fieldsToCheck) {
+            const val = currentUser.data[key];
+            if (!val) continue;
+
+            // Handle array of objects (populated) or strings (ids)
+            if (Array.isArray(val)) {
+                if (val.some(v => (v._id === targetResourceId) || (v === targetResourceId))) {
+                    userBelongsToGroup = true;
+                    break;
+                }
+            } else if (val === targetResourceId || val._id === targetResourceId) {
+                userBelongsToGroup = true;
+                break;
+            }
+        }
+
+        if (userBelongsToGroup) {
+            const accessList = settings.access || [];
+            accessList.forEach(a => userPermissionsFromGroups.add(a));
+        }
+    }
+    
+    if (userPermissionsFromGroups.size > 0) {
+        hasGroupPermission = (types) => types.some(t => userPermissionsFromGroups.has(t));
+    }
+  }
+
+  // Combine permissions
+  const check = (types) => hasRolePermission(types) || hasGroupPermission(types);
 
   return {
-    canCreateAll: has(["create_all"]),
-    canCreateOwn: has(["create_own"]),
-    canReadAll: has(["read_all"]),
-    canReadOwn: has(["read_own"]),
-    canUpdateAll: has(["update_all"]),
-    canUpdateOwn: has(["update_own"]),
-    canDeleteAll: has(["delete_all"]),
-    canDeleteOwn: has(["delete_own"]),
+    canCreateAll: check(["create_all"]),
+    canCreateOwn: check(["create_own"]),
+    canReadAll: check(["read_all"]),
+    canReadOwn: check(["read_own"]),
+    canUpdateAll: check(["update_all"]),
+    canUpdateOwn: check(["update_own"]),
+    canDeleteAll: check(["delete_all"]),
+    canDeleteOwn: check(["delete_own"]),
   };
 }

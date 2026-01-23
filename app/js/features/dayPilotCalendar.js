@@ -2,7 +2,7 @@
 
 import { getAppBridge } from '../services/appBridge.js';
 import { formioRequest } from '../services/formioService.js';
-import { startEditSubmission, startViewSubmission } from './submissions.js';
+import { startEditSubmission, startViewSubmission } from './submissions.js?v=2.14';
 import { renderViewToggle } from '../utils/viewUtils.js';
 import { showConfirm } from '../ui/modalUtils.js';
 
@@ -293,7 +293,7 @@ async function handleEventAction(event, action) {
             actions.showToast?.("Submission deleted.", "success");
             
             // Reload the calendar to show updated data
-            const { loadSubmissions } = await import('./submissions.js');
+            const { loadSubmissions } = await import('./submissions.js?v=2.14');
             await loadSubmissions(formMeta, permissions, currentUser);
         } catch (err) {
             console.error("deleteSubmission error", err);
@@ -347,7 +347,7 @@ async function updateEventTimes(event, newStart, newEnd) {
         actions.showToast?.("Shift updated successfully", "success");
         
         // Reload the calendar to show updated times
-        const { loadSubmissions } = await import('./submissions.js');
+        const { loadSubmissions } = await import('./submissions.js?v=2.14');
         if (state.currentDayPilotFormMeta) {
             await loadSubmissions(
                 state.currentDayPilotFormMeta,

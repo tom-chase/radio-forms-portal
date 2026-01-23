@@ -1,6 +1,6 @@
 // app/js/main.js
 
-import { initDebugFlag, log } from './utils/logger.js';
+import { initDebugFlag, isDebug, log } from './utils/logger.js';
 import { userIsAdmin } from './services/rbacService.js';
 import { setAppBridge, getAppBridge } from './services/appBridge.js';
 import { CONFIG } from "./config.js";
@@ -15,10 +15,10 @@ import {
     } from './services/formioService.js';
 import { 
     loadForms, renderFormsList, renderForm, populateBuilderFormSelect, createMainFormInstance, getFormDisplayTitle
-    } from "./features/forms.js";
+    } from "./features/forms.js?v=2.14";
 import { 
     renderSubmissionsTable, loadSubmissions, startEditSubmission
-    } from "./features/submissions.js";
+    } from "./features/submissions.js?v=2.14";
 import {
     getCurrentUserWithRoles,
     clearUserSessionCache
@@ -35,6 +35,9 @@ import { rebuildBuilder, mergeForSave } from './ui/builderUI.js';
 
 initDebugFlag();
 log.debug('Debug logging enabled');
+if (isDebug()) {
+  console.log('%c Radio Forms Portal v2.14 (Groups Prefill) Loaded ', 'background: #222; color: #bada55; padding: 4px;');
+}
 
 initFormioService({
   // In your CE setup (no /project/<id> path), baseUrl and projectUrl are the same.

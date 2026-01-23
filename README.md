@@ -19,6 +19,7 @@ Key docs:
 - `docs/SECURITY.md`
 - `docs/STAGING.md`
 - `docs/COMMON_ISSUES.md`
+- `docs/GROUP_PERMISSIONS.md`: Group-based access control setup and usage.
 
 ## Quick Start (Local Development)
 

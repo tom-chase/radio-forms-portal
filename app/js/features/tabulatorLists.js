@@ -3,6 +3,7 @@
 import { getAppBridge } from '../services/appBridge.js';
 import { formioRequest } from '../services/formioService.js';
 import { openRoleMgmtModal } from './roleMgmt.js';
+import { log } from '../utils/logger.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -15,21 +16,49 @@ const dataTransforms = {
      * Matches the original user form tabulator behavior
      */
     userRolesTransform: async (submissions, formMeta) => {
+        log.debug("userRolesTransform called", { count: submissions?.length });
+        
         // Load latest role logs once and join client-side
         let latestRoleLogByUserId = new Map();
+        let deptMap = new Map();
+        let commMap = new Map();
+
         try {
-            latestRoleLogByUserId = await fetchLatestRoleLogsByUserId({ limit: 5000 });
+            const [roleLogs, depts, comms] = await Promise.all([
+                fetchLatestRoleLogsByUserId({ limit: 5000 }),
+                formioRequest('/department/submission', { method: 'GET', query: { limit: 1000, select: '_id,data.name' } }).catch(() => []),
+                formioRequest('/committee/submission', { method: 'GET', query: { limit: 1000, select: '_id,data.name' } }).catch(() => [])
+            ]);
+
+            latestRoleLogByUserId = roleLogs;
+            
+            if (Array.isArray(depts)) depts.forEach(d => deptMap.set(d._id, d.data?.name || 'Unknown'));
+            if (Array.isArray(comms)) comms.forEach(c => commMap.set(c._id, c.data?.name || 'Unknown'));
+
         } catch (e) {
-            console.warn("Unable to load roleMgmtLog; roles column will be blank.", e);
+            console.warn("Unable to load reference data for user list transformation.", e);
         }
 
         return (submissions || []).map((u) => {
             const email = u?.data?.email || "—";
             const latestLog = latestRoleLogByUserId.get(u._id);
+            
+            // Format Departments and Committees
+            const formatGroup = (list, map) => {
+                if (!Array.isArray(list)) return '';
+                return list.map(item => {
+                    // Item could be an ID string or an object depending on form storage config
+                    const id = (typeof item === 'object' && item !== null) ? item._id : item;
+                    return map.get(id) || 'Unknown';
+                }).filter(Boolean).join(', ');
+            };
+
             return {
                 _id: u._id,
                 email,
                 roles: rolesStringFromLatestLog(latestLog),
+                departments: formatGroup(u.data?.departments, deptMap),
+                committees: formatGroup(u.data?.committees, commMap),
                 _raw: u
             };
         });
@@ -226,19 +255,37 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
         let roleMgmtPerms = { canCreateAll: false, canCreateOwn: false };
         let roleMgmtAdminPerms = { canCreateAll: false, canCreateOwn: false };
         
+        // Helper to resolve role IDs from names for fallback
+        const resolveRoleIds = async (names) => {
+            try {
+                const { fetchProjectRoles } = await import('../services/rbacService.js');
+                const roles = await fetchProjectRoles();
+                const ids = [];
+                for (const name of names) {
+                    const role = roles.find(r => r.machineName === name || r.title.toLowerCase() === name.toLowerCase());
+                    if (role) ids.push(role._id);
+                }
+                return ids;
+            } catch (e) {
+                return [];
+            }
+        };
+
         try {
             // Try to fetch roleMgmt form
             const roleMgmtForm = await formioRequest('/rolemgmt', { method: 'GET' });
             if (roleMgmtForm) {
-                roleMgmtPerms = getSubmissionPermissions(userRoles, roleMgmtForm, { isAdmin: state.adminMode });
+                roleMgmtPerms = getSubmissionPermissions(currentUser, roleMgmtForm, { isAdmin: state.adminMode });
             }
         } catch (e) {
             console.warn('Could not fetch roleMgmt form, using defaults:', e);
-            // Fallback to defaults
-            roleMgmtPerms = getSubmissionPermissions(userRoles, {
+            // Fallback to defaults with ID resolution
+            const managerRoleIds = await resolveRoleIds(["management", "staff", "administrator"]);
+            
+            roleMgmtPerms = getSubmissionPermissions(currentUser, {
                 submissionAccess: [
-                    { type: "create_all", roles: ["management", "staff", "administrator"] },
-                    { type: "create_own", roles: ["management", "staff", "administrator"] }
+                    { type: "create_all", roles: managerRoleIds },
+                    { type: "create_own", roles: managerRoleIds }
                 ]
             }, { isAdmin: state.adminMode });
         }
@@ -247,15 +294,16 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
             // Try to fetch roleMgmtAdmin form
             const roleMgmtAdminForm = await formioRequest('/rolemgmtadmin', { method: 'GET' });
             if (roleMgmtAdminForm) {
-                roleMgmtAdminPerms = getSubmissionPermissions(userRoles, roleMgmtAdminForm, { isAdmin: state.adminMode });
+                roleMgmtAdminPerms = getSubmissionPermissions(currentUser, roleMgmtAdminForm, { isAdmin: state.adminMode });
             }
         } catch (e) {
             console.warn('Could not fetch roleMgmtAdmin form, using defaults:', e);
             // Fallback to defaults
-            roleMgmtAdminPerms = getSubmissionPermissions(userRoles, {
+            const adminRoleIds = await resolveRoleIds(["administrator"]);
+            roleMgmtAdminPerms = getSubmissionPermissions(currentUser, {
                 submissionAccess: [
-                    { type: "create_all", roles: ["administrator"] },
-                    { type: "create_own", roles: ["administrator"] }
+                    { type: "create_all", roles: adminRoleIds },
+                    { type: "create_own", roles: adminRoleIds }
                 ]
             }, { isAdmin: state.adminMode });
         }
@@ -285,6 +333,11 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                     const canDeleteThis = permissions?.canDeleteAll || (permissions?.canDeleteOwn && isOwner);
                     const canViewThis = permissions?.canReadAll || (permissions?.canReadOwn && isOwner);
                     
+                    // DEBUG: Check permissions for button rendering
+                    if (isUserResource) {
+                        log.debug(`Row ${rawSub._id}: canManageRoles=${canManageRoles}, canManageAdminRoles=${canManageAdminRoles}`);
+                    }
+
                     let actionsHtml = '<div class="btn-group btn-group-sm" role="group">';
                     
                     // For user forms, only show role management buttons (special case)
@@ -297,6 +350,12 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         if (canManageAdminRoles) {
                             actionsHtml += `<button type="button" class="btn btn-outline-warning" data-action="role-mgmt-admin" data-id="${rawSub._id}" title="Change admin role">
                                 <i class="bi bi-shield-exclamation"></i>
+                            </button>`;
+                        }
+                        // Add Groups management button
+                        if (canManageRoles) { 
+                             actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="group-mgmt" data-id="${rawSub._id}" title="Manage Groups">
+                                <i class="bi bi-people"></i>
                             </button>`;
                         }
                     } else {
@@ -346,7 +405,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         const { actions } = getAppBridge();
                         actions.showJsonModal?.(rawSub.data || {});
                     } else if (action === "edit" || action === "view") {
-                        const { startEditSubmission, startViewSubmission } = await import('./submissions.js');
+                        const { startEditSubmission, startViewSubmission } = await import('./submissions.js?v=2.14');
                         if (action === "edit") {
                             startEditSubmission(rawSub);
                         } else {
@@ -355,7 +414,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                     } else if (action === "delete") {
                         const { showConfirm } = await import('../ui/modalUtils.js');
                         const { formioRequest } = await import('../services/formioService.js');
-                        const { loadSubmissions } = await import('./submissions.js');
+                        const { loadSubmissions } = await import('./submissions.js?v=2.14');
                         const { actions } = getAppBridge();
                         
                         const confirmed = await showConfirm("Delete this submission? This cannot be undone.");
@@ -381,7 +440,16 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                             targetUserSubmission: rawSub,
                             variant,
                             onSaved: async () => {
-                                const { loadSubmissions } = await import('./submissions.js');
+                                const { loadSubmissions } = await import('./submissions.js?v=2.14');
+                                await loadSubmissions(formMeta, permissions, user);
+                            }
+                        });
+                    } else if (action === "group-mgmt") {
+                        const { openGroupMgmtModal } = await import(`./groupMgmt.js?v=${Date.now()}`);
+                        await openGroupMgmtModal({
+                            targetUserSubmission: rawSub,
+                            onSaved: async () => {
+                                const { loadSubmissions } = await import('./submissions.js?v=2.14');
                                 await loadSubmissions(formMeta, permissions, user);
                             }
                         });
@@ -396,7 +464,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
             finalConfig.rowDblClick = async (e, row) => {
                 const data = row.getData();
                 if (data?._raw) {
-                    const { startEditSubmission } = await import('./submissions.js');
+                    const { startEditSubmission } = await import('./submissions.js?v=2.14');
                     startEditSubmission(data._raw);
                 }
             };

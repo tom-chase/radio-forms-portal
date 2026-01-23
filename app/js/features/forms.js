@@ -11,7 +11,7 @@ import {
     } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
-import { loadSubmissions } from './submissions.js';
+import { loadSubmissions } from './submissions.js?v=2.14';
 
 function $(id) { return document.getElementById(id); }
 function show(el) { if (el) el.classList.remove('d-none'); }
@@ -56,24 +56,27 @@ export async function loadForms() {
         } else {
         // Non-admin users: filter by access rules (read or create rights)
             visible = forms.filter((f) => {
-                const a = f.submissionAccess || f.access || [];
-                const rules = a.map((r) => ({
-                type: r.type,
-                roles: new Set(r.roles || [])
-                }));
-                const hasRead = rules.some(
-                (r) =>
-                    (r.type === "read_all" || r.type === "read_own" || r.type === "read") &&
-                    // local set intersection
+                // Use the shared service to check permissions (Roles + Groups)
+                const perms = getSubmissionPermissions(user, f, { isAdmin: false });
+                
+                // Also check strict "access" (Form definition access) which is usually just roles
+                // but for listing, we mainly care if they can submit or read submissions.
+                // However, traditionally `access` controls "Can I load the form definition?".
+                // If the user has Group Permission to submit, they implicitly need form read access.
+                
+                const canReadSubmissions = perms.canReadAll || perms.canReadOwn;
+                const canCreateSubmissions = perms.canCreateAll || perms.canCreateOwn;
+                
+                // Check basic form definition access (read_all/read_own on the form object itself)
+                // This is legacy role-based check for the form definition
+                const a = f.access || [];
+                const formDefRules = a.map((r) => ({ type: r.type, roles: new Set(r.roles || []) }));
+                const hasFormDefRead = formDefRules.some(
+                    (r) => (r.type === "read_all" || r.type === "read_own" || r.type === "read") &&
                     (() => { for (const v of r.roles) if (userRoles.has(v)) return true; return false; })()
                 );
-                const hasCreate = rules.some(
-                (r) =>
-                    (r.type === "create_all" || r.type === "create_own") &&
-                    // local set intersection
-                    (() => { for (const v of r.roles) if (userRoles.has(v)) return true; return false; })()
-                );
-                return hasRead || hasCreate;
+
+                return hasFormDefRead || canReadSubmissions || canCreateSubmissions;
             });
         }
 
@@ -226,11 +229,13 @@ export async function renderForm(formMeta) {
     try {
         const currentUser = await getCurrentUserWithRoles();
         state.currentUserObj = currentUser;
-        const userRoles = new Set(currentUser?.roles || []);
+        
+        // Pass full user object to support group permissions
         const submissionPerms = getSubmissionPermissions(
-            userRoles,
+            currentUser,
             formMeta,
-            { isAdmin: state.adminMode }        );
+            { isAdmin: state.adminMode }
+        );
         state.currentSubmissionPermissions = submissionPerms;
 
         // Enable create accordion only if user can create

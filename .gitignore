@@ -45,6 +45,7 @@ backups/
 
 # Tools (sensitive data)
 tools/
+config/bootstrap/form_templates/
 
 # Documentation planning notes
 docs/plans/

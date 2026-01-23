@@ -20,7 +20,7 @@
 ### A. The "Hardcoded Config" Stability Pattern
 **Status**: ACTIVE (Jan 2026)
 **Reason**: Dynamic environment variable substitution in Caddy and Frontend proved unstable during production deployments.
-**Rule**: For Production, we use **hardcoded values** in specific files. If you need to change domains (`forms.your-domain.com`) or emails (`example@your-domain.com`), you **MUST** update these files:
+**Rule**: For Production, we use **hardcoded values** in specific files. If you change domains (`forms.your-domain.com`) or emails (`example@your-domain.com`), you **MUST** update these files:
 1.  `Caddyfile`: Email and Domain blocks.
 2.  `app/js/config.js`: Fallback `API_BASE` and `SPA_ORIGIN`.
 3.  `scripts/deploy-production.sh`: Generation logic for `app/config.js`.
@@ -30,6 +30,7 @@
 **Rule**: NEVER use the Form.io SDK's native `submission.save()` or `formio.saveSubmission()`.
 **Action**: ALWAYS use `formioRequest()` from `@/app/js/services/formioService.js`.
 **Why**: This wrapper handles token refresh, standard headers, and consistent error logging.
+**Important**: `formioRequest()` expects the request body in the `data` option, not `body`.
 
 ### C. Infrastructure as Code
 **Source of Truth**: `@/infrastructure/cloudformation.yaml`
@@ -38,6 +39,28 @@
 - Security Groups (Ports 80, 443, 22)
 - IAM Roles (S3 Access)
 - EC2 Instance (t3.large/Debian 13)
+
+### D. Group Permissions (Resource-Based Access Control)
+**Status**: IMPLEMENTED (Jan 2026)
+**Pattern**: Users can be granted access to forms based on membership in Department/Committee resources.
+**Implementation**:
+- User submissions store `data.departments` and `data.committees` as arrays of resource IDs.
+- Forms configure `settings.groupPermissions` to check membership.
+- Frontend logic in `rbacService.js` evaluates both role-based and group-based access.
+- UI: "Manage Groups" modal allows editing user group assignments.
+**Key Files**:
+- `app/js/features/groupMgmt.js`: Modal for managing user groups.
+- `app/js/services/rbacService.js`: Permission evaluation logic.
+- `docs/GROUP_PERMISSIONS.md`: Full configuration and usage guide.
+
+### E. Tabulator Display vs Form Components
+**Principle**: Tabulator columns are driven by `form.settings.tabulatorList` and data transforms, **not** by form components.
+**Implication**: The user table can display Departments/Committees even if the `user` form schema does not define those components, because:
+- `userRolesTransform` formats `userSubmission.data.departments/committees` into human-readable columns.
+- These properties can exist in submission data without being defined as form components.
+**Files**:
+- `app/js/features/tabulatorLists.js`: Transform and column rendering.
+- `config/bootstrap/default-template.json`: Defines `latestRoleLogId` as hidden field; departments/committees are not form components.
 
 ## 4. Deployment Workflow
 
