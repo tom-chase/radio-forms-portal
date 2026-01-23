@@ -54,6 +54,7 @@ rm -rf "$TEMP_DIR"
 echo "🔧 Deploying on production server..."
 ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     set -e
+    set -o pipefail
     
     # Ensure app directory exists
     mkdir -p $APP_DIR
@@ -111,8 +112,8 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     echo "🔧 Generating frontend configuration..."
     cat > app/config.js << JS_EOF
 // Generated during deployment - DO NOT EDIT
-window.API_BASE_URL = 'https://${API_DOMAIN}';
-window.SPA_ORIGIN = 'https://${SPA_DOMAIN}';
+window.API_BASE_URL = 'https://\${API_DOMAIN}';
+window.SPA_ORIGIN = 'https://\${SPA_DOMAIN}';
 JS_EOF
 
     echo "✅ Configuration generated"
@@ -138,10 +139,12 @@ JS_EOF
 
         # Run post-bootstrap configuration
         echo "🔧 Running post-bootstrap configuration..."
-        if docker exec formio node /app/post-bootstrap.js; then
+        mkdir -p logs
+        if docker exec formio node /app/post-bootstrap.js 2>&1 | tee -a logs/post-bootstrap.log; then
             echo "✅ Post-bootstrap configuration completed successfully"
         else
             echo "❌ Post-bootstrap configuration failed"
+            echo "   See logs/post-bootstrap.log on the server for details."
         fi
     else
         echo "❌ Service startup failed. Checking logs..."

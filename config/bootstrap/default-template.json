@@ -2442,7 +2442,7 @@
             "title": "Incident Report",
             "type": "form",
             "name": "incidentReport",
-            "path": "incident-report",
+            "path": "incidentreport",
             "pdfComponents": [],
             "display": "form",
             "tags": [
@@ -2464,7 +2464,7 @@
                     },
                     {
                         "resource": "committee",
-                        "fieldName": "departments",
+                        "fieldName": "committees",
                         "access": [
                             "read_all",
                             "create_all",

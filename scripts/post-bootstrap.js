@@ -2,6 +2,8 @@ const API_BASE = process.env.FORMIO_DOMAIN || 'http://localhost:3001';
 const ROOT_EMAIL = process.env.ROOT_EMAIL || 'admin@dev.local';
 const ROOT_PASSWORD = process.env.ROOT_PASSWORD || 'admin123';
 
+const fs = require('fs');
+
 // Helper to log with timestamp
 const log = (msg) => console.log(`[${new Date().toISOString()}] ${msg}`);
 
@@ -72,6 +74,175 @@ async function main() {
     }, {});
     log(`Found ${forms.length} forms.`);
 
+    const templatePath = process.env.DEFAULT_TEMPLATE_PATH || '/app/default-template.json';
+    let templateForms = null;
+    const getTemplateForms = () => {
+        if (templateForms) return templateForms;
+        try {
+            const raw = fs.readFileSync(templatePath, 'utf8');
+            const parsed = JSON.parse(raw);
+            const forms = parsed && parsed.forms ? parsed.forms : {};
+            const resources = parsed && parsed.resources ? parsed.resources : {};
+            templateForms = { ...forms, ...resources };
+            const formCount = Object.keys(forms).length;
+            const resourceCount = Object.keys(resources).length;
+            log(`Loaded default template from ${templatePath} (${formCount} forms, ${resourceCount} resources).`);
+            return templateForms;
+        } catch (e) {
+            log(`WARNING: Could not read default template at ${templatePath}: ${e.message}`);
+            templateForms = null;
+            return null;
+        }
+    };
+
+    const mapRoleNamesToIds = (rolesList) => {
+        if (!Array.isArray(rolesList)) return rolesList;
+        return rolesList
+            .map((r) => (typeof r === 'string' && roleMap[r] ? roleMap[r] : r))
+            .filter((r) => !!r);
+    };
+
+    const normalizeAccessRoles = (formDef) => {
+        if (!formDef || typeof formDef !== 'object') return formDef;
+
+        if (Array.isArray(formDef.access)) {
+            formDef.access = formDef.access.map((rule) => {
+                if (rule && Array.isArray(rule.roles)) {
+                    return { ...rule, roles: mapRoleNamesToIds(rule.roles) };
+                }
+                return rule;
+            });
+        }
+
+        if (Array.isArray(formDef.submissionAccess)) {
+            formDef.submissionAccess = formDef.submissionAccess.map((rule) => {
+                if (rule && Array.isArray(rule.roles)) {
+                    return { ...rule, roles: mapRoleNamesToIds(rule.roles) };
+                }
+                return rule;
+            });
+        }
+
+        return formDef;
+    };
+
+    const createFormFromTemplate = async (formName) => {
+        if (formMap[formName]) {
+            return formMap[formName];
+        }
+
+        const formsFromTemplate = getTemplateForms();
+        if (!formsFromTemplate || !formsFromTemplate[formName]) {
+            log(`WARNING: Template does not include form '${formName}'.`);
+            return null;
+        }
+
+        try {
+            log(`Creating missing form '${formName}' from default-template.json...`);
+
+            const createBody = normalizeAccessRoles(JSON.parse(JSON.stringify(formsFromTemplate[formName])));
+            const createResp = await fetch(`${API_BASE}/form`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(createBody)
+            });
+
+            if (!createResp.ok) {
+                const text = await createResp.text();
+                log(`ERROR: Failed to create form '${formName}': ${createResp.status} ${createResp.statusText} - ${text}`);
+                return null;
+            }
+
+            const created = await createResp.json();
+            if (created && created._id) {
+                formMap[formName] = created._id;
+                log(`Created form '${formName}' with id ${created._id}`);
+                return created._id;
+            }
+
+            log(`ERROR: Unexpected response creating form '${formName}'.`);
+            return null;
+        } catch (e) {
+            log(`ERROR: Exception creating form '${formName}': ${e.message}`);
+            return null;
+        }
+    };
+
+    const componentKeyExists = (components, key) => {
+        if (!Array.isArray(components)) return false;
+        for (const comp of components) {
+            if (comp && comp.key === key) return true;
+            if (componentKeyExists(comp && comp.components, key)) return true;
+            if (componentKeyExists(comp && comp.columns && comp.columns.flatMap(c => c.components || []), key)) return true;
+            if (componentKeyExists(comp && comp.rows && comp.rows.flatMap(r => r.flatMap(c => c.components || [])), key)) return true;
+        }
+        return false;
+    };
+
+    const findComponentByKey = (components, key) => {
+        if (!Array.isArray(components)) return null;
+        for (const comp of components) {
+            if (comp && comp.key === key) return comp;
+            const inComponents = findComponentByKey(comp && comp.components, key);
+            if (inComponents) return inComponents;
+            const colComps = comp && comp.columns ? comp.columns.flatMap(c => c.components || []) : null;
+            const inCols = findComponentByKey(colComps, key);
+            if (inCols) return inCols;
+            const rowComps = comp && comp.rows ? comp.rows.flatMap(r => r.flatMap(c => c.components || [])) : null;
+            const inRows = findComponentByKey(rowComps, key);
+            if (inRows) return inRows;
+        }
+        return null;
+    };
+
+    const ensureUserGroupFields = async () => {
+        const userId = formMap['user'];
+        const formsFromTemplate = getTemplateForms();
+        if (!userId || !formsFromTemplate || !formsFromTemplate['user']) return;
+
+        try {
+            const formResp = await fetch(`${API_BASE}/form/${userId}`, { headers });
+            const userForm = await formResp.json();
+            const hasDepartments = componentKeyExists(userForm.components || [], 'departments');
+            const hasCommittees = componentKeyExists(userForm.components || [], 'committees');
+
+            if (hasDepartments && hasCommittees) {
+                return;
+            }
+
+            const templateUserForm = formsFromTemplate['user'];
+            const departmentsComp = hasDepartments ? null : findComponentByKey(templateUserForm.components || [], 'departments');
+            const committeesComp = hasCommittees ? null : findComponentByKey(templateUserForm.components || [], 'committees');
+
+            const toAdd = [];
+            if (departmentsComp) toAdd.push(JSON.parse(JSON.stringify(departmentsComp)));
+            if (committeesComp) toAdd.push(JSON.parse(JSON.stringify(committeesComp)));
+
+            if (!toAdd.length) return;
+
+            userForm.components = Array.isArray(userForm.components) ? userForm.components : [];
+            userForm.components.push(...toAdd);
+
+            log('Updating user form to include missing group fields...');
+            const putResp = await fetch(`${API_BASE}/form/${userId}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(userForm)
+            });
+
+            if (!putResp.ok) {
+                const text = await putResp.text();
+                log(`ERROR: Failed updating user form group fields: ${putResp.status} ${putResp.statusText} - ${text}`);
+            }
+        } catch (e) {
+            log(`ERROR: Exception updating user form group fields: ${e.message}`);
+        }
+    };
+
+    await createFormFromTemplate('department');
+    await createFormFromTemplate('committee');
+    await ensureUserGroupFields();
+
     // --- Task 1: Update Group Permissions in Forms ---
     // Critical Fix: groupPermissions.resource must be a SUBMISSION ID (Specific Group), not a FORM ID.
     // We must ensure the specific groups exist (e.g. "Engineering" Dept) and link to them.
@@ -94,7 +265,7 @@ async function main() {
                 return found[0]._id;
             }
 
-            log(`Creating ${formName} submission...`);
+            log(`Creating ${formName} submission (formId: ${formId})...`);
             const createResp = await fetch(`${API_BASE}/${formName}/submission`, {
                 method: 'POST',
                 headers,
