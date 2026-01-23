@@ -239,9 +239,71 @@ async function main() {
         }
     };
 
+    const syncFormPermissions = async (formName) => {
+        const formId = formMap[formName];
+        const formsFromTemplate = getTemplateForms();
+        
+        if (!formId || !formsFromTemplate || !formsFromTemplate[formName]) {
+            return;
+        }
+
+        try {
+            const formResp = await fetch(`${API_BASE}/form/${formId}`, { headers });
+            if (!formResp.ok) {
+                log(`WARNING: Could not fetch form ${formName} for permission sync`);
+                return;
+            }
+
+            const currentForm = await formResp.json();
+            const templateForm = formsFromTemplate[formName];
+            
+            let updated = false;
+
+            // Sync access rules
+            if (templateForm.access && JSON.stringify(currentForm.access) !== JSON.stringify(templateForm.access)) {
+                currentForm.access = normalizeAccessRoles(templateForm).access;
+                updated = true;
+                log(`Syncing access rules for ${formName}...`);
+            }
+
+            // Sync submissionAccess rules
+            if (templateForm.submissionAccess && JSON.stringify(currentForm.submissionAccess) !== JSON.stringify(templateForm.submissionAccess)) {
+                currentForm.submissionAccess = normalizeAccessRoles(templateForm).submissionAccess;
+                updated = true;
+                log(`Syncing submission access rules for ${formName}...`);
+            }
+
+            if (!updated) {
+                return;
+            }
+
+            const updateResp = await fetch(`${API_BASE}/form/${formId}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(currentForm)
+            });
+
+            if (!updateResp.ok) {
+                const text = await updateResp.text();
+                log(`ERROR: Failed to sync permissions for ${formName}: ${updateResp.status} ${text}`);
+            } else {
+                log(`Updated permissions for ${formName}`);
+            }
+        } catch (e) {
+            log(`ERROR: Exception syncing permissions for ${formName}: ${e.message}`);
+        }
+    };
+
     await createFormFromTemplate('department');
     await createFormFromTemplate('committee');
     await ensureUserGroupFields();
+
+    // Sync permissions from template for all forms
+    log('Syncing permissions from template...');
+    const formsToSync = Object.keys(formMap);
+    for (const formName of formsToSync) {
+        await syncFormPermissions(formName);
+    }
 
     // --- Task 1: Update Group Permissions in Forms ---
     // Critical Fix: groupPermissions.resource must be a SUBMISSION ID (Specific Group), not a FORM ID.

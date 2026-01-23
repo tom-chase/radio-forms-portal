@@ -66,6 +66,14 @@ if docker-compose -f docker-compose.dev.yml ps | grep -q "Up"; then
         # We don't exit here to allow inspection, but we warn loudly
     fi
 
+    # Run migrations
+    echo "🔄 Running database migrations..."
+    if docker exec formio-dev node /app/run-migrations.js; then
+        echo "✅ Migrations completed successfully"
+    else
+        echo "⚠️  Migrations failed or had warnings"
+    fi
+
     echo ""
     echo "🌐 Access your application:"
     echo "   SPA: http://localhost:3000"

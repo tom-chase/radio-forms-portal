@@ -56,6 +56,8 @@ What it does (high level):
 - Regenerates Form.io config (from server `.env`)
 - Generates `app/config.js` for the SPA (hardcoded production URLs)
 - Restarts Docker Compose
+- Runs post-bootstrap configuration (creates missing forms, syncs permissions)
+- Runs database migrations (applies structural changes to forms)
  
 ### 2) On the server
  
@@ -69,6 +71,71 @@ docker-compose logs --tail=200 caddy
 docker-compose logs --tail=200 formio
 ```
  
+---
+
+## 🔄 Database Migrations
+
+### Overview
+
+The project uses a hybrid approach for managing Form.io schema changes:
+
+1. **Automated** (via `post-bootstrap.js`): New forms/resources, permission syncing, seed data
+2. **Manual Migrations** (via `scripts/migrations/`): Structural changes to existing forms
+
+### When to Create a Migration
+
+Create a migration when you need to:
+- Add/remove fields from existing forms
+- Change field types or validation rules
+- Rename fields (especially with data migration)
+- Update form layouts or component order
+
+### Quick Start
+
+```bash
+# 1. Create migration from template
+cp scripts/migrations/000-example-migration.js.template \
+   scripts/migrations/001-add-status-field.js
+
+# 2. Edit the migration
+vim scripts/migrations/001-add-status-field.js
+
+# 3. Test in development
+./scripts/deploy-dev.sh
+
+# 4. Deploy to production (migrations run automatically)
+./scripts/deploy-production.sh ~/.ssh/key.pem
+```
+
+### Migration Execution
+
+Migrations run automatically during deployment:
+1. After Docker Compose restart
+2. After post-bootstrap configuration
+3. Before deployment completion
+
+Logs are written to:
+- **Development**: Console output
+- **Production**: `logs/migrations.log` on server
+
+### Checking Migration Status
+
+```bash
+# View applied migrations
+ssh admin@server "docker exec formio node -e \"
+const fetch = require('node-fetch');
+fetch('http://localhost:3001/migration/submission?limit=100')
+  .then(r => r.json())
+  .then(data => console.log(JSON.stringify(data, null, 2)));
+\""
+```
+
+### Documentation
+
+For detailed migration guide, see:
+- **`docs/MIGRATIONS.md`**: Comprehensive guide with examples
+- **`scripts/migrations/README.md`**: Quick reference for migration authors
+
 ---
  
 ## 🧩 Configuration Management

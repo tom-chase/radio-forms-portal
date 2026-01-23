@@ -65,16 +65,38 @@
 ### F. Post-Bootstrap Configuration
 **Status**: IMPLEMENTED (Jan 2026)
 **Problem**: Form.io generates new dynamic IDs for Resources/Roles on every fresh import, breaking hardcoded references in `groupPermissions` or `customConditional` logic.
-**Solution**: `scripts/post-bootstrap.js` runs automatically after the dev container starts.
+**Solution**: `scripts/post-bootstrap.js` runs automatically after container starts (both dev and production).
 **Mechanism**:
 1.  **Authentication**: Authenticates as the root admin.
 2.  **Mapping**: Fetches all Forms and Roles to map machine names (e.g. `administrator`, `department`) to runtime IDs.
-3.  **Seeding**: Ensures required reference submissions exist (e.g. "Engineering" Department).
-4.  **Linking**: Updates `form.settings.groupPermissions` to point to these specific *Submission IDs* (not Form IDs).
-5.  **Logic Update**: Rewrites `customConditional` logic in forms (like `roleMgmt`) to use the correct runtime Role IDs.
+3.  **Form Creation**: Creates missing forms/resources from `default-template.json` (both `forms` and `resources` sections).
+4.  **Permission Syncing**: Syncs `access` and `submissionAccess` rules from template to existing forms.
+5.  **Seeding**: Ensures required reference submissions exist (e.g. "Engineering" Department).
+6.  **Linking**: Updates `form.settings.groupPermissions` to point to these specific *Submission IDs* (not Form IDs).
+7.  **Logic Update**: Rewrites `customConditional` logic in forms (like `roleMgmt`) to use the correct runtime Role IDs.
 **Files**:
 - `scripts/post-bootstrap.js`: The configuration logic.
-- `scripts/deploy-dev.sh`: Triggers the script via `docker exec`.
+- `scripts/deploy-dev.sh` & `scripts/deploy-production.sh`: Trigger the script via `docker exec`.
+
+### G. Migration System
+**Status**: IMPLEMENTED (Jan 2026)
+**Problem**: Need a safe, version-controlled way to apply structural changes to forms in production without wiping data.
+**Solution**: Hybrid approach combining automated syncing (post-bootstrap) with manual migrations for complex changes.
+**When to Use**:
+- **Post-Bootstrap** (automatic): New forms/resources, permission syncing, seed data, dynamic IDs
+- **Migrations** (manual): Adding/removing fields, changing field types, renaming fields with data migration
+**Mechanism**:
+1.  **Migration Files**: Numbered scripts in `scripts/migrations/` (e.g., `001-add-status-field.js`)
+2.  **Runner**: `scripts/run-migrations.js` executes pending migrations in order
+3.  **Tracking**: Applied migrations stored in `migration` resource to prevent re-runs
+4.  **Execution**: Runs automatically after post-bootstrap during deployment
+5.  **Idempotency**: Migrations check for existing changes before applying
+**Files**:
+- `scripts/migrations/`: Migration scripts directory
+- `scripts/run-migrations.js`: Migration runner
+- `scripts/migrations/README.md`: Quick reference for migration authors
+- `docs/MIGRATIONS.md`: Comprehensive migration guide
+**Integration**: Both `deploy-dev.sh` and `deploy-production.sh` run migrations automatically after post-bootstrap.
 
 ## 4. Deployment Workflow
 

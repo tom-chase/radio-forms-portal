@@ -146,6 +146,15 @@ JS_EOF
             echo "❌ Post-bootstrap configuration failed"
             echo "   See logs/post-bootstrap.log on the server for details."
         fi
+
+        # Run migrations
+        echo "🔄 Running database migrations..."
+        if docker exec formio node /app/run-migrations.js 2>&1 | tee -a logs/migrations.log; then
+            echo "✅ Migrations completed successfully"
+        else
+            echo "⚠️  Migrations failed or had warnings"
+            echo "   See logs/migrations.log on the server for details."
+        fi
     else
         echo "❌ Service startup failed. Checking logs..."
         docker-compose logs --tail=50
