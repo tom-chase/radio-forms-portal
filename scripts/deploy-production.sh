@@ -135,6 +135,14 @@ JS_EOF
     if docker-compose ps | grep -q "Up"; then
         echo "✅ Services are running:"
         docker-compose ps
+
+        # Run post-bootstrap configuration
+        echo "🔧 Running post-bootstrap configuration..."
+        if docker exec formio node /app/post-bootstrap.js; then
+            echo "✅ Post-bootstrap configuration completed successfully"
+        else
+            echo "❌ Post-bootstrap configuration failed"
+        fi
     else
         echo "❌ Service startup failed. Checking logs..."
         docker-compose logs --tail=50

@@ -36,50 +36,50 @@
  
  ---
  
- ## 🚀 Production Deployment (“Tarball Push”)
+## 🚀 Production Deployment (“Tarball Push”)
  
- Production deploys do **not** use `git pull` on the server.
+Production deploys do **not** use `git pull` on the server.
  
- ### 1) On your laptop
+### 1) On your laptop
  
- - Ensure your local checkout is exactly what you want deployed.
- - Run:
+- Ensure your local checkout is exactly what you want deployed.
+- Run:
  
- ```bash
- ./scripts/deploy-production.sh /path/to/your-ssh-key.pem
- ```
+```bash
+./scripts/deploy-production.sh /path/to/your-ssh-key.pem
+```
  
- What it does (high level):
- - Creates a tarball of the current directory (excluding `.env`, `.git`, etc.)
- - Uploads it to the server
- - Extracts it into the app directory
- - Regenerates Form.io config (from server `.env`)
- - Generates `app/config.js` for the SPA (hardcoded production URLs)
- - Restarts Docker Compose
+What it does (high level):
+- Creates a tarball of the current directory (excluding `.env`, `.git`, etc.)
+- Uploads it to the server
+- Extracts it into the app directory
+- Regenerates Form.io config (from server `.env`)
+- Generates `app/config.js` for the SPA (hardcoded production URLs)
+- Restarts Docker Compose
  
- ### 2) On the server
+### 2) On the server
  
- The script handles the remote steps for you.
+The script handles the remote steps for you.
+
+Useful validation commands:
  
- Useful validation commands:
+```bash
+docker-compose ps
+docker-compose logs --tail=200 caddy
+docker-compose logs --tail=200 formio
+```
  
- ```bash
- docker-compose ps
- docker-compose logs --tail=200 caddy
- docker-compose logs --tail=200 formio
- ```
+---
  
- ---
+## 🧩 Configuration Management
  
- ## 🧩 Configuration Management
+### `.env`
  
- ### `.env`
+- Local dev uses `.env` for secrets and local URLs.
+- Production keeps its own `.env` on the server.
+- The production deploy script explicitly **does not** upload your local `.env`.
  
- - Local dev uses `.env` for secrets and local URLs.
- - Production keeps its own `.env` on the server.
- - The production deploy script explicitly **does not** upload your local `.env`.
- 
- ### Backend config generation
+### Backend config generation
  
  Backend configuration is generated via:
  
