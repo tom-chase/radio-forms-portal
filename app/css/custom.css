@@ -91,3 +91,160 @@ pre {
 .submission-inline-row .inline-form-container {
     border-top: 1px solid #dee2e6;
 }
+
+.todo-list {
+  list-style: none;    /* removes bullets */
+  margin: 0;
+  padding: 0 24px;          /* optional: aligns checkboxes with container edge */
+}
+
+label.todo-list__label input[type="checkbox"] {
+    margin-right: 12px;
+}
+
+/* EditGrid field-level styling */
+.editgrid-field {
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    background-color: #fff;
+}
+
+.editgrid-value {
+    color: #212529;
+}
+
+/* Make EditGrid container fill parent space */
+.formio-component-editgrid {
+    width: 100%;
+}
+
+.formio-component-editgrid .editgrid-listgroup {
+    width: 100%;
+}
+
+.formio-component-editgrid .list-group-item {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Field-specific styling examples */
+.editgrid-field-sectionTitle .editgrid-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #0d6efd;
+}
+
+.editgrid-field-anchorId .editgrid-value {
+    font-family: 'Courier New', monospace;
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* EditGrid inline buttons styling */
+.editgrid-field-sectionTitle .btn-group {
+    flex-shrink: 0;
+}
+
+.btn-xs {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    border-radius: 0.2rem;
+}
+
+.btn-xs i {
+    font-size: 0.7rem;
+}
+
+/* Ensure proper spacing in inline layout */
+.editgrid-field-sectionTitle .d-flex {
+    gap: 0.5rem;
+}
+
+/* Chapter title styling */
+.chapter-title-field {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+}
+
+/* Hide chapter title label in read-only mode */
+.formio-read-only .chapter-title-field .formio-component-label {
+    display: none;
+}
+
+.formio-read-only .chapter-title-field {
+    margin-top: 1rem;
+}
+
+/* EditGrid accordion styling */
+.editgrid-accordion .accordion-item {
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+.editgrid-accordion .accordion-header {
+    border-radius: 0.375rem;
+}
+
+.editgrid-accordion .accordion-button {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    color: #0d6efd;
+    font-size: 1.1rem;
+    border: none;
+    box-shadow: none;
+}
+
+.editgrid-accordion .accordion-button:not(.collapsed) {
+    background-color: #e7f1ff;
+    color: #0a58ca;
+}
+
+.editgrid-accordion .accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.editgrid-accordion .accordion-body {
+    padding: 1rem;
+    background-color: #fff;
+}
+
+.editgrid-accordion .btn-group {
+    flex-shrink: 0;
+}
+
+/* Position buttons outside accordion button - moved left */
+.editgrid-accordion .accordion-header .d-flex {
+    position: relative;
+}
+
+.editgrid-accordion .btn-group {
+    position: absolute;
+    right: 3rem; /* Moved left from 1rem to avoid overlap */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+/* Remove container around sectionContent - content fills accordion space */
+.editgrid-accordion .editgrid-field-sectionContent {
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+.editgrid-accordion .editgrid-field-sectionContent .editgrid-value {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+}

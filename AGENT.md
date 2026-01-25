@@ -70,10 +70,13 @@
 1.  **Authentication**: Authenticates as the root admin.
 2.  **Mapping**: Fetches all Forms and Roles to map machine names (e.g. `administrator`, `department`) to runtime IDs.
 3.  **Form Creation**: Creates missing forms/resources from `default-template.json` (both `forms` and `resources` sections).
-4.  **Permission Syncing**: Syncs `access` and `submissionAccess` rules from template to existing forms.
-5.  **Seeding**: Ensures required reference submissions exist (e.g. "Engineering" Department).
-6.  **Linking**: Updates `form.settings.groupPermissions` to point to these specific *Submission IDs* (not Form IDs).
-7.  **Logic Update**: Rewrites `customConditional` logic in forms (like `roleMgmt`) to use the correct runtime Role IDs.
+4.  **Schema Sync (Selected Forms)**: Syncs form schema fields (including `components` and `settings`) from `default-template.json` for selected forms.
+    - Current usage: The `book` form schema is synced to ensure UI customizations (EditGrid templates, calculated fields, layout) persist across redeploys.
+    - Implication: Manual schema edits made in the Form.io Admin UI for `book` may be overwritten by this step.
+5.  **Permission Syncing**: Syncs `access` and `submissionAccess` rules from template to existing forms.
+6.  **Seeding**: Ensures required reference submissions exist (e.g. "Engineering" Department).
+7.  **Linking**: Updates `form.settings.groupPermissions` to point to these specific *Submission IDs* (not Form IDs).
+8.  **Logic Update**: Rewrites `customConditional` logic in forms (like `roleMgmt`) to use the correct runtime Role IDs.
 **Files**:
 - `scripts/post-bootstrap.js`: The configuration logic.
 - `scripts/deploy-dev.sh` & `scripts/deploy-production.sh`: Trigger the script via `docker exec`.
@@ -97,6 +100,34 @@
 - `scripts/migrations/README.md`: Quick reference for migration authors
 - `docs/MIGRATIONS.md`: Comprehensive migration guide
 **Integration**: Both `deploy-dev.sh` and `deploy-production.sh` run migrations automatically after post-bootstrap.
+
+### H. Form Schema as Code (Book Form)
+**Status**: ACTIVE (Jan 2026)
+**Rule**: The `book` form schema (including layout/templates) is treated as **source-controlled configuration**.
+**Source of Truth**:
+1. `config/bootstrap/default-template.json` (form schema)
+2. `app/css/custom.css` (UI styling)
+
+**Development Workflow**:
+1. Make changes in `default-template.json` and/or SPA assets.
+2. Redeploy dev environment as normal.
+3. Run `scripts/post-bootstrap.js` so the `book` schema sync is applied.
+4. Verify in `localhost:3000`.
+
+**Verification Note**: The Book chapter EditGrid uses a custom display template that renders the accordion for rows **after a row is saved** (display mode). While a row is being edited, the accordion layout will not be visible.
+
+### I. Prototyping New Forms (Admin UI) + Capturing Back to Git
+**Status**: ACTIVE (Jan 2026)
+
+During early development, it is acceptable to prototype form schemas in the Form.io Admin UI Builder for speed.
+
+**Rule**: Do not overwrite `config/bootstrap/default-template.json` from a full "project export" (bundle export). These exports often include environment-specific noise and can accidentally clobber curated template structure.
+
+**Recommended Capture Workflow**:
+1. Prototype in Admin UI.
+2. Export only the specific form(s) you changed (per-form export via the Form.io API).
+3. Save each form JSON into `config/bootstrap/form_templates/<formName>.json`.
+4. Once stable, "promote" the form into `config/bootstrap/default-template.json` (and decide whether it remains DB-owned + migrations, or becomes schema-as-code).
 
 ## 4. Deployment Workflow
 

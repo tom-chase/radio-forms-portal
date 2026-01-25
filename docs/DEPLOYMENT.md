@@ -56,7 +56,7 @@ What it does (high level):
 - Regenerates Form.io config (from server `.env`)
 - Generates `app/config.js` for the SPA (hardcoded production URLs)
 - Restarts Docker Compose
-- Runs post-bootstrap configuration (creates missing forms, syncs permissions)
+- Runs post-bootstrap configuration (creates missing forms/resources, syncs permissions, and may sync selected form schemas)
 - Runs database migrations (applies structural changes to forms)
  
 ### 2) On the server
@@ -79,8 +79,17 @@ docker-compose logs --tail=200 formio
 
 The project uses a hybrid approach for managing Form.io schema changes:
 
-1. **Automated** (via `post-bootstrap.js`): New forms/resources, permission syncing, seed data
+1. **Automated** (via `post-bootstrap.js`): New forms/resources, permission syncing, seed data, dynamic ID resolution, and (for selected forms) schema syncing
 2. **Manual Migrations** (via `scripts/migrations/`): Structural changes to existing forms
+
+**Note on schema syncing**:
+- Some forms (currently `book`) are treated as "schema as code" and may have their schema (`components`, `settings`, templates) synced from `config/bootstrap/default-template.json` during post-bootstrap.
+- Implication: manual schema edits made in the Form.io Admin UI for these forms may be overwritten on deploy.
+
+**Note on prototyping new forms**:
+- During early development it is acceptable to prototype in the Form.io Admin UI Builder.
+- Prefer capturing changes via per-form exports into `config/bootstrap/form_templates/` and promoting into `default-template.json` once stable.
+- Avoid replacing `default-template.json` from a full "project export" bundle.
 
 ### When to Create a Migration
 

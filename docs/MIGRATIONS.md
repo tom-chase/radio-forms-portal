@@ -4,7 +4,7 @@
 
 The Radio Forms Portal uses a hybrid approach for managing Form.io schema changes:
 
-1. **Automated Syncing** (`post-bootstrap.js`): Handles permissions, new forms/resources, and dynamic IDs
+1. **Automated Syncing** (`post-bootstrap.js`): Handles permissions, new forms/resources, dynamic IDs, and (for selected forms) schema syncing
 2. **Manual Migrations** (`scripts/migrations/`): Handles structural changes to existing forms
 
 This document focuses on the migration system for managing incremental changes to production forms.
@@ -25,6 +25,24 @@ This document focuses on the migration system for managing incremental changes t
 - Updating role-based conditional logic (automatic)
 - Creating seed data (departments, committees)
 - Dynamic ID resolution
+
+### "Schema as Code" note (Selected Forms)
+
+Some forms (currently `book`) are treated as **schema as code**:
+- Their schema (`components`, `settings`, templates) is stored in `config/bootstrap/default-template.json` and may be synced to the DB during `post-bootstrap.js`.
+- Implication: manual schema edits made in the Form.io Admin UI for these forms may be overwritten during deployments.
+
+If you need to change `book`, prefer updating `default-template.json` and re-running post-bootstrap. Only use a migration for `book` when you must transform existing submission data.
+
+### Capturing Admin UI Prototypes (Early Development)
+
+During early development it is acceptable to prototype new forms in the Form.io Admin UI. To capture that work in git without introducing large, unstable diffs:
+
+1. Export only the specific form(s) you changed (per-form export).
+2. Save each exported form JSON into `config/bootstrap/form_templates/<formName>.json`.
+3. When the form stabilizes, promote it into `config/bootstrap/default-template.json`.
+
+Avoid overwriting `default-template.json` from a full "project export" bundle. Those exports can include environment-specific fields and make the template hard to review and maintain.
 
 ## Quick Start
 

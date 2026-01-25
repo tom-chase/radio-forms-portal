@@ -8,6 +8,7 @@ set -e
 # Get branch name (default: current branch)
 BRANCH=${1:-$(git branch --show-current)}
 COMMIT_MSG=${2:-"feat: $(echo $BRANCH | sed 's/-/ /g' | sed 's/\b\w/\U&/g')"}
+BASE_BRANCH=${3:-""}
 
 echo "🔧 Squashing commits in branch '$BRANCH'..."
 
@@ -19,8 +20,16 @@ if [ "$CURRENT_BRANCH" != "$BRANCH" ]; then
 fi
 
 # Get the number of commits to squash
-BASE_BRANCH="main"  # Change if your main branch is different
-COMMIT_COUNT=$(git rev-list --count $BASE_BRANCH..$BRANCH)
+if [ -z "$BASE_BRANCH" ]; then
+    if git show-ref --verify --quiet refs/heads/develop; then
+        BASE_BRANCH="develop"
+    else
+        BASE_BRANCH="main"
+    fi
+fi
+
+MERGE_BASE=$(git merge-base $BASE_BRANCH $BRANCH)
+COMMIT_COUNT=$(git rev-list --count $MERGE_BASE..$BRANCH)
 
 if [ $COMMIT_COUNT -eq 0 ]; then
     echo "❌ No commits to squash"
@@ -30,7 +39,7 @@ fi
 echo "Found $COMMIT_COUNT commits to squash"
 
 # Interactive rebase to squash
-git reset --soft $BASE_BRANCH
+git reset --soft $MERGE_BASE
 git commit -m "$COMMIT_MSG"
 
 echo "✅ Squashed $COMMIT_COUNT commits into one"

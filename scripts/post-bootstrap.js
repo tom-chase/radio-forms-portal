@@ -126,6 +126,58 @@ async function main() {
         return formDef;
     };
 
+    const syncFormSchema = async (formName) => {
+        const formId = formMap[formName];
+        const formsFromTemplate = getTemplateForms();
+
+        if (!formId || !formsFromTemplate || !formsFromTemplate[formName]) {
+            return;
+        }
+
+        try {
+            const formResp = await fetch(`${API_BASE}/form/${formId}`, { headers });
+            if (!formResp.ok) {
+                log(`WARNING: Could not fetch form ${formName} for schema sync`);
+                return;
+            }
+
+            const currentForm = await formResp.json();
+            const templateFormRaw = formsFromTemplate[formName];
+            const templateForm = normalizeAccessRoles(JSON.parse(JSON.stringify(templateFormRaw)));
+
+            const keysToSync = ['title', 'name', 'path', 'type', 'display', 'components', 'settings', 'tags', 'pdfComponents'];
+            let updated = false;
+
+            for (const k of keysToSync) {
+                if (!Object.prototype.hasOwnProperty.call(templateForm, k)) continue;
+                if (JSON.stringify(currentForm[k]) !== JSON.stringify(templateForm[k])) {
+                    currentForm[k] = templateForm[k];
+                    updated = true;
+                }
+            }
+
+            if (!updated) {
+                return;
+            }
+
+            log(`Syncing schema for ${formName}...`);
+            const updateResp = await fetch(`${API_BASE}/form/${formId}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(currentForm)
+            });
+
+            if (!updateResp.ok) {
+                const text = await updateResp.text();
+                log(`ERROR: Failed to sync schema for ${formName}: ${updateResp.status} ${text}`);
+            } else {
+                log(`Updated schema for ${formName}`);
+            }
+        } catch (e) {
+            log(`ERROR: Exception syncing schema for ${formName}: ${e.message}`);
+        }
+    };
+
     const createFormFromTemplate = async (formName) => {
         if (formMap[formName]) {
             return formMap[formName];
@@ -297,6 +349,8 @@ async function main() {
     await createFormFromTemplate('department');
     await createFormFromTemplate('committee');
     await ensureUserGroupFields();
+
+    await syncFormSchema('book');
 
     // Sync permissions from template for all forms
     log('Syncing permissions from template...');
