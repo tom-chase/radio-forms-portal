@@ -47,3 +47,28 @@ This document covers common issues encountered during development and their stan
 - **Solution**: To apply your changes, you must either:
   1.  **Restart the development environment with a clean database**: Run `docker-compose down -v` followed by `docker-compose up`. This will destroy the database volume and force a fresh import of the template.
   2.  **Manually Re-import the Form**: Use the "Import JSON" feature in the Admin Tools section of the application to upload the updated `default-template.json` file. Ensure the "Overwrite existing form/resource" checkbox is ticked.
+
+---
+
+### 4. Form.io Template Error: `TypeError: util.each is not a function`
+
+- **Symptom**: Custom templates (e.g., in EditGrid rows) fail to render, showing an error stack trace in the console referencing `util.each`.
+
+- **Cause**: The `util` object exposed in the Form.io template context does not contain an `each` method. While some Form.io documentation or examples might suggest `util.each`, it is not reliably available in all renderer contexts.
+
+- **Solution**: Use the Lodash `_` object, which is globally available in the template context.
+
+- **Example**:
+  - **Broken**: `{% util.each(components, function(component) { %}`
+  - **Fixed**: `{% _.each(components, function(component) { %}`
+
+---
+
+### 5. Tabulator Filter Error: "No such editor found: undefined"
+
+- **Symptom**: Tabulator fails to initialize or renders incorrectly, logging "Filter Error - Cannot build header filter, No such editor found: undefined".
+
+- **Cause**: The `headerFilter` property in a column definition is set to `undefined`, `null`, or the string literal `"undefined"` (often a result of imperfect serialization/sanitization of form settings). Tabulator expects a valid editor type string (e.g., "input", "select") or for the property to be omitted entirely.
+
+- **Solution**: Ensure strict sanitization of column definitions before passing them to the Tabulator constructor. Remove any keys where the value is not a valid string or boolean.
+

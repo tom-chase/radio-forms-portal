@@ -15,10 +15,10 @@ import {
     } from './services/formioService.js';
 import { 
     loadForms, renderFormsList, renderForm, populateBuilderFormSelect, createMainFormInstance, getFormDisplayTitle
-    } from "./features/forms.js?v=2.14";
+    } from "./features/forms.js?v=2.15";
 import { 
     renderSubmissionsTable, loadSubmissions, startEditSubmission
-    } from "./features/submissions.js?v=2.14";
+    } from "./features/submissions.js?v=2.15";
 import {
     getCurrentUserWithRoles,
     clearUserSessionCache
@@ -36,7 +36,7 @@ import { rebuildBuilder, mergeForSave } from './ui/builderUI.js';
 initDebugFlag();
 log.debug('Debug logging enabled');
 if (isDebug()) {
-  console.log('%c Radio Forms Portal v2.14 (Groups Prefill) Loaded ', 'background: #222; color: #bada55; padding: 4px;');
+  console.log('%c Radio Forms Portal v2.15 (Groups Prefill) Loaded ', 'background: #222; color: #bada55; padding: 4px;');
 }
 
 initFormioService({

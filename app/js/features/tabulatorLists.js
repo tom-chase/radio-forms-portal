@@ -178,16 +178,59 @@ function createDefaultConfig() {
     };
 }
 
+function sanitizeHeaderFilters(columns) {
+    if (!Array.isArray(columns)) return;
+
+    columns.forEach((col) => {
+        if (!col || typeof col !== 'object') return;
+        if (!Object.prototype.hasOwnProperty.call(col, 'headerFilter')) return;
+
+        const hf = col.headerFilter;
+
+        // Tabulator supports: string editor name, function editor, or boolean (true => input)
+        if (hf === true) {
+            col.headerFilter = 'input';
+            return;
+        }
+
+        if (hf === false || hf === undefined || hf === null) {
+            delete col.headerFilter;
+            return;
+        }
+
+        if (typeof hf === 'function') {
+            return;
+        }
+
+        if (typeof hf === 'string') {
+            const trimmed = hf.trim();
+            const invalidString = trimmed === '' || trimmed === 'undefined' || trimmed === 'null';
+            if (invalidString) delete col.headerFilter;
+            else col.headerFilter = trimmed;
+            return;
+        }
+
+        // Any other type (object/number/etc) is invalid for our use.
+        delete col.headerFilter;
+    });
+}
+
 /**
  * Merge form-specific config with defaults
  */
 function mergeTabulatorConfig(formConfig = {}) {
     const defaultConfig = createDefaultConfig();
+
+    const mergedColumns = Array.isArray(formConfig.columns)
+        ? formConfig.columns.map((c) => ({ ...c }))
+        : defaultConfig.columns;
+
+    sanitizeHeaderFilters(mergedColumns);
     
     return {
         ...defaultConfig,
         ...formConfig,
-        columns: formConfig.columns || defaultConfig.columns
+        columns: mergedColumns
     };
 }
 
@@ -405,7 +448,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         const { actions } = getAppBridge();
                         actions.showJsonModal?.(rawSub.data || {});
                     } else if (action === "edit" || action === "view") {
-                        const { startEditSubmission, startViewSubmission } = await import('./submissions.js?v=2.14');
+                        const { startEditSubmission, startViewSubmission } = await import('./submissions.js?v=2.15');
                         if (action === "edit") {
                             startEditSubmission(rawSub);
                         } else {
@@ -414,7 +457,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                     } else if (action === "delete") {
                         const { showConfirm } = await import('../ui/modalUtils.js');
                         const { formioRequest } = await import('../services/formioService.js');
-                        const { loadSubmissions } = await import('./submissions.js?v=2.14');
+                        const { loadSubmissions } = await import('./submissions.js?v=2.15');
                         const { actions } = getAppBridge();
                         
                         const confirmed = await showConfirm("Delete this submission? This cannot be undone.");
@@ -440,7 +483,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                             targetUserSubmission: rawSub,
                             variant,
                             onSaved: async () => {
-                                const { loadSubmissions } = await import('./submissions.js?v=2.14');
+                                const { loadSubmissions } = await import('./submissions.js?v=2.15');
                                 await loadSubmissions(formMeta, permissions, user);
                             }
                         });
@@ -449,7 +492,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         await openGroupMgmtModal({
                             targetUserSubmission: rawSub,
                             onSaved: async () => {
-                                const { loadSubmissions } = await import('./submissions.js?v=2.14');
+                                const { loadSubmissions } = await import('./submissions.js?v=2.15');
                                 await loadSubmissions(formMeta, permissions, user);
                             }
                         });
@@ -457,20 +500,34 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                 }
             });
         }
-            finalConfig.columns = cols;
+        // Re-sanitize after we mutate/append columns.
+        sanitizeHeaderFilters(cols);
+        finalConfig.columns = cols;
 
         // Add default row double-click handler for editing if not specified (but not for user forms)
         if (!finalConfig.rowDblClick && !isUserResource) {
             finalConfig.rowDblClick = async (e, row) => {
                 const data = row.getData();
                 if (data?._raw) {
-                    const { startEditSubmission } = await import('./submissions.js?v=2.14');
+                    const { startEditSubmission } = await import('./submissions.js?v=2.15');
                     startEditSubmission(data._raw);
                 }
             };
         }
 
-        // Create new Tabulator instance
+        sanitizeHeaderFilters(finalConfig.columns);
+
+        (finalConfig.columns || []).forEach((c) => {
+            if (!c || typeof c !== 'object') return;
+            if (!Object.prototype.hasOwnProperty.call(c, 'headerFilter')) return;
+            const hf = c.headerFilter;
+            const invalidString = typeof hf === 'string' && ['','undefined','null'].includes(hf.trim());
+            if (hf === undefined || invalidString) {
+                console.warn('Invalid Tabulator headerFilter for column:', c);
+                delete c.headerFilter;
+            }
+        });
+
         state.currentSubsTabulator = new Tabulator(host, {
             data: transformedData,
             ...finalConfig

@@ -1,14 +1,20 @@
 #!/bin/bash
 
 # Local Development Setup Script
-# Usage: ./scripts/deploy-dev.sh [branch-name]
+# Usage: ./scripts/deploy-dev.sh [branch-name] [forms-to-sync]
+# Examples:
+#   ./scripts/deploy-dev.sh                    # Current branch, sync book form only
+#   ./scripts/deploy-dev.sh main               # Main branch, sync book form only  
+#   ./scripts/deploy-dev.sh feature-branch book,tasks  # Feature branch, sync book and tasks forms [forms-to-sync]
 
 set -e
 
 # Get branch name (default: current branch)
 BRANCH=${1:-$(git branch --show-current)}
+# Get forms to sync (optional, second argument)
+FORMS_TO_SYNC=${2:-"book"}
 
-echo "� Setting up local development environment for branch '$BRANCH'..."
+echo "🚀 Setting up local development environment for branch '$BRANCH'..."
 
 # Check if branch exists
 if ! git show-ref --verify --quiet refs/heads/$BRANCH; then
@@ -26,6 +32,20 @@ fi
 if [ ! -f ".env" ]; then
     echo "📝 Setting up environment..."
     ./scripts/setup-environment.sh dev
+fi
+
+# Check if we should skip sync
+if [ "$FORMS_TO_SYNC" = "skip" ] || [ "$FORMS_TO_SYNC" = "none" ]; then
+    echo "⏩ Skipping form template sync..."
+else
+    # Sync form templates to default-template.json
+    echo "🔄 Syncing form templates..."
+    if ./scripts/sync-form-templates.sh "$FORMS_TO_SYNC"; then
+        echo "✅ Form templates synced successfully"
+    else
+        echo "❌ Form template sync failed"
+        exit 1
+    fi
 fi
 
 # Generate Form.io configuration for development
@@ -84,6 +104,8 @@ if docker-compose -f docker-compose.dev.yml ps | grep -q "Up"; then
     echo "   View logs: docker-compose -f docker-compose.dev.yml logs -f"
     echo "   Stop: docker-compose -f docker-compose.dev.yml down"
     echo "   Restart: docker-compose -f docker-compose.dev.yml restart"
+    echo ""
+    echo "📝 Forms synced: $FORMS_TO_SYNC"
 else
     echo "❌ Some services failed to start"
     docker-compose -f docker-compose.dev.yml ps

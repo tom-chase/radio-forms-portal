@@ -8,8 +8,8 @@ import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
 import { handleS3Upload } from '../services/uploadsService.js';
 import { showConfirm } from '../ui/modalUtils.js';
-import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tabulatorLists.js?v=2.14';
-import { renderDayPilotCalendar, hasDayPilotConfig, destroyDayPilot } from './dayPilotCalendar.js?v=2.14';
+import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tabulatorLists.js?v=2.15';
+import { renderDayPilotCalendar, hasDayPilotConfig, destroyDayPilot } from './dayPilotCalendar.js?v=2.15';
 import { openRoleMgmtModal } from './roleMgmt.js';
 import { renderViewToggle } from '../utils/viewUtils.js';
 

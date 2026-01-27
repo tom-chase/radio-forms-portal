@@ -105,14 +105,16 @@
 **Status**: ACTIVE (Jan 2026)
 **Rule**: The `book` form schema (including layout/templates) is treated as **source-controlled configuration**.
 **Source of Truth**:
-1. `config/bootstrap/default-template.json` (form schema)
-2. `app/css/custom.css` (UI styling)
+1. `config/bootstrap/form_templates/book.json` (Primary source)
+2. `config/bootstrap/default-template.json` (Generated/Synced destination)
+3. `app/css/custom.css` (UI styling)
 
 **Development Workflow**:
-1. Make changes in `default-template.json` and/or SPA assets.
-2. Redeploy dev environment as normal.
-3. Run `scripts/post-bootstrap.js` so the `book` schema sync is applied.
-4. Verify in `localhost:3000`.
+1. Make changes in `config/bootstrap/form_templates/book.json`.
+2. Run `./scripts/deploy-dev.sh [branch] book` (or just `./scripts/deploy-dev.sh`).
+   - This automatically runs `scripts/sync-form-templates.sh` to update `default-template.json`.
+   - Then deploys and runs post-bootstrap sync.
+3. Verify in `localhost:3000`.
 
 **Verification Note**: The Book chapter EditGrid uses a custom display template that renders the accordion for rows **after a row is saved** (display mode). While a row is being edited, the accordion layout will not be visible.
 
@@ -128,6 +130,17 @@ During early development, it is acceptable to prototype form schemas in the Form
 2. Export only the specific form(s) you changed (per-form export via the Form.io API).
 3. Save each form JSON into `config/bootstrap/form_templates/<formName>.json`.
 4. Once stable, "promote" the form into `config/bootstrap/default-template.json` (and decide whether it remains DB-owned + migrations, or becomes schema-as-code).
+
+### J. Advanced Form Patterns
+
+**Nested EditGrid Hierarchies (e.g., Books > Chapters > Sections)**
+- **Structure**: EditGrid (`chapters`) containing another EditGrid (`sections`).
+- **Numbering**: To achieve hierarchical numbering (e.g., "1.2. Section Title"):
+  - Use `{{ rowIndex + 1 }}` for the current level.
+  - For nested levels, parse `{{ instance.path }}` to extract the parent index (e.g., `chapters[0]`).
+  - *Note*: `instance` is available in the row template context.
+- **Reordering**: Enable `"reorder": true` on the EditGrid component to allow drag-and-drop reordering.
+- **Templates**: Use `_.each` instead of `util.each` for iterating components in custom row templates.
 
 ## 4. Deployment Workflow
 

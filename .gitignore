@@ -45,7 +45,8 @@ backups/
 
 # Tools (sensitive data)
 tools/
-config/bootstrap/form_templates/
+config/bootstrap/form_templates/*
+!config/bootstrap/form_templates/book.json
 docs/chats_ext/
 
 # Documentation planning notes

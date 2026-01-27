@@ -11,7 +11,7 @@ import {
     } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
-import { loadSubmissions } from './submissions.js?v=2.14';
+import { loadSubmissions } from './submissions.js?v=2.15';
 
 function $(id) { return document.getElementById(id); }
 function show(el) { if (el) el.classList.remove('d-none'); }
@@ -290,6 +290,8 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
         {
             readOnly: !!readOnly,
             user: currentUser, // makes 'user' available in conditional/logic JS
+            saveDraft: formMeta.settings?.saveDraft,
+            saveDraftThrottle: formMeta.settings?.saveDraftThrottle || 5000
         }
     );
     actions.attachFormioErrorHandler?.(formio, "Main form");

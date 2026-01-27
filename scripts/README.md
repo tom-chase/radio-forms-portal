@@ -98,6 +98,43 @@ Cleans up git history before creating PRs.
 
 **Usage:** `./scripts/squash-branch.sh feature/new-form "feat: add responsive form validation"`
 
+### Form Management Scripts
+
+#### `sync-form-templates.sh`
+**Form Template Sync** - Syncs selected form templates from `form_templates/` into `default-template.json`.
+- Selective form syncing (comma-separated list)
+- Automatic backup of default-template.json
+- JSON validation and error handling
+- Shows what changed during sync
+- Supports both new and existing forms
+
+**Usage:** 
+```bash
+./scripts/sync-form-templates.sh book                    # Sync book form only
+./scripts/sync-form-templates.sh book,tasks,contacts      # Sync multiple forms
+```
+
+**Integration:** Automatically called by `deploy-dev.sh` with the forms specified as the second argument.
+
+#### `deploy-dev.sh` (Updated)
+Enhanced development deployment with form template sync integration.
+- **New Parameter**: `[forms-to-sync]` - Comma-separated list of forms to sync
+- **Automatic Sync**: Runs form template sync before starting services
+- **Selective Development**: Only sync forms you're actively working on
+
+**Usage:**
+```bash
+./scripts/deploy-dev.sh                    # Current branch, sync book form only
+./scripts/deploy-dev.sh main               # Main branch, sync book form only  
+./scripts/deploy-dev.sh feature-branch book,tasks  # Feature branch, sync book and tasks forms
+```
+
+**Workflow:**
+1. Make changes to form templates in `config/bootstrap/form_templates/`
+2. Run deploy-dev.sh with forms you want to sync
+3. Post-bootstrap automatically applies schema changes
+4. Test in UI at localhost:3000
+
 ### Maintenance Scripts
 
 #### `health-check.sh`

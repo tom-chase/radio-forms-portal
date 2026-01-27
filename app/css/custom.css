@@ -234,17 +234,59 @@ label.todo-list__label input[type="checkbox"] {
     z-index: 10;
 }
 
-/* Remove container around sectionContent - content fills accordion space */
-.editgrid-accordion .editgrid-field-sectionContent {
-    border: none;
-    padding: 0;
-    background-color: transparent;
-    border-radius: 0;
+/* Nested accordion styling for Sections */
+.editgrid-accordion .editgrid-accordion {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    border-left: 3px solid #dee2e6;
 }
 
-.editgrid-accordion .editgrid-field-sectionContent .editgrid-value {
-    margin: 0;
-    padding: 0;
+.editgrid-accordion .editgrid-accordion .accordion-button {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+    color: #495057;
+}
+
+.editgrid-accordion .editgrid-accordion .accordion-button:not(.collapsed) {
+    background-color: #f1f3f5;
+    color: #212529;
+}
+
+.editgrid-accordion .editgrid-accordion .accordion-item {
     border: none;
-    background-color: transparent;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Ensure CKEditor fits within nested accordion */
+.editgrid-accordion .editgrid-accordion .ck-editor__editable {
+    min-height: 200px;
+    max-height: 600px;
+}
+
+/* Mobile optimizations for nested accordions */
+@media (max-width: 767.98px) {
+    .editgrid-accordion .accordion-button {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .editgrid-accordion .editgrid-accordion {
+        margin-left: 0.5rem; /* Reduce indentation on mobile */
+        border-left-width: 2px;
+    }
+
+    .editgrid-accordion .btn-group {
+        position: static; /* Stack buttons on mobile */
+        margin-top: 0.5rem;
+        transform: none;
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        padding-right: 0.5rem;
+    }
+
+    .editgrid-accordion .accordion-header .d-flex {
+        flex-wrap: wrap; /* Allow wrapping */
+    }
 }
