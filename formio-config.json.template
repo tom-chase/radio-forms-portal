@@ -1,0 +1,46 @@
+{
+  "mongo": "mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/${MONGO_DB_NAME}?authSource=admin",
+  "port": ${FORMIO_PORT},
+  "appPort": ${FORMIO_APP_PORT},
+  "host": "${FORMIO_HOST}",
+  "protocol": "${FORMIO_PROTOCOL}",
+  "allowedOrigins": ${FORMIO_ALLOWED_ORIGINS_ARRAY},
+  "basePath": "${FORMIO_BASE_PATH}",
+  "domain": "${FORMIO_DOMAIN}",
+  "jwt": {
+    "secret": "${JWT_SECRET}",
+    "expireTime": "${JWT_EXPIRE_TIME}",
+    "issuer": "${JWT_ISSUER}"
+  },
+  "trust proxy": true,
+  "mongoConfig": "${MONGO_CONFIG}",
+  "mongoCA": "${MONGO_CA}",
+  "mongoSecret": "${MONGO_SECRET}",
+  "reservedForms": [
+    "submission",
+    "exists", 
+    "export",
+    "role",
+    "current",
+    "logout",
+    "import",
+    "form",
+    "access",
+    "token",
+    "recaptcha",
+    "captcha"
+  ],
+  "email": {
+    "type": "smtp",
+    "host": "${SMTP_HOST}",
+    "port": ${SMTP_PORT},
+    "secure": ${SMTP_SECURE},
+    "auth": {
+      "user": "${SMTP_USER}",
+      "pass": "${SMTP_PASS}"
+    }
+  },
+  "actions": ${FORMIO_ACTIONS},
+  "debug": "${DEBUG}",
+  "root": "${FORMIO_ROOT_EMAIL}"
+}

@@ -1,0 +1,72 @@
+# Development Docker Compose Configuration
+# Builds Form.io from source for native ARM64 compatibility
+
+services:
+  mongo:
+    image: mongo:6.0
+    platform: linux/arm64  # Use ARM64 for native compatibility
+    container_name: mongo-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"  # Expose for local debugging
+    volumes:
+      - mongo-dev-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DB_NAME:-formio}
+    networks:
+      - radio-forms-dev
+
+  formio:
+    image: formio/formio:4.6.0-rc.4
+    platform: linux/amd64  # Use AMD64 emulation for ARM64 compatibility
+    container_name: formio-dev
+    restart: always
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+    volumes:
+      - ./config/env:/app/config:ro
+      - ./config/bootstrap/default-template.json:/app/default-template.json:ro
+      - ./config/actions/UpdateLatestRoleLogId.js:/app/src/actions/UpdateLatestRoleLogId.js:ro
+    environment:
+      NODE_ENV: development
+      DEBUG: formio:*
+      ROOT_EMAIL: ${FORMIO_ROOT_EMAIL}
+      ROOT_PASSWORD: ${FORMIO_ROOT_PASSWORD}
+      API_KEYS: ${API_KEYS}
+      FORMIO_DOMAIN: ${FORMIO_DOMAIN:-http://localhost:3001}
+      JWT_SECRET: ${JWT_SECRET}
+      MONGO_SECRET: ${MONGO_SECRET}
+      # Add MongoDB connection string
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/${MONGO_DB_NAME:-formio}?authSource=admin
+    networks:
+      - radio-forms-dev
+
+  # Development web server (serves static SPA)
+  dev-web:
+    image: caddy:2-alpine
+    container_name: dev-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./app:/srv:ro
+      - ./Caddyfile.dev:/etc/caddy/Caddyfile:ro
+    environment:
+      # Configure SPA to use local Form.io API
+      - API_BASE_URL=http://localhost:3001
+      - SPA_ORIGIN=http://localhost:3000
+    depends_on:
+      - formio
+    networks:
+      - radio-forms-dev
+
+volumes:
+  mongo-dev-data:
+
+networks:
+  radio-forms-dev:
+    driver: bridge

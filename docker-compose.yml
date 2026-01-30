@@ -1,0 +1,90 @@
+# Docker Compose configuration for a custom, production, Form.io community-edition application
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    networks:
+      - radio-forms
+
+  formio:
+    image: formio/formio:4.6.0-rc.4
+    container_name: formio
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      NODE_ENV: production
+      DEBUG: formio:*
+      ROOT_EMAIL: ${FORMIO_ROOT_EMAIL:-examaple@example.com}
+      ROOT_PASSWORD: ${FORMIO_ROOT_PASSWORD:-changeme}
+      API_KEYS: ${API_KEYS}
+    volumes:
+      - ./config/env/production.json:/app/config/production.json:ro
+      - ./config/bootstrap/default-template.json:/app/default-template.json:ro
+      - ./config/actions/UpdateLatestRoleLogId.js:/app/src/actions/UpdateLatestRoleLogId.js:ro
+      - ./scripts/post-bootstrap.js:/app/post-bootstrap.js:ro
+      - ./scripts/run-migrations.js:/app/run-migrations.js:ro
+      - ./scripts/migrations:/app/migrations:ro
+    networks:
+      - radio-forms
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    depends_on:
+      - formio
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - EMAIL=${EMAIL:-admin@example.com}
+      - SPA_DOMAIN=${SPA_DOMAIN:-localhost}
+      - API_DOMAIN=${API_DOMAIN:-api.localhost}
+    volumes:
+      - ./app:/var/www/html:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - radio-forms
+
+  mongo-backup:
+    build:
+      context: ./deployment/mongo-backup
+      dockerfile: Dockerfile
+    container_name: mongo-backup
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    environment:
+      # Single Mongo URI with correct credentials and authSource
+      - MONGO_URI=mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin
+
+      # AWS/S3 settings
+      - AWS_ACCESS_KEY_ID=${BACKUPS_AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${BACKUPS_AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${BACKUPS_AWS_DEFAULT_REGION}
+      - S3_BACKUP_BUCKET=${BACKUPS_S3_BACKUP_BUCKET}
+      - S3_PREFIX=${S3_PREFIX:-}
+
+    volumes:
+      - mongo-backup-data:/backup
+    networks:
+      - radio-forms
+
+volumes:
+  mongo-data:
+  caddy_data:
+  caddy_config:
+  mongo-backup-data:
+
+networks:
+  radio-forms:
+    driver: bridge

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Radio Forms Portal</title>
+
+        <!-- Environment Configuration (Generated during deployment) -->
+        <script src="/config.js"></script>
+
+        <!-- Favicon & App Icons -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+
+        <!-- Bootstrap CSS -->
+        <link
+            rel="stylesheet"
+            href="/js/vendor/bootstrap/bootstrap.min.css"
+            crossorigin="anonymous"
+        />
+
+        <!-- Bootstrap Icons -->
+        <link rel="stylesheet" href="/js/vendor/bootstrap-icons/bootstrap-icons.css" />
+
+        <!-- CKEditor 5 (for Form.io textarea w/ editor: 'ckeditor') -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.ckeditor.com/ckeditor5/47.3.0/ckeditor5.css"
+        />
+        <script src="/js/vendor/ckeditor.js"></script>
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/css/custom.css" />
+
+        <!-- Form.io CSS & JS -->
+        <link rel="stylesheet" href="/js/vendor/formio/formio.form.min.css" />
+        <script src="/js/vendor/formio/formio.full.min.js"></script>
+
+        <!-- Luxon.js (for date formatting) -->
+        <script src="/js/vendor/luxon/luxon.min.js"></script>
+
+        <!-- Tabulator 6.3 (Bootstrap 5 theme) -->
+        <link
+            rel="stylesheet"
+            href="/js/vendor/tabulator/tabulator_bootstrap5.min.css?v=20250116044900"
+        />
+        <script src="/js/vendor/tabulator/tabulator.min.js?v=20250116044900"></script>
+
+        <!-- Bootstrap JS Bundle -->
+        <script
+            src="/js/vendor/bootstrap/bootstrap.bundle.min.js"
+            crossorigin="anonymous"
+        ></script>
+
+    </head>
+    <body>
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+            <div class="container-fluid">
+                <span class="navbar-brand d-flex align-items-center">
+                <i class="bi bi-broadcast-pin me-2"></i>
+                Radio Forms Portal
+                </span>
+                <div class="d-flex align-items-center ms-auto gap-2">
+                <span
+                    id="statusText"
+                    class="navbar-text small text-white-50 me-3"
+                >
+                    Not signed in
+                </span>
+                <button
+                    id="adminToolsBtn"
+                    type="button"
+                    class="btn btn-outline-light btn-sm d-none"
+                    title="Admin tools"
+                    aria-disabled="true"
+                >
+                    <i class="bi bi-wrench-adjustable-circle me-1"></i> Admin
+                </button>
+                <button
+                    id="logoutBtn"
+                    type="button"
+                    class="btn btn-outline-light btn-sm d-none"
+                >
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </button>
+                </div>
+            </div>
+        </nav>
+        <main class="pt-3">
+            <!-- Login Section -->
+            <section id="loginSection" class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-sm-10 col-md-7 col-lg-5 col-xl-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person-lock me-2"></i>Sign in
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="small text-muted">
+                                    Use your Radio Forms Portal user credentials to access and manage
+                                    station forms.
+                                </p>
+                                <div id="loginFormContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- App Section (Dashboard) -->
+            <section id="appSection" class="container-fluid d-none">
+                <div class="row g-3">
+                    <!-- Sidebar: Forms List -->
+                    <aside id="formsColumn" class="col-12 col-md-3 col-lg-2">
+                       <div class="accordion shadow-sm h-100" id="formsAccordion">
+                           <div class="accordion-item">
+                               <h2 class="accordion-header" id="formsAccordionHeading">
+                                   <button
+                                       id="toggleFormsCollapseBtn"
+                                       type="button"
+                                       class="accordion-button py-2 rfp-side-accordion-toggle"
+                                       title="Collapse forms panel"
+                                       data-bs-toggle="collapse"
+                                       data-bs-target="#formsPanelCollapse"
+                                       aria-controls="formsPanelCollapse"
+                                       aria-expanded="true"
+                                   >
+                                       <i class="bi bi-ui-checks-grid me-2"></i>
+                                       <span class="rfp-forms-title">Forms</span>
+                                       <span class="ms-auto d-flex align-items-center">
+                                           <i id="formsCollapseIcon" class="bi bi-chevron-left"></i>
+                                       </span>
+                                   </button>
+                               </h2>
+                               <div id="formsPanelCollapse" class="accordion-collapse collapse show">
+                                    <div class="accordion-body p-2">                        
+                                
+                                            <div class="mb-2">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text">
+                                                        <i class="bi bi-search"></i>
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        id="formsSearch"
+                                                        class="form-control"
+                                                        placeholder="Filter forms..."
+                                                        aria-label="Filter forms"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div
+                                                id="formsList"
+                                                class="list-group list-group-flush small"
+                                                style="max-height: 70vh; overflow-y: auto"
+                                            >
+                                                <!-- Forms list populated by JS -->
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Main Content: New submission + Submissions list -->
+                    <section id="mainColumn" class="col-12 col-md-9 col-lg-10">
+                        <div class="row g-3">
+                            <!-- New submission (create) accordion -->
+                            <div id="formColumn" class="col-12">
+                                <div class="accordion shadow-sm" id="createAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="createAccordionHeading">
+
+                                            
+                                            <button
+                                                id="toggleCreateCollapseBtn"
+                                                type="button"
+                                                class="accordion-button collapsed py-2 px-3 rfp-accordion-toggle"
+                                                title="Select a form to create submissions"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#createCollapse"
+                                                aria-controls="createCollapse"
+                                                aria-expanded="false"
+                                            >
+                                                <div class="w-100 d-flex align-items-center gap-2">
+                                                <i class="bi bi-plus-square me-1"></i>
+
+                                                <div class="flex-grow-1" style="min-width: 0;">
+                                                    <div id="formTitle" class="fs-6 fw-semibold text-truncate">
+                                                    Select a form
+                                                    </div>
+                                                    <div class="text-muted small lh-sm">
+                                                    Create a new submission for the selected form.
+                                                    </div>
+                                                </div>
+
+                                                <span class="badge rounded-pill bg-secondary d-none" id="formTagBadge"></span>
+                                                <i id="createCollapseIcon" class="bi bi-chevron-down d-none"></i>
+                                                </div>
+                                            </button>
+                                        </h2>
+                                        <div id="createCollapse" class="accordion-collapse collapse">
+                                            <div class="accordion-body p-0">
+                                            <div
+                                                id="editBanner"
+                                                class="alert alert-warning d-none mb-0 d-flex align-items-center justify-content-between"
+                                                role="alert"
+                                            >
+                                                <div class="small" id="editBannerText">Editing submission…</div>
+                                                <button type="button" class="btn btn-sm btn-outline-dark" id="cancelEditBtn">
+                                                Cancel edit
+                                                </button>
+                                            </div>
+
+                                            <div id="formRender" class="p-3">
+                                                <p class="text-muted mb-0 small">Choose a form from the left to begin.</p>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submissions list accordion -->
+                            <div id="subsColumn" class="col-12">
+                            <div class="accordion shadow-sm" id="subsAccordion">
+                                <div class="accordion-item">
+                                <h2 class="accordion-header" id="subsAccordionHeading">
+                                    <button
+                                        id="toggleSubsCollapseBtn"
+                                        type="button"
+                                        class="accordion-button py-2 px-3 rfp-accordion-toggle"
+                                        title="Collapse submissions panel"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#subsCollapse"
+                                        aria-controls="subsCollapse"
+                                        aria-expanded="true"
+                                    >
+                                        <div class="w-100 d-flex align-items-center gap-2">
+                                        <i class="bi bi-card-list me-1"></i>
+                                        <div class="flex-grow-1" style="min-width: 0;">
+                                            <div class="fs-6 fw-semibold" id="subsTitle">Submissions</div>
+                                            <div class="text-muted small lh-sm" id="subsSubtitle">View or edit existing submissions.</div>
+                                        </div>
+                                        <i id="subsCollapseIcon" class="bi bi-chevron-up"></i>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="subsCollapse" class="accordion-collapse collapse show">                                
+                                    <div class="accordion-body p-2">
+                                        <div class="mb-2" id="subsSearchContainer">
+                                            <div class="input-group input-group-sm" style="max-width: 260px;">
+                                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                                <input
+                                                type="text"
+                                                id="subsSearch"
+                                                class="form-control"
+                                                placeholder="Filter submissions..."
+                                                aria-label="Filter submissions"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div id="subsList" class="p-0">
+                                            <p class="text-muted small px-1 pt-1 mb-0">No form selected.</p>
+                                        </div>
+                                    </div>
+
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Admin-only panels (inline, below main UI) -->
+                <div id="adminSection" class="row g-3 mt-1 d-none">
+                    <div class="col-12">
+                        <div class="accordion" id="adminPanelsAccordion">
+
+                            <!-- Form Tools (admin-only) -->
+                            <div class="accordion-item shadow-sm">
+                                <h2 class="accordion-header" id="adminToolsHeading">
+                                    <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#adminToolsCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="adminToolsCollapse"
+                                    >
+                                        <i class="bi bi-wrench-adjustable-circle me-2"></i>
+                                        Form Tools
+                                    </button>
+                                </h2>
+
+                                <div id="adminToolsCollapse" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+
+                                        <!-- Forms/resources index -->
+                                        <div class="mb-2 small text-muted">
+                                            Lists all forms/resources via <code>/form</code> (admin-only).
+                                        </div>
+                                        <div id="adminFormsListHost" class="mb-3"></div>
+
+                                        <!-- Import + Builder (re-used from prior Admin Tools) -->
+                                        <div class="row g-3 align-items-stretch">
+
+                                            <!-- Left: Import JSON (collapsible sidebar) -->
+                                            <div id="adminImportColumn" class="col-12 col-lg-4">
+                                                <div class="accordion shadow-sm h-100" id="adminImportAccordion">
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="adminImportHeading">
+                                                            <button
+                                                                id="toggleAdminImportCollapseBtn"
+                                                                type="button"
+                                                                class="accordion-button py-2 rfp-side-accordion-toggle"
+                                                                title="Collapse import JSON panel"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#adminImportCollapse"
+                                                                aria-controls="adminImportCollapse"
+                                                                aria-expanded="true"
+                                                            >
+                                                                <i class="bi bi-upload me-2"></i>
+                                                                <span class="rfp-import-title">Import Form JSON</span>
+                                                                <span class="ms-auto d-flex align-items-center">
+                                                                    <i id="adminImportCollapseIcon" class="bi bi-chevron-left"></i>
+                                                                </span>
+                                                            </button>
+                                                        </h2>
+
+                                                        <div id="adminImportCollapse" class="accordion-collapse collapse show">
+                                                            <div class="accordion-body small">
+                                                                <p class="text-muted">
+                                                                    Paste a full Form.io form/resource JSON definition or upload a
+                                                                    <code>.json</code> file, then create or update it in this project.
+                                                                </p>
+
+                                                                <div class="mb-2">
+                                                                    <label class="form-label mb-1">JSON file</label>
+                                                                    <input
+                                                                        type="file"
+                                                                        class="form-control form-control-sm"
+                                                                        id="importJsonFile"
+                                                                        accept=".json,application/json"
+                                                                    />
+                                                                </div>
+
+                                                                <div class="mb-2">
+                                                                    <label for="importJsonText" class="form-label mb-1">Or paste JSON</label>
+                                                                    <textarea
+                                                                        id="importJsonText"
+                                                                        class="form-control form-control-sm"
+                                                                        rows="8"
+                                                                        placeholder='{"title": "Tasks", "name": "tasks", "path": "tasks", ...}'
+                                                                    ></textarea>
+                                                                </div>
+
+                                                                <div class="form-check mb-2">
+                                                                    <input class="form-check-input" type="checkbox" id="importOverwriteCheckbox" />
+                                                                    <label class="form-check-label" for="importOverwriteCheckbox">
+                                                                        Overwrite existing form with same <code>path</code> if it exists
+                                                                    </label>
+                                                                </div>
+
+                                                                <button id="importJsonBtn" class="btn btn-primary btn-sm">
+                                                                    <i class="bi bi-cloud-upload me-1"></i> Import to Form.io
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right: Form Builder -->
+                                            <div id="adminBuilderColumn" class="col-12 col-lg-8">
+                                                <div class="accordion shadow-sm h-100" id="adminBuilderAccordion">
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header" id="adminBuilderHeading">
+                                                            <div class="p-2 d-flex align-items-center justify-content-between gap-2 flex-wrap bg-body-tertiary">
+                                                                <div class="me-auto">
+                                                                    <div class="fw-semibold">
+                                                                        <i class="bi bi-braces-asterisk me-2"></i>Form Builder
+                                                                    </div>
+                                                                    <div class="text-muted small">
+                                                                        Edit existing forms/resources or create new ones.
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="d-flex gap-2 flex-wrap align-items-center">
+                                                                    <select id="builderFormSelect" class="form-select form-select-sm" style="min-width: 220px;">
+                                                                        <option value="">– Select form/resource –</option>
+                                                                    </select>
+
+                                                                    <button id="builderNewFormBtn" class="btn btn-outline-success btn-sm" type="button">
+                                                                        <i class="bi bi-plus-circle me-1"></i> New form
+                                                                    </button>
+
+                                                                    <button id="builderNewResourceBtn" class="btn btn-outline-success btn-sm" type="button">
+                                                                        <i class="bi bi-plus-circle-dotted me-1"></i> New resource
+                                                                    </button>
+
+                                                                    <button id="builderSaveBtn" class="btn btn-primary btn-sm" type="button" disabled>
+                                                                        <i class="bi bi-save me-1"></i> Save
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </h2>
+
+                                                        <div class="accordion-body">
+                                                            <div id="builderMetaPanel" class="mb-2 d-none"></div>
+                                                            <div id="builderContainer">
+                                                                <p class="text-muted small mb-0">
+                                                                    Select a form above or create a new one to start the builder.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div><!-- /.row -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Roles (admin-only) -->
+                            <div class="accordion-item shadow-sm">
+                                <h2 class="accordion-header" id="adminRolesHeading">
+                                    <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#adminRolesCollapse"
+                                        aria-expanded="false"
+                                        aria-controls="adminRolesCollapse"
+                                    >
+                                        <i class="bi bi-people-gear me-2"></i>Roles
+                                    </button>
+                                </h2>
+
+                                <div id="adminRolesCollapse" class="accordion-collapse collapse">
+                                    <div class="accordion-body small">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Role actions">
+                                                <button id="rolesRefreshBtn" type="button" class="btn btn-outline-secondary">
+                                                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+                                                </button>
+                                                <button id="rolesNewBtn" type="button" class="btn btn-outline-success">
+                                                    <i class="bi bi-plus-circle me-1"></i> New role
+                                                </button>
+                                            </div>
+                                            <span class="text-muted">
+                                                Only Administrator accounts can modify roles.
+                                            </span>
+                                        </div>
+
+                                        <div id="rolesList">
+                                            <p class="text-muted mb-0">Expand this panel to load roles.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                                                    </div><!-- /#adminPanelsAccordion -->
+                    </div>
+                </div><!-- /#adminSection -->
+            </section>
+        </main>
+
+        <!-- JSON Viewer Modal -->
+        <div
+            class="modal fade"
+            id="jsonModal"
+            tabindex="-1"
+            aria-labelledby="jsonModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="jsonModalLabel">
+                            Submission data
+                        </h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <pre id="jsonModalBody" class="mb-0 small"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Edit Modal -->
+        <div class="modal fade" id="userEditModal" tabindex="-1" aria-labelledby="userEditModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userEditModalLabel">Edit user</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="userEditModalBody"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Roles Modal -->
+        <div class="modal fade" id="userRolesModal" tabindex="-1" aria-labelledby="userRolesModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userRolesModalLabel">Edit roles</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="userRolesModalBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="userRolesSaveBtn" class="btn btn-primary btn-sm">
+                            <i class="bi bi-save me-1"></i> Save roles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form JSON Editor Modal (Advanced) -->
+        <div class="modal fade" id="formJsonEditModal" tabindex="-1" aria-labelledby="formJsonEditModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="formJsonEditModalLabel">Edit form JSON (advanced)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <div class="alert alert-warning small">
+                    Editing JSON directly can break forms. Use <strong>Save</strong> only if you know what you’re changing.
+                </div>
+                <textarea id="formJsonEditTextarea" class="form-control font-monospace" rows="18"></textarea>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="formJsonEditApplyBtn" class="btn btn-primary btn-sm">
+                    <i class="bi bi-check2-circle me-1"></i> Apply JSON to builder
+                </button>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Form Settings JSON Modal -->
+        <div class="modal fade" id="formSettingsModal" tabindex="-1" aria-labelledby="formSettingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="formSettingsModalLabel">Edit form settings JSON</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning small">
+                This edits only <code>form.settings</code>. Saving invalid JSON can break list rendering.
+                </div>
+                <textarea id="formSettingsTextarea" class="form-control font-monospace" rows="18"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="formSettingsSaveBtn" class="btn btn-primary btn-sm">
+                <i class="bi bi-save me-1"></i> Save settings
+                </button>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Toast for feedback -->
+        <div
+            class="position-fixed bottom-0 end-0 p-3"
+            style="z-index: 1100;"
+        >
+            <div
+                id="appToast"
+                class="toast text-bg-primary border-0"
+                role="alert"
+                aria-live="polite"
+                aria-atomic="true"
+                data-bs-delay="3000"
+            >
+                <div class="d-flex">
+                    <div id="appToastBody" class="toast-body">
+                        Action completed.
+                    </div>
+                    <button
+                        type="button"
+                        class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"
+                    ></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="container-fluid py-3 border-top mt-4 bg-light">
+            <div class="row">
+                <div class="col-12 text-center text-muted small">
+                    <p class="mb-0">
+                        &copy; 2026 Tom Chase | 
+                        <a href="/licenses.html" class="text-decoration-none text-muted">License Compliance</a> |
+                        <a href="https://github.com/tom-chase/radio-forms-portal" class="text-decoration-none text-muted" target="_blank">GitHub</a>
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+        <script src="/js/vendor/daypilot-all.min.js"></script>
+        <!-- Main Application Script (ES Module) -->
+        <script type="module" src="/js/main.js?v=2.19"></script>
+
+        </body>
+</html>

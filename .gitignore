@@ -1,0 +1,53 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Configuration - allow structure but ignore sensitive files
+config/env/*.json
+!config/env/default.json
+
+# Docker
+.dockerignore
+
+# Logs
+logs/
+*.log
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# Temporary files
+tmp/
+temp/
+
+# Build artifacts
+dist/
+build/
+
+# Database
+*.sqlite
+*.db
+
+# Backup files
+backups/
+*.backup
+*.bak
+
+# Tools (sensitive data)
+tools/
+config/bootstrap/form_templates/*
+!config/bootstrap/form_templates/book.json
+docs/chats_ext/
+
+# Documentation planning notes
+docs/plans/

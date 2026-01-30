@@ -1,0 +1,300 @@
+
+ # Deployment Guide
+ 
+ ## 📌 Overview
+ 
+ This repository deploys as:
+ - **SPA**: static files served by **Caddy**
+ - **API**: **Form.io Community Edition** behind Caddy reverse proxy
+ - **DB**: MongoDB
+ 
+ This project currently prioritizes **production stability** over portability.
+ 
+ ---
+ 
+ ## ✅ Prerequisites
+ 
+ - **Docker** + **Docker Compose**
+ - A `.env` file (see `.env.example`)
+ - DNS for your domains pointing to the server (production/staging)
+ 
+ ---
+ 
+ ## 🔒 The “Hardcoded Config” Production Pattern
+ 
+ **Status**: Active
+ 
+ During production bring-up we found that runtime substitution (especially in Caddy and frontend config) created failure modes that were hard to diagnose (empty vars, template substitution pitfalls, caching).
+ 
+ In production we intentionally hardcode values in a few places to reduce risk:
+ - `Caddyfile`
+ - `scripts/deploy-production.sh` (generates `app/config.js`)
+ - `app/js/config.js` (fallbacks)
+ - `formio-config.json.template` (`trust proxy` is fixed)
+ 
+ If you change domains or ACME email, update those files.
+ 
+ ---
+ 
+## 🚀 Production Deployment (Dual Channel)
+
+Production deployment now consists of two independent channels:
+
+1.  **Code Deployment (“Tarball Push”)**: Pushes the application codebase (SPA, scripts, Docker configs) to the server.  This process deploys the application codebase. It does **not** use `git pull` on the server.
+2.  **Form.io Project Deployment**: Pushes the Form.io project structure (forms, resources, roles, actions) from dev to production using direct API calls.
+
+ 
+### 1) On your laptop
+ 
+- Ensure your local checkout is exactly what you want deployed.
+- Run:
+ 
+```bash
+./scripts/deploy-production.sh /path/to/your-ssh-key.pem
+```
+ 
+What it does (high level):
+- Creates a tarball of the current directory (excluding `.env`, `.git`, etc.)
+- Uploads it to the server
+- Extracts it into the app directory
+- Regenerates Form.io config (from server `.env`)
+- Generates `app/config.js` for the SPA (hardcoded production URLs)
+- Restarts Docker Compose
+- Runs post-bootstrap configuration (creates missing forms/resources, syncs permissions, and resolves dynamic IDs for role/group conditionals).
+
+Note:
+- Database migrations are mounted into the container (`/app/run-migrations.js`) but may require a manual run via `docker exec` depending on your deployment plan.
+ 
+### 2) On the server
+ 
+The script handles the remote steps for you.
+
+Useful validation commands:
+ 
+```bash
+docker-compose ps
+docker-compose logs --tail=200 caddy
+docker-compose logs --tail=200 formio
+```
+
+If you need to run migrations manually:
+
+```bash
+docker exec formio node /app/run-migrations.js
+```
+ 
+---
+
+## 🔄 Database Migrations
+
+### Overview
+
+The project uses a hybrid approach for managing Form.io schema changes:
+
+1. **Automated** (via `post-bootstrap.js`): New forms/resources, permission syncing, seed data, dynamic ID resolution, and (for selected forms) schema syncing
+2. **Manual Migrations** (via `scripts/migrations/`): Structural changes to existing forms
+
+**Note on schema syncing**:
+- The `post-bootstrap.js` script *can* sync form schemas from `default-template.json`, but the recommended approach for promoting a full project structure is the export/deploy workflow described below.
+
+**Note on prototyping new forms**:
+- During early development it is acceptable to prototype in the Form.io Admin UI Builder.
+- Prefer capturing changes via per-form exports into `config/bootstrap/form_templates/` and promoting into `default-template.json` once stable.
+- Avoid replacing `default-template.json` from a full "project export" bundle.
+
+### When to Create a Migration
+
+Create a migration when you need to:
+- Add/remove fields from existing forms
+- Change field types or validation rules
+- Rename fields (especially with data migration)
+- Update form layouts or component order
+
+### Quick Start
+
+```bash
+# 1. Create migration from template
+cp scripts/migrations/000-example-migration.js.template \
+   scripts/migrations/001-add-status-field.js
+
+# 2. Edit the migration
+vim scripts/migrations/001-add-status-field.js
+
+# 3. Test in development
+./scripts/deploy-dev.sh
+
+# 4. Deploy to production
+./scripts/deploy-production.sh ~/.ssh/key.pem
+```
+
+### Migration Execution
+
+Migrations are available via `scripts/run-migrations.js` (mounted into the Form.io container as `/app/run-migrations.js`).
+
+Run migrations explicitly on the server when needed:
+
+```bash
+docker exec formio node /app/run-migrations.js
+```
+
+Logs are written to:
+- **Development**: Console output
+- **Production**: `logs/migrations.log` on server
+
+### Checking Migration Status
+
+```bash
+# View applied migrations
+ssh admin@server "docker exec formio node -e \"
+const fetch = require('node-fetch');
+fetch('http://localhost:3001/migration/submission?limit=100')
+  .then(r => r.json())
+  .then(data => console.log(JSON.stringify(data, null, 2)));
+\""
+```
+
+### Documentation
+
+For detailed migration guide, see:
+- **`docs/MIGRATIONS.md`**: Comprehensive guide with examples
+- **`scripts/migrations/README.md`**: Quick reference for migration authors
+
+---
+ 
+## 🧩 Configuration Management
+ 
+### `.env`
+ 
+- Local dev uses `.env` for secrets and local URLs.
+- Production keeps its own `.env` on the server.
+- The production deploy script explicitly **does not** upload your local `.env`.
+ 
+### Backend config generation
+ 
+ Backend configuration is generated via:
+ 
+ ```bash
+ ./scripts/generate-formio-config.sh production
+ ```
+ 
+ This produces `config/env/production.json` from `formio-config.json.template`.
+ 
+ ---
+ 
+## 💻 Local Development
+
+Local development now has two primary workflows: one for starting/restarting the environment, and a much faster one for applying form/resource definition changes.
+
+### Workflow 1: Starting or Restarting the Environment
+
+Use this workflow for initial setup, after making changes to scripts or server code, or when you need a full restart.
+
+1.  **Initial Setup (if first time or database is wiped):**
+    ```bash
+    ./scripts/setup-environment.sh dev
+    ```
+
+2.  **Start/Restart Services:**
+    ```bash
+    ./scripts/deploy-dev.sh
+    ```
+
+### Workflow 2: Applying Form/Resource Changes (Non-Destructive)
+
+Use this workflow to sync changes from your local `form_templates/*.json` files to the **running** dev database without wiping data or restarting containers. It uses a `POST` request to the `/import` endpoint, which is the correct method for bootstrapping or updating a running Form.io Community Edition server.
+
+1.  **Make changes** to a form or resource definition file (e.g., `config/bootstrap/form_templates/book.json`).
+
+2.  **Run the sync script:**
+    ```bash
+    ./scripts/cli-sync-dev.sh book
+    ```
+
+3.  **Refresh your browser.** The changes are applied in real-time.
+
+### ARM64 (Apple Silicon) Note
+
+Form.io Community Edition may require AMD64 emulation. If you see image/platform errors on ARM64, ensure the `docker-compose.dev.yml` config uses `platform: linux/amd64` for the Form.io service.
+ 
+ ---
+ 
+### Form.io Project Deployment (Local Source -> Prod)
+
+This workflow promotes the source-controlled form and resource definitions from your local machine to the live production server. It does **not** export from a running dev server.
+
+#### Prerequisites
+
+- Your local `.env` file must have `PROD_FORMIO_DOMAIN` and `PROD_API_KEYS` set correctly for the production environment.
+
+#### Workflow
+
+1.  **Make Schema Changes**: Edit the relevant file(s) in `config/bootstrap/form_templates/`. This is the source of truth for all form and resource definitions.
+
+2.  **Build Master Template**: Run the following script to combine all individual templates into the master `default-template.json`.
+    ```bash
+    ./scripts/sync-form-templates.sh
+    ```
+
+3.  **Validate in Dev (Recommended)**: Apply the changes to your local development environment to ensure they work as expected.
+    ```bash
+    ./scripts/cli-sync-dev.sh
+    ```
+
+4.  **Deploy to Production**: Run the following from your laptop to push the master template to production. This uses a `POST` to the `/import` endpoint, which is the correct method for the Form.io Community Edition.
+    ```bash
+    ./scripts/cli-deploy-template.sh ./config/bootstrap/default-template.json
+    ```
+
+**Recommended safety step (backup)**:
+
+Before importing to production, export the current production project state to a local file (do not commit it):
+
+```bash
+mkdir -p ./backups
+FORMIO_DOMAIN="$PROD_FORMIO_DOMAIN" API_KEYS="$PROD_API_KEYS" \
+  ./scripts/cli-export-template.sh ./backups/prod-template-$(date +%F-%H%M).json
+```
+
+---
+
+## 🧪 Staging
+ 
+ Staging is intended for pre-production testing. See:
+ - `STAGING.md`
+ 
+ ---
+ 
+ ## 🔧 Troubleshooting
+ 
+ ### Caddy won’t start
+ 
+ - Check `docker-compose logs caddy`
+ - Validate the `Caddyfile` syntax
+ - Confirm ports 80/443 are reachable and not already bound
+ 
+ ### SPA points at `localhost`
+ 
+ In production this usually means:
+ - The generated `app/config.js` didn’t update as expected
+ - The browser cached an old config
+ 
+ Checks:
+ - Confirm `app/config.js` exists on the server inside the deployed directory
+ - Confirm `app/index.html` includes the `/config.js` loader
+ - Hard refresh or clear cache if needed
+ 
+ ### Form.io container crash loop
+ 
+ - Check `docker-compose logs formio`
+ - Validate the generated config JSON in `config/env/production.json`
+ - Confirm MongoDB credentials match the server `.env`
+ 
+ ---
+ 
+ ## 📚 Related Docs
+ 
+ - `INFRASTRUCTURE.md`
+ - `SECURITY.md`
+ - `STAGING.md`
+ - `COMMON_ISSUES.md`
+ - `CDCI_CHECKLIST.md`

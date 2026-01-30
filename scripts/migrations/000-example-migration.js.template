@@ -1,0 +1,154 @@
+/**
+ * Example Migration Template
+ * 
+ * Copy this file and rename it following the convention:
+ * NNN-description-of-change.js (e.g., 001-add-status-field.js)
+ * 
+ * Remove the .template extension when creating a real migration.
+ */
+
+const fetch = require('node-fetch');
+
+module.exports = {
+    // Unique ID matching the filename (without .js extension)
+    id: '000-example-migration',
+    
+    // Human-readable description
+    description: 'Example migration showing common patterns',
+    
+    /**
+     * Apply the migration
+     * @param {Object} context - Migration context
+     * @param {string} context.API_BASE - Form.io API base URL
+     * @param {Object} context.headers - Authenticated request headers
+     * @param {Function} context.log - Logging function
+     */
+    async up({ API_BASE, headers, log }) {
+        // Example 1: Fetch a form by name
+        log('Fetching form...');
+        const formResp = await fetch(`${API_BASE}/form?name=incidentReport`, { headers });
+        const forms = await formResp.json();
+        
+        if (!forms || forms.length === 0) {
+            throw new Error('Form not found');
+        }
+        
+        const form = forms[0];
+        log(`Found form: ${form.title} (${form._id})`);
+        
+        // Example 2: Check if a component already exists (idempotency)
+        const existingComponent = form.components.find(c => c.key === 'newField');
+        if (existingComponent) {
+            log('Component already exists, skipping');
+            return;
+        }
+        
+        // Example 3: Add a new component
+        form.components.push({
+            type: 'textfield',
+            key: 'newField',
+            label: 'New Field',
+            placeholder: 'Enter value',
+            validate: {
+                required: false,
+                maxLength: 100
+            }
+        });
+        
+        // Example 4: Update the form
+        log('Updating form...');
+        const updateResp = await fetch(`${API_BASE}/form/${form._id}`, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(form)
+        });
+        
+        if (!updateResp.ok) {
+            const errorText = await updateResp.text();
+            throw new Error(`Failed to update form: ${updateResp.status} ${errorText}`);
+        }
+        
+        log('✅ Migration completed successfully');
+    },
+    
+    /**
+     * Rollback the migration (optional)
+     * @param {Object} context - Migration context
+     */
+    async down({ API_BASE, headers, log }) {
+        log('Rolling back migration...');
+        
+        // Fetch the form
+        const formResp = await fetch(`${API_BASE}/form?name=incidentReport`, { headers });
+        const forms = await formResp.json();
+        
+        if (!forms || forms.length === 0) {
+            log('Form not found, nothing to rollback');
+            return;
+        }
+        
+        const form = forms[0];
+        
+        // Remove the component we added
+        form.components = form.components.filter(c => c.key !== 'newField');
+        
+        // Update the form
+        const updateResp = await fetch(`${API_BASE}/form/${form._id}`, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(form)
+        });
+        
+        if (!updateResp.ok) {
+            throw new Error(`Failed to rollback: ${updateResp.statusText}`);
+        }
+        
+        log('✅ Rollback completed');
+    }
+};
+
+/**
+ * Common Patterns:
+ * 
+ * 1. Fetch form by name:
+ *    const resp = await fetch(`${API_BASE}/form?name=formName`, { headers });
+ *    const forms = await resp.json();
+ * 
+ * 2. Fetch form by ID:
+ *    const resp = await fetch(`${API_BASE}/form/${formId}`, { headers });
+ *    const form = await resp.json();
+ * 
+ * 3. Update form:
+ *    await fetch(`${API_BASE}/form/${formId}`, {
+ *        method: 'PUT',
+ *        headers,
+ *        body: JSON.stringify(form)
+ *    });
+ * 
+ * 4. Query submissions:
+ *    const resp = await fetch(`${API_BASE}/formName/submission?limit=100`, { headers });
+ *    const submissions = await resp.json();
+ * 
+ * 5. Update submission:
+ *    await fetch(`${API_BASE}/formName/submission/${submissionId}`, {
+ *        method: 'PUT',
+ *        headers,
+ *        body: JSON.stringify(submission)
+ *    });
+ * 
+ * 6. Find component in form:
+ *    const component = form.components.find(c => c.key === 'fieldKey');
+ * 
+ * 7. Add component to form:
+ *    form.components.push({ type: 'textfield', key: 'newField', ... });
+ * 
+ * 8. Remove component from form:
+ *    form.components = form.components.filter(c => c.key !== 'oldField');
+ * 
+ * 9. Update component properties:
+ *    const component = form.components.find(c => c.key === 'fieldKey');
+ *    if (component) {
+ *        component.label = 'New Label';
+ *        component.validate.required = true;
+ *    }
+ */

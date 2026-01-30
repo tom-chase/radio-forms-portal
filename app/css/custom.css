@@ -1,0 +1,292 @@
+/* Radio Forms Portal - Custom Styles */
+
+/* Base typography and layout */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            sans-serif;
+    background-color: #f8f9fa;
+}
+
+pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+            "Liberation Mono", "Courier New", monospace;
+}
+
+/* Custom button sizes */
+.btn-xxs {
+    padding: 2px 2px;
+    font-size: 10px;
+    line-height: 1.2em;
+    border-radius: 0;
+    width: 18px;
+    height: 18px;
+}
+
+/* Form Builder UI fixes */
+#builderContainer .component-btn-group {
+    float: right; /* or use Bootstrap class behavior */
+}
+
+/* Hide badge until tags are implemented */
+#formTagBadge {  
+    display: none; 
+}
+
+/* Collapsible forms sidebar: optionally shrink width when collapsed */
+#formsColumn.rfp-collapsed .rfp-forms-title {
+    display: none;
+}
+
+/* Sidebar-style accordions: use our own chevrons (hide Bootstrap's ::after arrow) */
+.rfp-side-accordion-toggle.accordion-button::after {
+    display: none;
+}
+
+/* Create/Submissions accordions: match Admin Tools look + use our own chevrons */
+.rfp-accordion-toggle.accordion-button::after {
+    display: none; /* hide Bootstrap's default caret */
+}
+.rfp-accordion-toggle.accordion-button,
+.rfp-accordion-toggle.accordion-button:not(.collapsed) {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    box-shadow: none; /* remove inset "active" shadow for consistency */
+}
+.rfp-toggle-disabled {
+    cursor: default;
+    opacity: 0.85;
+}
+
+/* Responsive sidebar behavior */
+@media (min-width: 768px) {
+    #formsColumn.rfp-collapsed {
+        flex: 0 0 46px;
+    }
+    /* mainColumn is a sibling in the same .row */
+    #formsColumn.rfp-collapsed + #mainColumn {
+        flex: 1 1 auto;
+        max-width: calc(100% - 46px);
+    }
+}
+
+/* Admin: collapsible JSON sidebar (like Forms sidebar) */
+#adminImportColumn.rfp-collapsed .rfp-import-title {
+    display: none;
+}
+@media (min-width: 992px) {
+    #adminImportColumn.rfp-collapsed {
+        flex: 0 0 46px;
+        max-width: 46px;
+    }
+    #adminImportColumn.rfp-collapsed + #adminBuilderColumn {
+        flex: 1 1 auto;
+        max-width: calc(100% - 46px);
+    }
+}
+
+/* Inline submission form row styling */
+.submission-inline-row {
+    background-color: #f8f9fa;
+}
+.submission-inline-row .inline-form-container {
+    border-top: 1px solid #dee2e6;
+}
+
+.todo-list {
+  list-style: none;    /* removes bullets */
+  margin: 0;
+  padding: 0 24px;          /* optional: aligns checkboxes with container edge */
+}
+
+label.todo-list__label input[type="checkbox"] {
+    margin-right: 12px;
+}
+
+/* EditGrid field-level styling */
+.editgrid-field {
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    background-color: #fff;
+}
+
+.editgrid-value {
+    color: #212529;
+}
+
+/* Make EditGrid container fill parent space */
+.formio-component-editgrid {
+    width: 100%;
+}
+
+.formio-component-editgrid .editgrid-listgroup {
+    width: 100%;
+}
+
+.formio-component-editgrid .list-group-item {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Field-specific styling examples */
+.editgrid-field-sectionTitle .editgrid-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #0d6efd;
+}
+
+.editgrid-field-anchorId .editgrid-value {
+    font-family: 'Courier New', monospace;
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* EditGrid inline buttons styling */
+.editgrid-field-sectionTitle .btn-group {
+    flex-shrink: 0;
+}
+
+.btn-xs {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    border-radius: 0.2rem;
+}
+
+.btn-xs i {
+    font-size: 0.7rem;
+}
+
+/* Ensure proper spacing in inline layout */
+.editgrid-field-sectionTitle .d-flex {
+    gap: 0.5rem;
+}
+
+/* Chapter title styling */
+.chapter-title-field {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 1rem;
+}
+
+/* Hide chapter title label in read-only mode */
+.formio-read-only .formio-component-editgrid label{
+    display: none;
+}
+
+.formio-read-only .chapter-title-field {
+    margin-top: 1rem;
+}
+
+/* EditGrid accordion styling */
+.editgrid-accordion .accordion-item {
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+.editgrid-accordion .accordion-header {
+    border-radius: 0.375rem;
+}
+
+.editgrid-accordion .accordion-button {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    color: #0d6efd;
+    font-size: 1.1rem;
+    border: none;
+    box-shadow: none;
+}
+
+.editgrid-accordion .accordion-button:not(.collapsed) {
+    background-color: #e7f1ff;
+    color: #0a58ca;
+}
+
+.editgrid-accordion .accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.editgrid-accordion .accordion-body {
+    padding: 1rem;
+    background-color: #fff;
+}
+
+.editgrid-accordion .btn-group {
+    flex-shrink: 0;
+}
+
+/* Position buttons outside accordion button - moved left */
+.editgrid-accordion .accordion-header .d-flex {
+    position: relative;
+}
+
+.editgrid-accordion .btn-group {
+    position: absolute;
+    right: 3rem; /* Moved left from 1rem to avoid overlap */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+/* Nested accordion styling for Sections */
+.editgrid-accordion .editgrid-accordion {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    border-left: 3px solid #dee2e6;
+}
+
+.editgrid-accordion .editgrid-accordion .accordion-button {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #ffffff;
+    color: #495057;
+}
+
+.editgrid-accordion .editgrid-accordion .accordion-button:not(.collapsed) {
+    background-color: #f1f3f5;
+    color: #212529;
+}
+
+.editgrid-accordion .editgrid-accordion .accordion-item {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Ensure CKEditor fits within nested accordion */
+.editgrid-accordion .editgrid-accordion .ck-editor__editable {
+    min-height: 200px;
+    max-height: 600px;
+}
+
+/* Mobile optimizations for nested accordions */
+@media (max-width: 767.98px) {
+    .editgrid-accordion .accordion-button {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .editgrid-accordion .editgrid-accordion {
+        margin-left: 0.5rem; /* Reduce indentation on mobile */
+        border-left-width: 2px;
+    }
+
+    .editgrid-accordion .btn-group {
+        position: static; /* Stack buttons on mobile */
+        margin-top: 0.5rem;
+        transform: none;
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        padding-right: 0.5rem;
+    }
+
+    .editgrid-accordion .accordion-header .d-flex {
+        flex-wrap: wrap; /* Allow wrapping */
+    }
+}
