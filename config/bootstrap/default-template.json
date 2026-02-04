@@ -3104,6 +3104,19 @@
       "handler": [
         "before"
       ]
+    },
+    "contact:save": {
+      "title": "Save Submission",
+      "name": "save",
+      "form": "contact",
+      "priority": 10,
+      "method": [
+        "create",
+        "update"
+      ],
+      "handler": [
+        "before"
+      ]
     }
   },
   "resources": {
@@ -8753,6 +8766,224 @@
               "title": "Ch",
               "field": "chapterCount",
               "width": 70,
+              "hozAlign": "center"
+            }
+          ]
+        },
+        "saveDraft": true,
+        "saveDraftThrottle": 3000
+      }
+    },
+    "contact": {
+      "title": "Contact",
+      "name": "contact",
+      "path": "contact",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "underwriting"
+      ],
+      "access": [
+        {
+          "type": "read_own",
+          "roles": []
+        },
+        {
+          "type": "update_own",
+          "roles": []
+        },
+        {
+          "type": "delete_own",
+          "roles": []
+        },
+        {
+          "type": "read_all",
+          "roles": [
+            "anonymous",
+            "authenticated"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": []
+        },
+        {
+          "type": "delete_all",
+          "roles": []
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "create_own",
+          "roles": [
+            "anonymous",
+            "authenticated"
+          ]
+        },
+        {
+          "type": "read_own",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": [
+            "management",
+            "staff"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": []
+        },
+        {
+          "type": "read_all",
+          "roles": [
+            "management",
+            "staff"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "management",
+            "staff"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "administrator"
+          ]
+        }
+      ],
+      "components": [
+        {
+          "label": "First Name",
+          "key": "firstName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Last Name",
+          "key": "lastName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Email",
+          "key": "email",
+          "type": "email",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "Phone",
+          "key": "phone",
+          "type": "phoneNumber",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "Organization",
+          "key": "organization",
+          "type": "textfield",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "Role / Title at Organization",
+          "key": "roleAtOrg",
+          "type": "textfield",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "Notes",
+          "key": "notes",
+          "type": "textarea",
+          "autoExpand": "true",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Contacts",
+          "submissionsTitle": "Contacts"
+        },
+        "tabulatorList": {
+          "enabled": true,
+          "layout": "fitColumns",
+          "height": "60vh",
+          "pagination": "local",
+          "paginationSize": 25,
+          "movableColumns": true,
+          "placeholder": "No contacts found.",
+          "columns": [
+            {
+              "title": "First Name",
+              "field": "data.firstName",
+              "headerFilter": "input",
+              "minWidth": 100
+            },
+            {
+              "title": "Last Name",
+              "field": "data.lastName",
+              "headerFilter": "input",
+              "minWidth": 100
+            },
+            {
+              "title": "Email",
+              "field": "data.email",
+              "headerFilter": "input",
+              "minWidth": 100
+            },
+            {
+              "title": "Phone",
+              "field": "data.phone",
+              "width": 80,
+              "headerFilter": "input"
+            },
+            {
+              "title": "Organization",
+              "field": "data.organization",
+              "width": 100,
+              "hozAlign": "center"
+            },
+            {
+              "title": "Role / Title at Organization",
+              "field": "data.roleAtOrg",
+              "width": 100,
+              "hozAlign": "center"
+            },
+            {
+              "title": "Notes",
+              "field": "data.notes",
+              "width": 100,
               "hozAlign": "center"
             }
           ]

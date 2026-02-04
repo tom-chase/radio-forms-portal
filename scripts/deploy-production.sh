@@ -75,8 +75,8 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     
     # Regenerate Backend Configuration (Form.io)
     # This uses the fixed template and server's .env values
-    echo "🔧 Generating backend configuration..."
-    ./scripts/generate-formio-config.sh production
+    # echo "🔧 Generating backend configuration..."
+    # ./scripts/generate-formio-config.sh production
 
     # Debug: Check environment variables
     echo "🔍 Checking server environment variables..."
@@ -109,12 +109,7 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     export API_DOMAIN="\${API_DOMAIN:-api.localhost}"
 
     # Generate Frontend Configuration (Environment specific)
-    echo "🔧 Generating frontend configuration..."
-    cat > app/config.js << JS_EOF
-// Generated during deployment - DO NOT EDIT
-window.API_BASE_URL = 'https://\${API_DOMAIN}';
-window.SPA_ORIGIN = 'https://\${SPA_DOMAIN}';
-JS_EOF
+    # echo "🔧 Generating frontend configuration..."
 
     echo "✅ Configuration generated"
     
