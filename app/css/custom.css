@@ -110,10 +110,6 @@ label.todo-list__label input[type="checkbox"] {
     background-color: #fff;
 }
 
-.editgrid-value {
-    color: #212529;
-}
-
 /* Make EditGrid container fill parent space */
 .formio-component-editgrid {
     width: 100%;

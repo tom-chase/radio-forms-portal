@@ -554,8 +554,8 @@ export async function startViewSubmission(submission) {
 
     state.isEditing = false; // Not editing, just viewing
     state.editingSubmissionId = submission?._id || null;
-    if (editBannerText) editBannerText.textContent = "Viewing submission (read-only)";
-    if (cancelEditBtn) cancelEditBtn.textContent = "Cancel";
+    if (editBannerText) editBannerText.textContent = "Viewing (read-only)";
+    if (cancelEditBtn) cancelEditBtn.textContent = "Close";
     if (editBanner) editBanner.classList.remove("d-none");
 
     // Ensure the create panel is visible while viewing.

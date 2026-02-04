@@ -110,7 +110,7 @@ export FORMIO_ALLOWED_ORIGINS_ARRAY=${FORMIO_ALLOWED_ORIGINS_ARRAY}
 export FORMIO_BASE_PATH=${FORMIO_BASE_PATH:-""}
 export FORMIO_DOMAIN=${FORMIO_DOMAIN}
 export JWT_SECRET=${JWT_SECRET}
-export JWT_EXPIRE_TIME=${JWT_EXPIRE_TIME:-"240"}
+export JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-240}
 export JWT_ISSUER=${JWT_ISSUER:-"formio"}
 export TRUST_PROXY=${TRUST_PROXY}
 export SMTP_HOST=${SMTP_HOST:-""}
@@ -120,7 +120,7 @@ export SMTP_USER=${SMTP_USER:-""}
 export SMTP_PASS=${SMTP_PASS:-""}
 export FORMIO_ACTIONS=${FORMIO_ACTIONS:-"{\"updateLatestRoleLogId\": \"/app/src/actions/UpdateLatestRoleLogId.js\"}"}
 export DEBUG=${DEBUG:-"false"}
-export FORMIO_ROOT_EMAIL=${FORMIO_ROOT_EMAIL:-"admin@localhost"}
+export ROOT_EMAIL=${ROOT_EMAIL:-"admin@localhost"}
 
 envsubst < "$PROJECT_DIR/formio-config.json.template" > "$CONFIG_FILE"
 

@@ -3,8 +3,8 @@
 # Local Development Setup Script
 # Usage: ./scripts/deploy-dev.sh [branch-name] [forms-to-sync]
 # Examples:
-#   ./scripts/deploy-dev.sh                    # Current branch, sync book form only
-#   ./scripts/deploy-dev.sh main               # Main branch, sync book form only  
+#   ./scripts/deploy-dev.sh                            # Current branch
+#   ./scripts/deploy-dev.sh main                       # Main branch
 #   ./scripts/deploy-dev.sh feature-branch book,tasks  # Feature branch, sync book and tasks forms [forms-to-sync]
 
 set -e

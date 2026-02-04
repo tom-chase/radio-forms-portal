@@ -6,6 +6,8 @@
 # Configuration - allow structure but ignore sensitive files
 config/env/*.json
 !config/env/default.json
+app/config.js
+app/js/config.js
 
 # Docker
 .dockerignore
@@ -45,9 +47,10 @@ backups/
 
 # Tools (sensitive data)
 tools/
+docs/chats_ext/
 config/bootstrap/form_templates/*
 !config/bootstrap/form_templates/book.json
-docs/chats_ext/
+!config/bootstrap/form_templates/note.json
 
 # Documentation planning notes
 docs/plans/

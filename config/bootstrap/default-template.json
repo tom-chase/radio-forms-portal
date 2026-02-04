@@ -4601,11 +4601,12 @@
       "pdfComponents": [],
       "display": "form",
       "tags": [
-        "common",
-        "resource"
+        ""
       ],
       "settings": {
         "ui": {
+          "alternateTitle": "Notes",
+          "submissionsTitle": "Notes",
           "formsList": {
             "hidden": false
           }
@@ -4627,7 +4628,7 @@
             },
             {
               "title": "Note",
-              "field": "data.note",
+              "field": "data.content",
               "formatter": "html",
               "minWidth": 220
             },
@@ -4638,9 +4639,15 @@
               "minWidth": 160
             },
             {
-              "title": "Created/Updated Date",
+              "title": "Updated",
               "field": "modified",
-              "headerFilter": "input",
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MMM d, yyyy HH:mm a",
+                "invalidPlaceholder": "(invalid)",
+                "timezone": "America/New_York"
+              },
               "minWidth": 220
             }
           ]
@@ -4807,6 +4814,95 @@
           "truncateMultipleSpaces": false,
           "rows": 3,
           "fixedSize": true
+        },
+        {
+          "label": "Author",
+          "labelPosition": "top",
+          "placeholder": "",
+          "description": "",
+          "tooltip": "",
+          "prefix": "",
+          "suffix": "",
+          "widget": {
+            "type": "input"
+          },
+          "inputMask": "",
+          "displayMask": "",
+          "applyMaskOn": "change",
+          "allowMultipleMasks": false,
+          "customClass": "",
+          "tabindex": "",
+          "autocomplete": "",
+          "hidden": false,
+          "hideLabel": false,
+          "showWordCount": false,
+          "showCharCount": false,
+          "mask": false,
+          "autofocus": false,
+          "spellcheck": true,
+          "disabled": false,
+          "tableView": true,
+          "modalEdit": false,
+          "multiple": false,
+          "persistent": true,
+          "inputFormat": "plain",
+          "protected": false,
+          "dbIndex": false,
+          "case": "",
+          "truncateMultipleSpaces": false,
+          "encrypted": false,
+          "redrawOn": "",
+          "clearOnHide": true,
+          "customDefaultValue": "",
+          "calculateValue": "value = data.author || (user ? user.data.email : '')",
+          "calculateServer": false,
+          "allowCalculateOverride": false,
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "pattern": "",
+            "customMessage": "",
+            "custom": "",
+            "customPrivate": false,
+            "json": "",
+            "minLength": "",
+            "maxLength": "",
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "unique": false,
+          "validateWhenHidden": false,
+          "errorLabel": "",
+          "errors": "",
+          "key": "author",
+          "tags": [],
+          "properties": {},
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": "",
+            "json": ""
+          },
+          "customConditional": "",
+          "logic": [],
+          "attributes": {},
+          "overlay": {
+            "style": "",
+            "page": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "type": "textfield",
+          "input": true,
+          "refreshOn": "",
+          "addons": [],
+          "inputType": "text",
+          "id": "e84fwdg",
+          "defaultValue": "",
+          "dataGridLabel": false
         },
         {
           "title": "Share Settings",
@@ -8422,8 +8518,7 @@
           "templates": {
             "header": "",
             "tableHeader": "",
-            "row": "<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'title') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h2 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h2>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                  {% if (contentComponent.key !== 'title') { %}\n                    <div class=\"col-12 mb-2\">\n                      {{ getView(contentComponent, row[contentComponent.key]) }}\n                    </div>\n                  {% } %}\n                {% }) %}\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n",
-            "tableRow": "",
+            "row": "<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'title') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h1 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h1>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n\n                {% var accordionId = 'accordionMore-' + instance.id + '-' + rowIndex; %}\n                {% var collapseId = 'collapseContent-' + instance.id + '-' + rowIndex; %}\n\n                <div class=\"col-12 mb-2\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'summary') { %}\n                    {{ getView(contentComponent, row[contentComponent.key]) }}\n                    {% } %}\n                {% }) %}\n                </div>\n\n                <div class=\"accordion\" id=\"{{ accordionId }}\">\n                    <div class=\"accordion-item\">\n                        <h2 class=\"accordion-header\" id=\"heading-{{ collapseId }}\">\n                            <button class=\"accordion-button collapsed\" type=\"button\"\n                                data-bs-toggle=\"collapse\"\n                                data-bs-target=\"#{{ collapseId }}\"\n                                aria-expanded=\"false\"\n                                aria-controls=\"{{ collapseId }}\">\n                                more\n                            </button>\n                        </h2>\n\n                        <div id=\"{{ collapseId }}\" class=\"accordion-collapse collapse\" data-bs-parent=\"#{{ accordionId }}\">\n                            <div class=\"accordion-body\">\n                                {% util.eachComponent(components, function(contentComponent) { %}\n                                    {% if (contentComponent.key !== 'title' && contentComponent.key !== 'summary') { %}\n                                        <div class=\"col-12 mb-2\">\n                                        <div class=\"d-flex align-items-left\">\n                                            <div class=\"ms-2 text-muted\">\n                                            {{ contentComponent.label }}:&nbsp;&nbsp;\n                                            </div>\n                                            <div>\n                                            {{ getView(contentComponent, row[contentComponent.key]) }}\n                                            </div>\n                                        </div>\n                                        </div>\n                                    {% } %}\n                                {% }) %}\n                            </div>\n                        </div>\n                    </div>\n                </div>         \n              </div>\n            </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>",
             "footer": ""
           },
           "components": [
@@ -8582,7 +8677,8 @@
           ],
           "templates": {
             "header": "",
-            "row": "\n<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'chapterTitle') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h2 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.</span>\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h2>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'sections') { %}\n                      {% var sections = row.sections || []; %}\n                      {% if (sections.length) { %}\n                        <div class=\"small text-muted mb-2\">{{ sections.length }} section{% if (sections.length !== 1) { %}s{% } %}</div>\n                        <ol class=\"mb-0 ps-3 list-unstyled\">\n                          {% _.each(sections, function(sec, i) { %}\n                            <li><span class=\"fw-bold me-1\">{{ rowIndex + 1 }}.{{ i + 1 }}.</span> {{ sec.sectionTitle || ('Section ' + (i + 1)) }}</li>\n                          {% }) %}\n                        </ol>\n                      {% } else { %}\n                        <div class=\"text-muted\">No sections yet. Click Edit to add sections.</div>\n                      {% } %}\n                    {% } %}\n                {% }) %}\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n"
+            "row": "\n<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'chapterTitle') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h3 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1 collapsed\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"false\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.</span>\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h3>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n                <div class=\"accordion-body\">\n                    {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'sections') { %}\n                        {% var sections = row.sections || []; %}\n                        {% if (sections.length) { %}\n                        <div class=\"small text-muted mb-2\">{{ sections.length }} section{% if (sections.length !== 1) { %}s{% } %}</div>\n                        <!-- Nested accordions for sections with full functionality -->\n                        <div class=\"accordion editgrid-accordion editgrid-accordion-nested\" id=\"sections-accordion-{{ instance.id }}-{{ rowIndex }}\">\n                            {% _.each(sections, function(sec, i) { %}\n                            <div class=\"accordion-item\">\n                                <h4 class=\"accordion-header\" id=\"sections-heading-{{ instance.id }}-{{ rowIndex }}-{{ i }}\">\n                                <div class=\"d-flex align-items-center justify-content-between w-100\">\n                                    <button class=\"accordion-button collapsed\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" aria-expanded=\"false\" aria-controls=\"sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\">\n                                    <div class=\"editgrid-value\">\n                                        <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.{{ i + 1 }}.</span>\n                                        {{ sec.sectionTitle || ('Section ' + (i + 1)) }}\n                                    </div>\n                                    </button>\n                                    {% if (!instance.options.readOnly && !instance.disabled) { %}\n                                    <div class=\"btn-group ms-2 me-3\">\n                                        <button class=\"btn btn-default btn-light btn-xs editSectionRow\" data-section-index=\"{{ i }}\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                                        <button class=\"btn btn-danger btn-xs removeSectionRow\" data-section-index=\"{{ i }}\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                                    </div>\n                                    {% } %}\n                                </div>\n                                </h4>\n                                <div id=\"sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" class=\"accordion-collapse collapse\" aria-labelledby=\"sections-heading-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" data-bs-parent=\"#sections-accordion-{{ instance.id }}-{{ rowIndex }}\">\n                                <div class=\"accordion-body\">\n                                    <!-- Render section content with proper label-value pairs -->\n                                    <div class=\"col-12 mb-2\">\n                                    <div>\n                                        {{ sec.sectionContent || 'No content' }}\n                                    </div>\n                                    </div>\n                                </div>\n                                </div>\n                            </div>\n                            {% }) %}\n                        </div>\n                        {% } else { %}\n                        <div class=\"text-muted\">No sections yet. Click Edit to add sections.</div>\n                        {% } %}\n                    {% } %}\n                    {% }) %}\n                </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n",
+            "footer": ""
           },
           "addAnother": "Add Chapter",
           "saveRow": "Save Chapter",

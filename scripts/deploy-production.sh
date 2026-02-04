@@ -6,7 +6,7 @@
 set -e
 
 # Configuration
-PROD_SERVER="${PROD_SERVER:-34.224.137.109}"
+PROD_SERVER="${PROD_SERVER:-3.227.80.82}"
 PROD_USER="${PROD_USER:-admin}"
 APP_DIR="${PROD_APP_DIR:-/home/admin/radio-forms-portal}"
 BACKUP_DIR="${PROD_BACKUP_DIR:-/home/admin/backups}"

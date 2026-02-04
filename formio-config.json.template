@@ -9,7 +9,7 @@
   "domain": "${FORMIO_DOMAIN}",
   "jwt": {
     "secret": "${JWT_SECRET}",
-    "expireTime": "${JWT_EXPIRE_TIME}",
+    "expiresIn": "${JWT_EXPIRES_IN}",
     "issuer": "${JWT_ISSUER}"
   },
   "trust proxy": true,
@@ -42,5 +42,5 @@
   },
   "actions": ${FORMIO_ACTIONS},
   "debug": "${DEBUG}",
-  "root": "${FORMIO_ROOT_EMAIL}"
+  "root": "${ROOT_EMAIL}"
 }

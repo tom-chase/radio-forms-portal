@@ -14,7 +14,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_DB_NAME:-formio}
     networks:
       - radio-forms-dev
 
@@ -28,20 +27,15 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./config/env:/app/config:ro
+      - ./config/env/development.json:/app/config/development.json:ro
       - ./config/bootstrap/default-template.json:/app/default-template.json:ro
       - ./config/actions/UpdateLatestRoleLogId.js:/app/src/actions/UpdateLatestRoleLogId.js:ro
     environment:
       NODE_ENV: development
       DEBUG: formio:*
-      ROOT_EMAIL: ${FORMIO_ROOT_EMAIL}
-      ROOT_PASSWORD: ${FORMIO_ROOT_PASSWORD}
-      API_KEYS: ${API_KEYS}
-      FORMIO_DOMAIN: ${FORMIO_DOMAIN:-http://localhost:3001}
-      JWT_SECRET: ${JWT_SECRET}
-      MONGO_SECRET: ${MONGO_SECRET}
-      # Add MongoDB connection string
-      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/${MONGO_DB_NAME:-formio}?authSource=admin
+      ROOT_EMAIL: ${ROOT_EMAIL:-admin@dev.local}
+      ROOT_PASSWORD: ${ROOT_PASSWORD:-admin123}
+      API_KEYS: ${API_KEYS:-}
     networks:
       - radio-forms-dev
 
