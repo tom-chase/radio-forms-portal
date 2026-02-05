@@ -1,0 +1,82 @@
+{
+  "title": "Contact",
+  "name": "contact",
+  "path": "contact",
+  "type": "resource",
+  "display": "form",
+  "tags": ["underwriting"],
+  "access": [],
+  "submissionAccess": [],
+  "components": [
+    {
+      "label": "First Name",
+      "key": "firstName",
+      "type": "textfield",
+      "input": true,
+      "tableView": true,
+      "validate": { "required": true }
+    },
+    {
+      "label": "Last Name",
+      "key": "lastName",
+      "type": "textfield",
+      "input": true,
+      "tableView": true,
+      "validate": { "required": true }
+    },
+    {
+      "label": "Email",
+      "key": "email",
+      "type": "email",
+      "input": true,
+      "tableView": true
+    },
+    {
+      "label": "Phone",
+      "key": "phone",
+      "type": "phoneNumber",
+      "input": true,
+      "tableView": true
+    },
+    {
+      "label": "Organization",
+      "key": "organization",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "url",
+      "data": {
+        "url": "/orgs/submission?limit=1000"
+      },
+      "valueProperty": "_id",
+      "template": "<span>{{ item.data.name }}</span>",
+      "searchEnabled": true,
+      "placeholder": "Select organization"
+    },
+    {
+      "label": "Role / Title at Organization",
+      "key": "roleAtOrg",
+      "type": "textfield",
+      "input": true,
+      "tableView": true
+    },
+    {
+      "label": "Notes",
+      "key": "notes",
+      "type": "textarea",
+      "editor": "ckeditor",
+      "input": true,
+      "inputFormat": "html",
+      "tableView": false
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}
