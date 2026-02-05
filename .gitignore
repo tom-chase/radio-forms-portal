@@ -48,12 +48,11 @@ backups/
 # Tools (sensitive data)
 tools/
 docs/chats_ext/
-config/bootstrap/form_templates/*
-!config/bootstrap/form_templates/book.json
-!config/bootstrap/form_templates/note.json
-# !config/bootstrap/form_templates/underwriting_lead_intake.json
-!config/bootstrap/form_templates/contact.json
+config/bootstrap/form_templates/editgrid_templates/
+config/bootstrap/form_templates/pdf_outputs/
+
 
 
 # Documentation planning notes
 docs/plans/
+docs/pdf_outputs

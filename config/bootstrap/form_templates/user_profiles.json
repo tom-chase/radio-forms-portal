@@ -1,0 +1,140 @@
+{
+  "title": "User Profile",
+  "name": "userProfile",
+  "path": "user-profile",
+  "type": "resource",
+  "display": "form",
+  "tags": [""],
+  "access": [],
+  "submissionAccess": [],
+  "components": [
+    {
+      "label": "Linked User",
+      "key": "user",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "validate": { "required": true },
+      "dataSrc": "url",
+      "data": {
+        "url": "/user/submission?limit=1000"
+      },
+      "valueProperty": "_id",
+      "template": "<span>{{ item.data.email }}</span>",
+      "searchEnabled": true,
+      "placeholder": "Select user"
+    },
+    {
+      "label": "Display Name",
+      "key": "displayName",
+      "type": "textfield",
+      "input": true,
+      "tableView": true,
+      "description": "Name to show in dashboards, assignments, etc."
+    },
+    {
+      "label": "Pronouns",
+      "key": "pronouns",
+      "type": "textfield",
+      "input": true,
+      "tableView": true,
+      "placeholder": "e.g., she/her, he/him, they/them"
+    },
+    {
+      "label": "Phone Number",
+      "key": "phone",
+      "type": "phoneNumber",
+      "input": true,
+      "tableView": true
+    },
+    {
+      "label": "Primary Station Role",
+      "key": "primaryStationRole",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Staff", "value": "staff" },
+          { "label": "Volunteer - On Air", "value": "volunteer_on_air" },
+          { "label": "Volunteer - Off Air", "value": "volunteer_off_air" },
+          { "label": "Underwriting", "value": "underwriting" },
+          { "label": "Engineering / Tech", "value": "engineering" },
+          { "label": "Finance", "value": "finance" },
+          { "label": "Traffic", "value": "traffic" },
+          { "label": "Other", "value": "other" }
+        ]
+      }
+    },
+    {
+      "label": "Departments / Teams",
+      "key": "departments",
+      "type": "selectboxes",
+      "input": true,
+      "tableView": false,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Programming", "value": "programming" },
+          { "label": "News & Public Affairs", "value": "news" },
+          { "label": "Music", "value": "music" },
+          { "label": "Underwriting / Development", "value": "underwriting" },
+          { "label": "Engineering", "value": "engineering" },
+          { "label": "Fund Drive", "value": "fund_drive" },
+          { "label": "Administration", "value": "admin" }
+        ]
+      }
+    },
+    {
+      "label": "Shows / Programs (free text)",
+      "key": "shows",
+      "type": "textarea",
+      "input": true,
+      "tableView": false,
+      "rows": 2,
+      "description": "List show names, time slots, or other program affiliations."
+    },
+    {
+      "label": "Skills / Interests",
+      "key": "skills",
+      "type": "textarea",
+      "input": true,
+      "tableView": false,
+      "rows": 3
+    },
+    {
+      "label": "Emergency Contact Name",
+      "key": "emergencyContactName",
+      "type": "textfield",
+      "input": true,
+      "tableView": false
+    },
+    {
+      "label": "Emergency Contact Phone",
+      "key": "emergencyContactPhone",
+      "type": "phoneNumber",
+      "input": true,
+      "tableView": false
+    },
+    {
+      "label": "Bio / Notes",
+      "key": "bio",
+      "type": "textarea",
+      "editor": "ckeditor",
+      "input": true,
+      "inputFormat": "html",
+      "tableView": false
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "title": "Task",
+  "name": "task",
+  "path": "task",
+  "type": "resource",
+  "display": "form",
+  "tags": [""],
+  "components": [
+    {
+      "label": "Task Title",
+      "tableView": true,
+      "key": "title",
+      "type": "textfield",
+      "input": true,
+      "validate": { "required": true }
+    },
+    {
+      "label": "Details / Checklist",
+      "autoExpand": false,
+      "tableView": false,
+      "key": "details",
+      "type": "textarea",
+      "editor": "ckeditor",
+      "input": true,
+      "description": "Use the todo-list toolbar in the editor to track subtasks."
+    },
+    {
+      "label": "Status",
+      "widget": "choicesjs",
+      "tableView": true,
+      "data": {
+        "values": [
+          { "label": "Open", "value": "open" },
+          { "label": "In progress", "value": "in_progress" },
+          { "label": "Blocked", "value": "blocked" },
+          { "label": "Done", "value": "done" }
+        ]
+      },
+      "key": "status",
+      "type": "select",
+      "input": true,
+      "defaultValue": "open"
+    },
+    {
+      "label": "Priority",
+      "widget": "choicesjs",
+      "tableView": true,
+      "data": {
+        "values": [
+          { "label": "Low", "value": "low" },
+          { "label": "Normal", "value": "normal" },
+          { "label": "High", "value": "high" },
+          { "label": "Urgent", "value": "urgent" }
+        ]
+      },
+      "key": "priority",
+      "type": "select",
+      "input": true,
+      "defaultValue": "normal"
+    },
+    {
+      "label": "Due Date",
+      "widget": "calendar",
+      "tableView": true,
+      "enableTime": false,
+      "format": "yyyy-MM-dd",
+      "key": "dueDate",
+      "type": "datetime",
+      "input": true
+    },
+    {
+      "label": "Category / Area",
+      "widget": "choicesjs",
+      "tableView": true,
+      "data": {
+        "values": [
+          { "label": "Underwriting", "value": "underwriting" },
+          { "label": "Volunteers", "value": "volunteers" },
+          { "label": "Programming / Shows", "value": "programming" },
+          { "label": "Engineering / Tech", "value": "engineering" },
+          { "label": "Fund Drive", "value": "fund_drive" },
+          { "label": "Other", "value": "other" }
+        ]
+      },
+      "key": "category",
+      "type": "select",
+      "input": true
+    },
+    {
+      "label": "Internal Notes",
+      "autoExpand": false,
+      "tableView": false,
+      "key": "internalNotes",
+      "type": "textarea",
+      "editor": "ckeditor",
+      "input": true,
+      "description": "For staff-only notes; you can later hide this from volunteers using conditional logic."
+    },
+    {
+      "label": "Submit",
+      "showValidations": false,
+      "theme": "primary",
+      "key": "submit",
+      "type": "button",
+      "input": true,
+      "saveOnEnter": true
+    }
+  ],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": [
+        "ROLE_ID_Administrator",
+        "ROLE_ID_Staff",
+        "ROLE_ID_Underwriting"
+      ]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "create_own",
+      "roles": [
+        "ROLE_ID_Authenticated",
+        "ROLE_ID_Volunteer",
+        "ROLE_ID_Staff",
+        "ROLE_ID_Underwriting"
+      ]
+    },
+    {
+      "type": "read_own",
+      "roles": [
+        "ROLE_ID_Authenticated",
+        "ROLE_ID_Volunteer",
+        "ROLE_ID_Staff",
+        "ROLE_ID_Underwriting"
+      ]
+    },
+    {
+      "type": "read_all",
+      "roles": [
+        "ROLE_ID_Staff",
+        "ROLE_ID_Underwriting",
+        "ROLE_ID_Administrator"
+      ]
+    },
+    {
+      "type": "update_all",
+      "roles": [
+        "ROLE_ID_Staff",
+        "ROLE_ID_Underwriting",
+        "ROLE_ID_Administrator"
+      ]
+    },
+    {
+      "type": "delete_all",
+      "roles": [
+        "ROLE_ID_Administrator"
+      ]
+    }
+  ]
+}

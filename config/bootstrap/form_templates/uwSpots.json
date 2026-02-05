@@ -1,0 +1,347 @@
+{
+  "title": "Underwriting Spots",
+  "name": "uwSpots",
+  "path": "uw-spots",
+  "type": "resource",
+  "display": "form",
+  "tags": ["underwriting"],
+  "access": [],
+  "submissionAccess": [],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Spots",
+      "submissionsTitle": "Spots"
+    },
+    "tabulatorList": {
+      "enabled": true,
+      "responsiveLayout": "hide",
+      "columns": [
+        {
+          "field": "data.spotName",
+          "title": "Spot",
+          "responsive": 0,
+          "minWidth": 150,
+          "headerFilter": "input"
+        },
+        {
+          "field": "data.campaign",
+          "title": "Campaign",
+          "responsive": 0,
+          "minWidth": 150
+        },
+        {
+          "field": "data.lengthSeconds",
+          "title": "Length",
+          "responsive": 1,
+          "width": 80,
+          "formatter": "plaintext"
+        },
+        {
+          "field": "data.status",
+          "title": "Status",
+          "responsive": 1,
+          "width": 100
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "label": "Spot Information",
+      "key": "spotInfo",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Spot Name",
+          "key": "spotName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Campaign",
+          "key": "campaign",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "url",
+          "data": {
+            "url": "/uw-campaigns/submission?limit=1000&select=_id,data.campaignName"
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.campaignName }}</span>",
+          "searchEnabled": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Length (seconds)",
+          "key": "lengthSeconds",
+          "type": "number",
+          "input": true,
+          "tableView": true,
+          "description": "Duration in seconds (e.g., 30, 60)"
+        }
+      ]
+    },
+    {
+      "label": "Copy & Script",
+      "key": "copyScript",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Copy/Script",
+          "key": "copy",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "inputFormat": "html",
+          "tableView": false,
+          "description": "Full script text for the spot"
+        }
+      ]
+    },
+    {
+      "label": "Audio File",
+      "key": "audioFile",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Audio URL",
+          "key": "audioUrl",
+          "type": "url",
+          "input": true,
+          "tableView": true,
+          "description": "URL to audio file (for future upload/serving integration)"
+        }
+      ]
+    },
+    {
+      "label": "Attachments",
+      "key": "attachments",
+      "type": "datagrid",
+      "input": true,
+      "tableView": false,
+      "reorder": true,
+      "components": [
+        {
+          "label": "File Name",
+          "key": "fileName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "File URL",
+          "key": "fileUrl",
+          "type": "url",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "Description",
+          "key": "description",
+          "type": "textfield",
+          "input": true,
+          "tableView": false
+        }
+      ]
+    },
+    {
+      "label": "Approval Workflow",
+      "key": "approvalWorkflow",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Status",
+          "key": "status",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              { "label": "Draft", "value": "draft" },
+              { "label": "Pending Approval", "value": "pending" },
+              { "label": "Approved", "value": "approved" },
+              { "label": "Deprecated", "value": "deprecated" }
+            ]
+          },
+          "defaultValue": "draft"
+        },
+        {
+          "label": "Program Manager Approval",
+          "key": "programManagerApproval",
+          "type": "container",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Approved",
+              "key": "programManagerApproved",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "Approver",
+              "key": "programManagerApprover",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": false,
+              "dataSrc": "url",
+              "data": {
+                "url": "/user/submission?limit=1000&select=_id,data.email"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.email }}</span>",
+              "searchEnabled": true,
+              "conditional": {
+                "show": true,
+                "when": "programManagerApproved",
+                "eq": true
+              }
+            },
+            {
+              "label": "Approval Date",
+              "key": "programManagerApprovalDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "enableTime": true,
+              "format": "yyyy-MM-dd HH:mm",
+              "conditional": {
+                "show": true,
+                "when": "programManagerApproved",
+                "eq": true
+              }
+            }
+          ]
+        },
+        {
+          "label": "General Manager Approval",
+          "key": "generalManagerApproval",
+          "type": "container",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Approved",
+              "key": "generalManagerApproved",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "Approver",
+              "key": "generalManagerApprover",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": false,
+              "dataSrc": "url",
+              "data": {
+                "url": "/user/submission?limit=1000&select=_id,data.email"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.email }}</span>",
+              "searchEnabled": true,
+              "conditional": {
+                "show": true,
+                "when": "generalManagerApproved",
+                "eq": true
+              }
+            },
+            {
+              "label": "Approval Date",
+              "key": "generalManagerApprovalDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "enableTime": true,
+              "format": "yyyy-MM-dd HH:mm",
+              "conditional": {
+                "show": true,
+                "when": "generalManagerApproved",
+                "eq": true
+              }
+            }
+          ]
+        },
+        {
+          "label": "Compliance Officer Approval",
+          "key": "complianceOfficerApproval",
+          "type": "container",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Approved",
+              "key": "complianceOfficerApproved",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "Approver",
+              "key": "complianceOfficerApprover",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": false,
+              "dataSrc": "url",
+              "data": {
+                "url": "/user/submission?limit=1000&select=_id,data.email"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.email }}</span>",
+              "searchEnabled": true,
+              "conditional": {
+                "show": true,
+                "when": "complianceOfficerApproved",
+                "eq": true
+              }
+            },
+            {
+              "label": "Approval Date",
+              "key": "complianceOfficerApprovalDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "enableTime": true,
+              "format": "yyyy-MM-dd HH:mm",
+              "conditional": {
+                "show": true,
+                "when": "complianceOfficerApproved",
+                "eq": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

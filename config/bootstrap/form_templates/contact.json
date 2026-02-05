@@ -4,9 +4,90 @@
   "path": "contact",
   "type": "resource",
   "display": "form",
-  "tags": ["underwriting"],
-  "access": [],
-  "submissionAccess": [],
+  "tags": [
+    "underwriting"
+  ],
+  "access": [
+    {
+      "type": "read_own",
+      "roles": []
+    },
+    {
+      "type": "update_own",
+      "roles": []
+    },
+    {
+      "type": "delete_own",
+      "roles": []
+    },
+    {
+      "type": "read_all",
+      "roles": [
+        "anonymous",
+        "authenticated"
+      ]
+    },
+    {
+      "type": "update_all",
+      "roles": []
+    },
+    {
+      "type": "delete_all",
+      "roles": []
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "create_own",
+      "roles": [
+        "anonymous",
+        "authenticated"
+      ]
+    },
+    {
+      "type": "read_own",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "type": "update_own",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
+      "type": "delete_own",
+      "roles": [
+        "management",
+        "staff"
+      ]
+    },
+    {
+      "type": "create_all",
+      "roles": []
+    },
+    {
+      "type": "read_all",
+      "roles": [
+        "management",
+        "staff"
+      ]
+    },
+    {
+      "type": "update_all",
+      "roles": [
+        "management",
+        "staff"
+      ]
+    },
+    {
+      "type": "delete_all",
+      "roles": [
+        "administrator"
+      ]
+    }
+  ],
   "components": [
     {
       "label": "First Name",
@@ -14,7 +95,9 @@
       "type": "textfield",
       "input": true,
       "tableView": true,
-      "validate": { "required": true }
+      "validate": {
+        "required": true
+      }
     },
     {
       "label": "Last Name",
@@ -22,7 +105,9 @@
       "type": "textfield",
       "input": true,
       "tableView": true,
-      "validate": { "required": true }
+      "validate": {
+        "required": true
+      }
     },
     {
       "label": "Email",
@@ -47,12 +132,12 @@
       "tableView": true,
       "dataSrc": "url",
       "data": {
-        "url": "/orgs/submission?limit=1000"
+        "url": "/orgs/submission?limit=1000&select=_id,data.name"
       },
       "valueProperty": "_id",
       "template": "<span>{{ item.data.name }}</span>",
       "searchEnabled": true,
-      "placeholder": "Select organization"
+      "description": "Link to organization record"
     },
     {
       "label": "Role / Title at Organization",
@@ -62,13 +147,170 @@
       "tableView": true
     },
     {
+      "label": "Contact Type",
+      "key": "contactType",
+      "type": "selectboxes",
+      "input": true,
+      "tableView": false,
+      "values": [
+        { "label": "Sponsor Contact", "value": "sponsor" },
+        { "label": "Member/Donor", "value": "member" },
+        { "label": "Community Partner", "value": "partner" },
+        { "label": "Vendor", "value": "vendor" },
+        { "label": "Volunteer Prospect", "value": "volunteer" },
+        { "label": "Other", "value": "other" }
+      ],
+      "defaultValue": {
+        "sponsor": true
+      }
+    },
+    {
+      "label": "Status",
+      "key": "status",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Active", "value": "active" },
+          { "label": "Pending Review", "value": "pending_review" },
+          { "label": "Inactive", "value": "inactive" }
+        ]
+      },
+      "defaultValue": "active"
+    },
+    {
+      "label": "Source",
+      "key": "source",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Website", "value": "website" },
+          { "label": "Referral", "value": "referral" },
+          { "label": "Event", "value": "event" },
+          { "label": "Cold Call", "value": "cold_call" },
+          { "label": "Other", "value": "other" }
+        ]
+      }
+    },
+    {
+      "label": "Linked Portal User (optional)",
+      "key": "linkedUser",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": false,
+      "dataSrc": "url",
+      "data": {
+        "url": "/user/submission?limit=1000&select=_id,data.email"
+      },
+      "valueProperty": "_id",
+      "template": "<span>{{ item.data.email }}</span>",
+      "searchEnabled": true,
+      "description": "If this contact has a portal login, link it here"
+    },
+    {
+      "label": "Donation History",
+      "key": "donationHistory",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "customConditional": "show = data.contactType && data.contactType.member === true;",
+      "components": [
+        {
+          "label": "Giving History",
+          "key": "givingHistory",
+          "type": "datagrid",
+          "input": true,
+          "tableView": false,
+          "reorder": true,
+          "components": [
+            {
+              "label": "Date",
+              "key": "donationDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": false,
+              "format": "yyyy-MM-dd",
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Amount (USD)",
+              "key": "amount",
+              "type": "number",
+              "input": true,
+              "tableView": true,
+              "delimiter": true,
+              "requireDecimal": true,
+              "validate": {
+                "required": true,
+                "min": 0
+              }
+            },
+            {
+              "label": "Campaign/Fund",
+              "key": "campaign",
+              "type": "textfield",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "Payment Method",
+              "key": "paymentMethod",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  { "label": "Cash", "value": "cash" },
+                  { "label": "Check", "value": "check" },
+                  { "label": "Credit Card", "value": "credit_card" },
+                  { "label": "Online", "value": "online" },
+                  { "label": "Other", "value": "other" }
+                ]
+              }
+            },
+            {
+              "label": "Notes",
+              "key": "donationNotes",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            }
+          ]
+        },
+        {
+          "label": "Major Donor (365 days)",
+          "key": "majorDonor",
+          "type": "checkbox",
+          "input": true,
+          "tableView": true,
+          "disabled": true,
+          "description": "Automatically calculated: donations over $1,000 in past 365 days",
+          "calculateValue": "value = (function() {\n  const history = data.givingHistory || [];\n  const now = new Date();\n  const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);\n  const recentTotal = history.reduce((sum, donation) => {\n    const donationDate = new Date(donation.donationDate);\n    if (donationDate >= oneYearAgo && donationDate <= now) {\n      return sum + (parseFloat(donation.amount) || 0);\n    }\n    return sum;\n  }, 0);\n  return recentTotal >= 1000;\n})();"
+        }
+      ]
+    },
+    {
       "label": "Notes",
       "key": "notes",
       "type": "textarea",
       "editor": "ckeditor",
       "input": true,
       "inputFormat": "html",
-      "tableView": false
+      "tableView": false,
+      "description": "Internal notes"
     },
     {
       "label": "Submit",
@@ -78,5 +320,58 @@
       "theme": "primary",
       "input": true
     }
-  ]
+  ],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Contacts",
+      "submissionsTitle": "Contacts"
+    },
+    "tabulatorList": {
+      "enabled": true,
+      "responsiveLayout": "hide",
+      "layout": "fitColumns",
+      "height": "60vh",
+      "pagination": "local",
+      "paginationSize": 25,
+      "movableColumns": true,
+      "placeholder": "No contacts found.",
+      "columns": [
+        {
+          "title": "First",
+          "field": "data.firstName",
+          "headerFilter": "input",
+          "responsive": 0,
+          "minWidth": 100
+        },
+        {
+          "title": "Last",
+          "field": "data.lastName",
+          "headerFilter": "input",
+          "responsive": 0,
+          "minWidth": 100
+        },
+        {
+          "title": "Email",
+          "field": "data.email",
+          "headerFilter": "input",
+          "responsive": 1,
+          "minWidth": 150
+        },
+        {
+          "title": "Org",
+          "field": "data.organization",
+          "responsive": 1,
+          "width": 150
+        },
+        {
+          "title": "Status",
+          "field": "data.status",
+          "responsive": 2,
+          "width": 100
+        }
+      ]
+    },
+    "saveDraft": true,
+    "saveDraftThrottle": 3000
+  }
 }

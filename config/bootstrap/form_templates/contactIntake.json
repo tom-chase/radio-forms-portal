@@ -1,0 +1,114 @@
+{
+  "title": "Contact Intake",
+  "name": "contactIntake",
+  "path": "contact-intake",
+  "type": "form",
+  "display": "form",
+  "tags": ["public", "intake"],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["anonymous", "authenticated"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "create_own",
+      "roles": ["anonymous"]
+    },
+    {
+      "type": "read_all",
+      "roles": ["staff", "management", "administrator"]
+    }
+  ],
+  "components": [
+    {
+      "label": "Contact Information",
+      "key": "contactInfo",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "First Name",
+          "key": "firstName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Last Name",
+          "key": "lastName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Email",
+          "key": "email",
+          "type": "email",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Phone",
+          "key": "phone",
+          "type": "phoneNumber",
+          "input": true,
+          "tableView": true
+        },
+        {
+          "label": "Organization",
+          "key": "organization",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "description": "Your company or organization name"
+        }
+      ]
+    },
+    {
+      "label": "Message",
+      "key": "message",
+      "type": "textarea",
+      "input": true,
+      "tableView": false,
+      "rows": 5,
+      "description": "Tell us about your interest in sponsoring or partnering with us"
+    },
+    {
+      "label": "Source",
+      "key": "source",
+      "type": "hidden",
+      "input": true,
+      "tableView": false,
+      "defaultValue": "website"
+    },
+    {
+      "label": "Honeypot",
+      "key": "honeypot",
+      "type": "textfield",
+      "input": true,
+      "tableView": false,
+      "customClass": "d-none",
+      "description": "Leave this field blank"
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

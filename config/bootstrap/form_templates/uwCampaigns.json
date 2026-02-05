@@ -1,0 +1,234 @@
+{
+  "title": "Underwriting Campaigns",
+  "name": "uwCampaigns",
+  "path": "uw-campaigns",
+  "type": "resource",
+  "display": "form",
+  "tags": ["underwriting"],
+  "access": [],
+  "submissionAccess": [],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Campaigns",
+      "submissionsTitle": "Campaigns"
+    },
+    "tabulatorList": {
+      "enabled": true,
+      "responsiveLayout": "hide",
+      "columns": [
+        {
+          "field": "data.campaignName",
+          "title": "Campaign",
+          "responsive": 0,
+          "minWidth": 150,
+          "headerFilter": "input"
+        },
+        {
+          "field": "data.organization",
+          "title": "Sponsor",
+          "responsive": 0,
+          "minWidth": 150
+        },
+        {
+          "field": "data.stationCampaign",
+          "title": "Station Campaign",
+          "responsive": 1,
+          "width": 150
+        },
+        {
+          "field": "data.status",
+          "title": "Status",
+          "responsive": 1,
+          "width": 100
+        },
+        {
+          "field": "data.startDate",
+          "title": "Start",
+          "responsive": 2,
+          "width": 120,
+          "formatter": "datetime",
+          "formatterParams": {
+            "inputFormat": "iso",
+            "outputFormat": "MMM d, yyyy"
+          }
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "label": "Campaign Information",
+      "key": "campaignInfo",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Campaign Name",
+          "key": "campaignName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          },
+          "description": "Sponsor-specific campaign name (e.g., 'Acme Spring 2025')"
+        },
+        {
+          "label": "Organization",
+          "key": "organization",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "url",
+          "data": {
+            "url": "/orgs/submission?limit=1000&select=_id,data.name"
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.name }}</span>",
+          "searchEnabled": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Contract",
+          "key": "contract",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "url",
+          "data": {
+            "url": "/uw-contracts/submission?limit=1000&select=_id,data.contractName"
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.contractName }}</span>",
+          "searchEnabled": true,
+          "description": "Link to parent contract (optional)"
+        },
+        {
+          "label": "Primary Contact",
+          "key": "primaryContact",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "url",
+          "data": {
+            "url": "/contact/submission?limit=1000&select=_id,data.firstName,data.lastName"
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
+          "searchEnabled": true
+        },
+        {
+          "label": "Station-Wide Campaign",
+          "key": "stationCampaign",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "description": "Station-wide campaign period this sponsor participates in (e.g., 'Fall Fund Drive 2025', 'Spring Pledge Drive 2026')"
+        }
+      ]
+    },
+    {
+      "label": "On-Air Details",
+      "key": "onAirDetails",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "On-Air Name",
+          "key": "onAirName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "description": "Short on-air label for this campaign"
+        }
+      ]
+    },
+    {
+      "label": "Campaign Period",
+      "key": "campaignPeriod",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Start Date",
+          "key": "startDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd"
+        },
+        {
+          "label": "End Date",
+          "key": "endDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd"
+        }
+      ]
+    },
+    {
+      "label": "Scheduling",
+      "key": "scheduling",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Spots Per Week",
+          "key": "spotsPerWeek",
+          "type": "number",
+          "input": true,
+          "tableView": true,
+          "description": "Target number of spots per week"
+        },
+        {
+          "label": "Scheduling Notes",
+          "key": "notes",
+          "type": "textarea",
+          "input": true,
+          "tableView": false,
+          "rows": 3,
+          "description": "Scheduling instructions, preferred time slots, restrictions"
+        }
+      ]
+    },
+    {
+      "label": "Status",
+      "key": "status",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Planned", "value": "planned" },
+          { "label": "Active", "value": "active" },
+          { "label": "Paused", "value": "paused" },
+          { "label": "Completed", "value": "completed" },
+          { "label": "Cancelled", "value": "cancelled" }
+        ]
+      },
+      "defaultValue": "planned"
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}
