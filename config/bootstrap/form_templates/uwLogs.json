@@ -5,8 +5,30 @@
   "type": "resource",
   "display": "form",
   "tags": ["underwriting", "traffic"],
-  "access": [],
-  "submissionAccess": [],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["programmer", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["programmer", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["programmer", "underwriting", "management", "administrator"]
+    }
+  ],
   "settings": {
     "ui": {
       "alternateTitle": "Aircheck Logs",
@@ -83,13 +105,14 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/uw-campaigns/submission?limit=1000&select=_id,data.campaignName"
+            "resource": "uwCampaigns"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.campaignName }}</span>",
-          "searchEnabled": true
+          "searchEnabled": true,
+          "reference": true
         },
         {
           "label": "Spot",
@@ -98,14 +121,15 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/uw-spots/submission?limit=1000&select=_id,data.spotName"
+            "resource": "uwSpots"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.spotName }}</span>",
           "searchEnabled": true,
-          "description": "Which spot was aired"
+          "description": "Which spot was aired",
+          "reference": true
         }
       ]
     },

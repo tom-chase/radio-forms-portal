@@ -1,14 +1,14 @@
 {
   "title": "Contact Intake",
   "name": "contactIntake",
-  "path": "contact-intake",
+  "path": "contactintake",
   "type": "form",
   "display": "form",
   "tags": ["public", "intake"],
   "access": [
     {
       "type": "read_all",
-      "roles": ["anonymous", "authenticated"]
+      "roles": ["anonymous", "authenticated", "staff", "management", "administrator"]
     }
   ],
   "submissionAccess": [
@@ -18,7 +18,15 @@
     },
     {
       "type": "read_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": ["staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["management", "administrator"]
     }
   ],
   "components": [
@@ -26,6 +34,7 @@
       "label": "Contact Information",
       "key": "contactInfo",
       "type": "panel",
+      "hideLabel": true,
       "input": false,
       "tableView": false,
       "components": [

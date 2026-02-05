@@ -398,7 +398,7 @@ The `audioFileUrl` and `fileHash` fields are prepared for:
 | `content` | textarea (ckeditor) | Note content |
 | `author` | textfield (calculated) | Auto-populated from user.data.email |
 | `parentType` | select | Organization, Contact, Contract, Campaign, Spot |
-| `parentId` | textfield | Record ID (auto-populated) |
+| `parentId` | select (dynamic) | Record selector (updates based on parentType) |
 | `sharePublic` | checkbox | Share with public |
 | `shareRoles` | select (multiple) | Share with roles |
 | `shareDepartments` | select (multiple) | Share with departments |
@@ -409,14 +409,50 @@ The `audioFileUrl` and `fileHash` fields are prepared for:
 
 Notes can be linked to any record type via `parentRef` container:
 - **parentType:** Specifies the resource (orgs, contact, uwContracts, uwCampaigns, uwSpots)
-- **parentId:** The `_id` of the linked record
+- **parentId:** Dynamic select dropdown that loads submissions from the selected resource type
 
-#### Frontend Pattern
+#### Dynamic Record Selection
 
-When viewing a record (e.g., organization detail):
-1. "Add Note" button pre-populates `parentType` and `parentId`
-2. Notes list filtered by `parentType` and `parentId`
-3. Notes appear in context of the parent record
+The note form uses **conditional resource fields** to provide proper record selection:
+- Five separate select fields: `parentId_orgs`, `parentId_contact`, `parentId_uwContracts`, `parentId_uwCampaigns`, `parentId_uwSpots`
+- Each field uses `dataSrc: "resource"` with proper resource reference
+- Each field has `customConditional` to show only when matching `parentType` is selected
+- A hidden `parentId` field uses `calculateValue` to consolidate the selected value
+
+**Benefits:**
+- Proper Form.io resource integration with "Add Resource" buttons
+- Save as reference functionality works correctly
+- Better data integrity and validation
+- Searchable dropdowns with appropriate display templates
+
+#### Inline Notes Display
+
+When viewing or editing any submission, a **Notes section** automatically appears below the form with:
+
+**Features:**
+- **Notes List:** Displays all notes linked to the current record, sorted by most recent
+- **Add Note Button:** Opens inline note creation form
+- **Auto-Population:** Parent reference fields are automatically populated and hidden
+- **Real-time Display:** Shows author, timestamp, note type badge, and content
+- **Follow-up Tracking:** Displays follow-up dates if set
+- **Relative Timestamps:** "Just now", "2 hours ago", "Yesterday", etc.
+
+**Note Type Badges:**
+- General (gray)
+- Follow-up (yellow)
+- Important (red)
+- Meeting (blue)
+- Phone (primary blue)
+- Email (green)
+
+#### Frontend Integration
+
+The notes system is integrated via `notesUI.js` module:
+1. **Automatic Display:** Notes section renders when viewing/editing any submission with an `_id`
+2. **Permission Checks:** Respects note form permissions before allowing creation
+3. **Filtered Queries:** Only loads notes matching the parent record
+4. **Inline Creation:** Note form appears in a card below the notes list
+5. **Auto-refresh:** Notes list refreshes after successful submission
 
 ---
 

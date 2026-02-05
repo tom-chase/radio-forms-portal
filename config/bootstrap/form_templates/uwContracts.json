@@ -5,8 +5,30 @@
   "type": "resource",
   "display": "form",
   "tags": ["underwriting"],
-  "access": [],
-  "submissionAccess": [],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["underwriting", "management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["underwriting", "management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["underwriting", "management", "administrator"]
+    }
+  ],
   "settings": {
     "ui": {
       "alternateTitle": "Contracts",
@@ -87,16 +109,18 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/orgs/submission?limit=1000&select=_id,data.name"
+            "resource": "orgs"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.name }}</span>",
           "searchEnabled": true,
           "validate": {
             "required": true
-          }
+          },
+          "addResource": true,
+          "reference": true
         },
         {
           "label": "Primary Contact",
@@ -105,13 +129,15 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/contact/submission?limit=1000&select=_id,data.firstName,data.lastName"
+            "resource": "contact"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
-          "searchEnabled": true
+          "searchEnabled": true,
+          "addResource": true,
+          "reference": true
         }
       ]
     },
@@ -292,13 +318,14 @@
               "widget": "choicesjs",
               "input": true,
               "tableView": false,
-              "dataSrc": "url",
+              "dataSrc": "resource",
               "data": {
-                "url": "/user/submission?limit=1000&select=_id,data.email"
+                "resource": "user"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.email }}</span>",
               "searchEnabled": true,
+              "reference": true,
               "conditional": {
                 "show": true,
                 "when": "programManagerApproved",
@@ -342,13 +369,14 @@
               "widget": "choicesjs",
               "input": true,
               "tableView": false,
-              "dataSrc": "url",
+              "dataSrc": "resource",
               "data": {
-                "url": "/user/submission?limit=1000&select=_id,data.email"
+                "resource": "user"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.email }}</span>",
               "searchEnabled": true,
+              "reference": true,
               "conditional": {
                 "show": true,
                 "when": "generalManagerApproved",
@@ -392,13 +420,14 @@
               "widget": "choicesjs",
               "input": true,
               "tableView": false,
-              "dataSrc": "url",
+              "dataSrc": "resource",
               "data": {
-                "url": "/user/submission?limit=1000&select=_id,data.email"
+                "resource": "user"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.email }}</span>",
               "searchEnabled": true,
+              "reference": true,
               "conditional": {
                 "show": true,
                 "when": "complianceOfficerApproved",

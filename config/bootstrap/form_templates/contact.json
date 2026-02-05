@@ -4,88 +4,33 @@
   "path": "contact",
   "type": "resource",
   "display": "form",
-  "tags": [
-    "underwriting"
-  ],
+  "tags": ["crm"],
   "access": [
     {
-      "type": "read_own",
-      "roles": []
-    },
-    {
-      "type": "update_own",
-      "roles": []
-    },
-    {
-      "type": "delete_own",
-      "roles": []
-    },
-    {
       "type": "read_all",
-      "roles": [
-        "anonymous",
-        "authenticated"
-      ]
-    },
-    {
-      "type": "update_all",
-      "roles": []
-    },
-    {
-      "type": "delete_all",
-      "roles": []
+      "roles": ["authenticated", "programmer", "staff", "underwriting", "management", "administrator"]
     }
   ],
   "submissionAccess": [
     {
-      "type": "create_own",
-      "roles": [
-        "anonymous",
-        "authenticated"
-      ]
-    },
-    {
       "type": "read_own",
-      "roles": [
-        "authenticated"
-      ]
-    },
-    {
-      "type": "update_own",
-      "roles": [
-        "authenticated"
-      ]
-    },
-    {
-      "type": "delete_own",
-      "roles": [
-        "management",
-        "staff"
-      ]
-    },
-    {
-      "type": "create_all",
-      "roles": []
+      "roles": ["authenticated"]
     },
     {
       "type": "read_all",
-      "roles": [
-        "management",
-        "staff"
-      ]
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["underwriting", "management", "administrator"]
     },
     {
       "type": "update_all",
-      "roles": [
-        "management",
-        "staff"
-      ]
+      "roles": ["underwriting", "management", "administrator"]
     },
     {
       "type": "delete_all",
-      "roles": [
-        "administrator"
-      ]
+      "roles": ["underwriting", "management", "administrator"]
     }
   ],
   "components": [
@@ -130,14 +75,16 @@
       "widget": "choicesjs",
       "input": true,
       "tableView": true,
-      "dataSrc": "url",
+      "dataSrc": "resource",
       "data": {
-        "url": "/orgs/submission?limit=1000&select=_id,data.name"
+        "resource": "orgs"
       },
       "valueProperty": "_id",
       "template": "<span>{{ item.data.name }}</span>",
       "searchEnabled": true,
-      "description": "Link to organization record"
+      "description": "Link to organization record",
+      "addResource": true,
+      "reference": true
     },
     {
       "label": "Role / Title at Organization",
@@ -206,14 +153,15 @@
       "widget": "choicesjs",
       "input": true,
       "tableView": false,
-      "dataSrc": "url",
+      "dataSrc": "resource",
       "data": {
-        "url": "/user/submission?limit=1000&select=_id,data.email"
+        "resource": "user"
       },
       "valueProperty": "_id",
       "template": "<span>{{ item.data.email }}</span>",
       "searchEnabled": true,
-      "description": "If this contact has a portal login, link it here"
+      "description": "If this contact has a portal login, link it here",
+      "reference": true
     },
     {
       "label": "Donation History",

@@ -246,12 +246,97 @@
                 }
             },
             {
-                "label": "Record ID",
-                "key": "parentId",
-                "type": "textfield",
+                "label": "Organization",
+                "key": "parentId_orgs",
+                "type": "select",
+                "widget": "choicesjs",
                 "input": true,
                 "tableView": false,
-                "description": "Auto-populated when creating note from a record"
+                "dataSrc": "resource",
+                "data": {
+                    "resource": "orgs"
+                },
+                "valueProperty": "_id",
+                "template": "<span>{{ item.data.name }}</span>",
+                "searchEnabled": true,
+                "reference": true,
+                "customConditional": "show = data.parentType === 'orgs';"
+            },
+            {
+                "label": "Contact",
+                "key": "parentId_contact",
+                "type": "select",
+                "widget": "choicesjs",
+                "input": true,
+                "tableView": false,
+                "dataSrc": "resource",
+                "data": {
+                    "resource": "contact"
+                },
+                "valueProperty": "_id",
+                "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
+                "searchEnabled": true,
+                "reference": true,
+                "customConditional": "show = data.parentType === 'contact';"
+            },
+            {
+                "label": "Contract",
+                "key": "parentId_uwContracts",
+                "type": "select",
+                "widget": "choicesjs",
+                "input": true,
+                "tableView": false,
+                "dataSrc": "resource",
+                "data": {
+                    "resource": "uwContracts"
+                },
+                "valueProperty": "_id",
+                "template": "<span>{{ item.data.contractName }}</span>",
+                "searchEnabled": true,
+                "reference": true,
+                "customConditional": "show = data.parentType === 'uwContracts';"
+            },
+            {
+                "label": "Campaign",
+                "key": "parentId_uwCampaigns",
+                "type": "select",
+                "widget": "choicesjs",
+                "input": true,
+                "tableView": false,
+                "dataSrc": "resource",
+                "data": {
+                    "resource": "uwCampaigns"
+                },
+                "valueProperty": "_id",
+                "template": "<span>{{ item.data.campaignName }}</span>",
+                "searchEnabled": true,
+                "reference": true,
+                "customConditional": "show = data.parentType === 'uwCampaigns';"
+            },
+            {
+                "label": "Spot",
+                "key": "parentId_uwSpots",
+                "type": "select",
+                "widget": "choicesjs",
+                "input": true,
+                "tableView": false,
+                "dataSrc": "resource",
+                "data": {
+                    "resource": "uwSpots"
+                },
+                "valueProperty": "_id",
+                "template": "<span>{{ item.data.spotName }}</span>",
+                "searchEnabled": true,
+                "reference": true,
+                "customConditional": "show = data.parentType === 'uwSpots';"
+            },
+            {
+                "label": "Parent ID (Calculated)",
+                "key": "parentId",
+                "type": "hidden",
+                "input": true,
+                "tableView": false,
+                "calculateValue": "value = data.parentId_orgs || data.parentId_contact || data.parentId_uwContracts || data.parentId_uwCampaigns || data.parentId_uwSpots || value;"
             }
         ]
     },
@@ -1021,91 +1106,48 @@
         "encrypted": false,
         "showCharCount": false,
         "showWordCount": false,
-        "properties": {},
-        "allowMultipleMasks": false,
-        "addons": [],
-        "size": "md",
-        "leftIcon": "",
-        "rightIcon": "",
-        "block": false,
-        "theme": "primary"
+        "properties": {}
     }
     ],
     "access": [
-    {
-        "type": "read_own",
-        "roles": []
-    },
-    {
-        "type": "update_own",
-        "roles": []
-    },
-    {
-        "type": "delete_own",
-        "roles": []
-    },
-    {
-        "type": "read_all",
-        "roles": [
-        "administrator",
-        "authenticated"
-        ]
-    },
-    {
-        "type": "update_all",
-        "roles": []
-    },
-    {
-        "type": "delete_all",
-        "roles": []
-    }
+        {
+            "type": "read_all",
+            "roles": ["authenticated", "programmer", "staff", "underwriting", "management", "administrator"]
+        }
     ],
     "submissionAccess": [
-    {
-        "type": "create_own",
-        "roles": [
-        "authenticated"
-        ]
-    },
-    {
-        "type": "read_own",
-        "roles": [
-        "authenticated"
-        ]
-    },
-    {
-        "type": "update_own",
-        "roles": [
-        "authenticated"
-        ]
-    },
-    {
-        "type": "delete_own",
-        "roles": [
-        "authenticated"
-        ]
-    },
-    {
-        "type": "create_all",
-        "roles": []
-    },
-    {
-        "type": "read_all",
-        "roles": [
-        "administrator"
-        ]
-    },
-    {
-        "type": "update_all",
-        "roles": [
-        "administrator"
-        ]
-    },
-    {
-        "type": "delete_all",
-        "roles": [
-        "administrator"
-        ]
-    }
-    ]
+        {
+            "type": "create_own",
+            "roles": ["authenticated", "programmer", "staff", "underwriting"]
+        },
+        {
+            "type": "read_own",
+            "roles": ["authenticated", "programmer", "staff", "underwriting"]
+        },
+        {
+            "type": "update_own",
+            "roles": ["authenticated", "programmer", "staff", "underwriting"]
+        },
+        {
+            "type": "delete_own",
+            "roles": ["authenticated", "programmer", "staff", "underwriting"]
+        },
+        {
+            "type": "read_all",
+            "roles": ["management", "administrator"]
+        },
+        {
+            "type": "create_all",
+            "roles": ["management", "administrator"]
+        },
+        {
+            "type": "update_all",
+            "roles": ["management", "administrator"]
+        },
+        {
+            "type": "delete_all",
+            "roles": ["management", "administrator"]
+        }
+    ],
+    "components": []
 }

@@ -5,8 +5,30 @@
   "type": "resource",
   "display": "form",
   "tags": ["underwriting", "crm"],
-  "access": [],
-  "submissionAccess": [],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["underwriting", "management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["underwriting", "management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["underwriting", "management", "administrator"]
+    }
+  ],
   "settings": {
     "ui": {
       "alternateTitle": "Organizations",

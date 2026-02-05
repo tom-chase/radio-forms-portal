@@ -12,6 +12,7 @@ import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tab
 import { renderDayPilotCalendar, hasDayPilotConfig, destroyDayPilot } from './dayPilotCalendar.js?v=2.19';
 import { openRoleMgmtModal } from './roleMgmt.js';
 import { renderViewToggle } from '../utils/viewUtils.js';
+import { openInlineNotesView } from './inlineNotes.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -340,6 +341,11 @@ export async function renderSubmissionsTable(
         let actionsHtml =
             '<div class="btn-group btn-group-sm" role="group">';
 
+        // Notes button (always available for viewing)
+        actionsHtml += `<button type="button" class="btn btn-outline-info" data-action="notes" data-id="${encodedId}" title="View/Add Notes">
+                <i class="bi bi-chat-left-text"></i>
+            </button>`;
+
         // JSON view always available (server will enforce access)
         actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="json" data-id="${encodedId}" title="View JSON">
                 <i class="bi bi-code-slash"></i>
@@ -667,6 +673,8 @@ async function wireTableEventHandlers(subs, formMeta, user, permissions) {
                         console.error("deleteSubmission error", err);
                         actions.showToast?.("Error deleting submission.", "danger");
                     }
+                } else if (action === "notes") {
+                    await openInlineNotesView(sub, formMeta, user);
                 } else if (action === "role-mgmt" || action === "role-mgmt-admin") {
                     if (action === "role-mgmt" && !canManageRoles) return;
                     if (action === "role-mgmt-admin" && !canManageAdminRoles) return;

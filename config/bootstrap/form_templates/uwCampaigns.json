@@ -5,8 +5,30 @@
   "type": "resource",
   "display": "form",
   "tags": ["underwriting"],
-  "access": [],
-  "submissionAccess": [],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["underwriting", "management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["underwriting", "management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["underwriting", "management", "administrator"]
+    }
+  ],
   "settings": {
     "ui": {
       "alternateTitle": "Campaigns",
@@ -81,16 +103,18 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/orgs/submission?limit=1000&select=_id,data.name"
+            "resource": "orgs"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.name }}</span>",
           "searchEnabled": true,
           "validate": {
             "required": true
-          }
+          },
+          "addResource": true,
+          "reference": true
         },
         {
           "label": "Contract",
@@ -99,14 +123,16 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/uw-contracts/submission?limit=1000&select=_id,data.contractName"
+            "resource": "uwContracts"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.contractName }}</span>",
           "searchEnabled": true,
-          "description": "Link to parent contract (optional)"
+          "description": "Link to parent contract (optional)",
+          "addResource": true,
+          "reference": true
         },
         {
           "label": "Primary Contact",
@@ -115,13 +141,15 @@
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "dataSrc": "url",
+          "dataSrc": "resource",
           "data": {
-            "url": "/contact/submission?limit=1000&select=_id,data.firstName,data.lastName"
+            "resource": "contact"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
-          "searchEnabled": true
+          "searchEnabled": true,
+          "addResource": true,
+          "reference": true
         },
         {
           "label": "Station-Wide Campaign",

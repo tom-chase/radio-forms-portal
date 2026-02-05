@@ -330,6 +330,21 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
 
     if (submission) {
         await actions.safeSetSubmission?.(formio, submission);
+        
+        // If we're viewing/editing a submission, render the notes section
+        if (submission._id && formRender) {
+            const notesContainer = document.createElement('div');
+            notesContainer.id = 'submissionNotesContainer';
+            formRender.appendChild(notesContainer);
+            
+            // Dynamically import and render inline notes view
+            try {
+                const { renderNotesInFormView } = await import('./inlineNotes.js');
+                await renderNotesInFormView(submission, formMeta, notesContainer);
+            } catch (error) {
+                console.error('Error loading notes section:', error);
+            }
+        }
     }
     
     return formio;
