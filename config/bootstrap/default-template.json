@@ -2583,7 +2583,50 @@
           "theme": "primary",
           "input": true
         }
-      ]
+      ],
+      "settings": {
+        "ui": {
+          "submissionsTitle": "Contact Intake List"
+        },
+        "tabulatorList": {
+          "enabled": true,
+          "layout": "fitColumns",
+          "height": "60vh",
+          "pagination": "local",
+          "paginationSize": 25,
+          "movableColumns": true,
+          "placeholder": "No Contact Intake found.",
+          "dataTransform": "contactIntakeDataTransform",
+          "columns": [
+            {
+              "title": "First Name",
+              "field": "data.firstName",
+              "headerFilter": "input",
+              "minWidth": 70
+            },
+            {
+              "title": "Last Name",
+              "field": "data.lastName",
+              "headerFilter": "input",
+              "minWidth": 70
+            },
+            {
+              "title": "Organization",
+              "field": "data.organization",
+              "headerFilter": "input",
+              "minWidth": 120
+            },
+            {
+              "title": "Email",
+              "field": "data.email",
+              "width": 80,
+              "headerFilter": "input"
+            }
+          ]
+        },
+        "saveDraft": true,
+        "saveDraftThrottle": 3000
+      }
     }
   },
   "actions": {
