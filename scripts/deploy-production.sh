@@ -33,6 +33,8 @@ TAR_FILE="$TEMP_DIR/deploy.tar.gz"
 
 # Create archive, excluding development/system files
 # CRITICAL: We exclude .env so we don't overwrite production secrets with local ones
+# We also exclude app/config.js and config/env/production.json because these are
+# generated on the server from the server's .env (see config generation below).
 tar -czf "$TAR_FILE" \
     --exclude='.git' \
     --exclude='.github' \
@@ -40,6 +42,8 @@ tar -czf "$TAR_FILE" \
     --exclude='.env' \
     --exclude='Caddyfile' \
     --exclude='Caddyfile.*' \
+    --exclude='app/config.js' \
+    --exclude='config/env/production.json' \
     --exclude='logs' \
     --exclude='backups' \
     --exclude='.DS_Store' \
@@ -75,8 +79,13 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     
     # Regenerate Backend Configuration (Form.io)
     # This uses the fixed template and server's .env values
-    # echo "🔧 Generating backend configuration..."
-    # ./scripts/generate-formio-config.sh production
+    echo "🔧 Generating backend configuration..."
+    # Safety check: if production.json is a directory (from a previous failed run), remove it
+    if [ -d config/env/production.json ]; then
+        echo "⚠️  config/env/production.json is a directory (stale). Removing..."
+        rm -rf config/env/production.json
+    fi
+    ./scripts/generate-formio-config.sh production
 
     # Debug: Check environment variables
     echo "🔍 Checking server environment variables..."
@@ -108,8 +117,10 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     export SPA_DOMAIN="\${SPA_DOMAIN:-localhost}"
     export API_DOMAIN="\${API_DOMAIN:-api.localhost}"
 
-    # Generate Frontend Configuration (Environment specific)
-    # echo "🔧 Generating frontend configuration..."
+    # Generate Frontend Configuration from server's .env values
+    echo "🔧 Generating frontend configuration..."
+    printf '// Generated during deployment - DO NOT EDIT\nwindow.API_BASE_URL = '"'"'https://%s'"'"';\nwindow.SPA_ORIGIN = '"'"'https://%s'"'"';\n' "\$API_DOMAIN" "\$SPA_DOMAIN" > app/config.js
+    echo "   app/config.js -> API: https://\${API_DOMAIN}, SPA: https://\${SPA_DOMAIN}"
 
     echo "✅ Configuration generated"
     

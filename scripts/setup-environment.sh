@@ -40,8 +40,8 @@ if [[ "$ENVIRONMENT" == "dev" && $(uname -m) == "arm64" ]]; then
         sed -i.bak "s|^    JWT_SECRET=.*|    JWT_SECRET=$JWT_SECRET|g" "$PROJECT_DIR/.env"
         
         # Set development-friendly defaults (preserve indentation)
-        sed -i.bak 's|^    FORMIO_ROOT_EMAIL=.*|    FORMIO_ROOT_EMAIL=admin@localhost|g' "$PROJECT_DIR/.env"
-        sed -i.bak 's|^    FORMIO_ROOT_PASSWORD=.*|    FORMIO_ROOT_PASSWORD=admin123|g' "$PROJECT_DIR/.env"
+        sed -i.bak 's|^    ROOT_EMAIL=.*|    ROOT_EMAIL=admin@localhost|g' "$PROJECT_DIR/.env"
+        sed -i.bak 's|^    ROOT_PASSWORD=.*|    ROOT_PASSWORD=admin123|g' "$PROJECT_DIR/.env"
         sed -i.bak 's|^    MONGO_ROOT_PASSWORD=.*|    MONGO_ROOT_PASSWORD=mongoadmin|g' "$PROJECT_DIR/.env"
         sed -i.bak 's|^    FORMIO_DOMAIN=.*|    FORMIO_DOMAIN=http://localhost:3001|g' "$PROJECT_DIR/.env"
         sed -i.bak 's|^    FORMIO_HOST=.*|    FORMIO_HOST=localhost|g' "$PROJECT_DIR/.env"

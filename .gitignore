@@ -7,7 +7,6 @@
 config/env/*.json
 !config/env/default.json
 app/config.js
-app/js/config.js
 
 # Docker
 .dockerignore

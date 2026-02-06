@@ -46,29 +46,24 @@ docker-compose -f docker-compose.dev.yml up -d --build
 
 ## Production Deployment
 
-Production uses a “tarball push” workflow (no `git pull` on the server). See:
+Production uses a "tarball push" workflow (no `git pull` on the server). The deploy script:
 
-- `docs/DEPLOYMENT.md`
+- Excludes environment-specific files (`app/config.js`, `config/env/production.json`, `.env`, `Caddyfile`) from the tarball
+- Regenerates `app/config.js` and `config/env/production.json` on the server from the server's `.env`
+- Restarts Docker Compose and runs post-bootstrap configuration
 
-### Production Stability Note
+See `docs/DEPLOYMENT.md` for full details.
 
-Production currently uses a small set of intentionally hardcoded config values for reliability:
+### Configuration Notes
 
-- `Caddyfile`
-- `scripts/deploy-production.sh` (generates `app/config.js`)
-- `app/js/config.js` (fallbacks)
-- `formio-config.json.template` (`trust proxy`)
-
-If you change domains or ACME email, update those files.
+- `Caddyfile`: Hardcoded domains on the production server (not deployed from repo)
+- `formio-config.json.template`: `trust proxy` set to `true`
+- If you change domains or ACME email, update the server's `.env` and production `Caddyfile`
 
 ## Scripts
 
-Script reference:
-
-- `scripts/README.md`
+Script reference: `scripts/README.md`
 
 ## AI Agent Notes
 
-High-context guidance for agentic tooling:
-
-- `AGENT.md`
+High-context guidance for agentic tooling: `AGENT.md`

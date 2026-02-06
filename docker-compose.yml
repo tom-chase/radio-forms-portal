@@ -21,8 +21,8 @@ services:
     environment:
       NODE_ENV: production
       DEBUG: formio:*
-      ROOT_EMAIL: ${FORMIO_ROOT_EMAIL:-examaple@example.com}
-      ROOT_PASSWORD: ${FORMIO_ROOT_PASSWORD:-changeme}
+      ROOT_EMAIL: ${ROOT_EMAIL:-admin@example.com}
+      ROOT_PASSWORD: ${ROOT_PASSWORD:-changeme}
       API_KEYS: ${API_KEYS}
     volumes:
       - ./config/env/production.json:/app/config/production.json:ro

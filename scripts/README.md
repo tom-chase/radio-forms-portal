@@ -242,8 +242,8 @@ MONGO_ROOT_PASSWORD=secure_password
 MONGO_SECRET=random_32_char_key
 
 # Form.io
-FORMIO_ROOT_EMAIL=admin@your-domain.com
-FORMIO_ROOT_PASSWORD=secure_password
+ROOT_EMAIL=admin@your-domain.com
+ROOT_PASSWORD=secure_password
 FORMIO_DOMAIN=https://api.forms.your-domain.com
 JWT_SECRET=random_32_char_key
 

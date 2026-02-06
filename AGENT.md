@@ -18,12 +18,13 @@
 ## 3. Critical Architecture Patterns
 
 ### A. The "Hardcoded Config" Stability Pattern
-**Status**: ACTIVE (Jan 2026)
+**Status**: ACTIVE (Feb 2026)
 **Reason**: Dynamic environment variable substitution in Caddy and Frontend proved unstable during production deployments.
-**Rule**: For Production, we use **hardcoded values** in specific files. If you change domains (`forms.your-domain.com`) or emails (`example@your-domain.com`), you **MUST** update these files:
-1.  `Caddyfile`: Email and Domain blocks.
-2.  `app/js/config.js`: Fallback `API_BASE` and `SPA_ORIGIN`.
-3.  `scripts/deploy-production.sh`: Generation logic for `app/config.js`.
+**Rule**: Production config files are **generated on the server** from the server's `.env` during deployment. The deploy script excludes `app/config.js` and `config/env/production.json` from the tarball and regenerates them remotely. No manual server-side edits are needed after a deploy.
+**If you change domains or emails**, update:
+1.  `Caddyfile` (on the production server): Email and Domain blocks.
+2.  Server `.env`: `SPA_DOMAIN`, `API_DOMAIN`, and related variables.
+3.  `app/js/config.js`: Fallback `API_BASE` and `SPA_ORIGIN` (for local dev).
 4.  `formio-config.json.template`: `trust proxy` set to `true`.
 
 ### B. Request Handling

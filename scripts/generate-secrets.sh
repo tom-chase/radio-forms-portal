@@ -49,10 +49,10 @@ while IFS= read -r line; do
         else
              echo "$line"
         fi
-    elif [[ $line =~ ^[[:space:]]*FORMIO_ROOT_PASSWORD= ]]; then
+    elif [[ $line =~ ^[[:space:]]*ROOT_PASSWORD= ]]; then
         # Only replace if it contains "change_this" to avoid overwriting set passwords
         if [[ $line == *"change_this"* ]]; then
-             echo "FORMIO_ROOT_PASSWORD=$FORMIO_PASSWORD"
+             echo "ROOT_PASSWORD=$FORMIO_PASSWORD"
         else
              echo "$line"
         fi

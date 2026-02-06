@@ -79,7 +79,7 @@ echo ""
 echo -e "${BLUE}📄 Checking environment configuration...${NC}"
 
 if [[ -f .env ]]; then
-    required_vars=("MONGO_ROOT_USERNAME" "MONGO_ROOT_PASSWORD" "FORMIO_ROOT_EMAIL" "FORMIO_ROOT_PASSWORD" "JWT_SECRET" "MONGO_SECRET")
+    required_vars=("MONGO_ROOT_USERNAME" "MONGO_ROOT_PASSWORD" "ROOT_EMAIL" "ROOT_PASSWORD" "JWT_SECRET" "MONGO_SECRET")
     missing_vars=()
     
     for var in "${required_vars[@]}"; do
