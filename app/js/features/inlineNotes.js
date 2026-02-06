@@ -62,7 +62,6 @@ export async function openInlineNotesView(parentSubmission, parentFormMeta, user
                 </button>
             </div>
             <div id="notesTableContainer"></div>
-            <div id="noteFormInlineContainer" class="d-none mt-3"></div>
         </div>
     `;
 
@@ -122,7 +121,7 @@ async function loadNotesTable(parentType, parentId) {
             author: note.data?.author || 'Unknown',
             noteType: note.data?.noteType || 'general',
             title: note.data?.title || '',
-            note: note.data?.note || '',
+            content: note.data?.content || '',
             followUpDate: note.data?.followUpDate || null,
             created: note.created,
             modified: note.modified,
@@ -134,7 +133,6 @@ async function loadNotesTable(parentType, parentId) {
             data: tableData,
             layout: "fitColumns",
             responsiveLayout: "collapse",
-            height: "400px",
             placeholder: "No notes found",
             columns: [
                 {
@@ -164,12 +162,16 @@ async function loadNotesTable(parentType, parentId) {
                 },
                 {
                     title: "Note",
-                    field: "note",
+                    field: "content",
                     responsive: 1,
                     minWidth: 200,
                     formatter: (cell) => {
                         const value = cell.getValue();
-                        return value ? value.substring(0, 100) + (value.length > 100 ? '...' : '') : '';
+                        if (!value) return '';
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = value;
+                        const plainText = tmp.textContent || tmp.innerText || '';
+                        return plainText.substring(0, 100) + (plainText.length > 100 ? '...' : '');
                     }
                 },
                 {
@@ -191,7 +193,7 @@ async function loadNotesTable(parentType, parentId) {
                 {
                     title: "Actions",
                     field: "_id",
-                    width: 100,
+                    width: 120,
                     responsive: 0,
                     hozAlign: "center",
                     formatter: (cell) => {
@@ -199,6 +201,9 @@ async function loadNotesTable(parentType, parentId) {
                             <div class="btn-group btn-group-sm" role="group">
                                 <button class="btn btn-outline-primary btn-view-note" title="View">
                                     <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-edit-note" title="Edit">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
                                 <button class="btn btn-outline-danger btn-delete-note" title="Delete">
                                     <i class="bi bi-trash"></i>
@@ -210,10 +215,13 @@ async function loadNotesTable(parentType, parentId) {
                         const target = e.target.closest('button');
                         if (!target) return;
 
-                        const rowData = cell.getRow().getData();
+                        const row = cell.getRow();
+                        const rowData = row.getData();
                         
                         if (target.classList.contains('btn-view-note')) {
-                            viewNoteDetails(rowData);
+                            await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'view');
+                        } else if (target.classList.contains('btn-edit-note')) {
+                            await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'edit');
                         } else if (target.classList.contains('btn-delete-note')) {
                             await deleteNote(rowData._id, parentType, parentId);
                         }
@@ -240,138 +248,28 @@ async function loadNotesTable(parentType, parentId) {
  * Shows inline note creation form
  */
 async function showInlineNoteForm(parentSubmission, parentFormMeta, user) {
-    const { actions, state } = getAppBridge();
-    const noteFormContainer = document.getElementById('noteFormInlineContainer');
-    const addNoteBtn = document.getElementById('addNoteInlineBtn');
+    const { state } = getAppBridge();
+    const table = state.inlineNotesTableInstance;
     
-    if (!noteFormContainer) return;
-
+    if (!table) {
+        console.error('Notes table not found');
+        return;
+    }
+    
     const parentType = parentFormMeta.path.replace(/^\/+/, '');
     const parentId = parentSubmission._id;
-
-    // Hide add button, show form
-    if (addNoteBtn) addNoteBtn.classList.add('d-none');
-    noteFormContainer.classList.remove('d-none');
     
-    noteFormContainer.innerHTML = `
-        <div class="card">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">New Note</h6>
-                <button type="button" class="btn-close" id="cancelNoteInlineBtn" aria-label="Close"></button>
-            </div>
-            <div class="card-body">
-                <div id="noteFormInlineRender"></div>
-            </div>
-        </div>
-    `;
-
-    const noteFormRender = document.getElementById('noteFormInlineRender');
-    const cancelNoteBtn = document.getElementById('cancelNoteInlineBtn');
-
-    // Wire up cancel button
-    if (cancelNoteBtn) {
-        cancelNoteBtn.addEventListener('click', () => {
-            hideInlineNoteForm();
-        });
-    }
-
-    try {
-        // Check permissions for note form
-        const currentUser = user || await getCurrentUserWithRoles();
-        const noteFormMeta = await formioRequest('/note', { method: 'GET' });
-        const notePerms = getSubmissionPermissions(currentUser, noteFormMeta, { isAdmin: state.adminMode });
-
-        if (!notePerms.canCreateAll && !notePerms.canCreateOwn) {
-            noteFormRender.innerHTML = `
-                <div class="alert alert-warning small mb-0">
-                    You do not have permission to create notes.
-                </div>
-            `;
-            return;
-        }
-
-        // Create the note form with pre-populated parent reference
-        const formio = await Formio.createForm(
-            noteFormRender,
-            buildUrl('/note'),
-            {
-                readOnly: false,
-                user: currentUser
-            }
-        );
-
-        // Pre-populate the parent reference fields
-        const submissionData = {
-            parentRef: {
-                parentType: parentType,
-                parentId: parentId,
-            },
-            author: currentUser.data?.email || currentUser.data?.name || 'Unknown'
-        };
-        
-        // Set the appropriate conditional field based on parentType
-        submissionData.parentRef[`parentId_${parentType}`] = parentId;
-        
-        formio.submission = { data: submissionData };
-
-        // Hide the parent reference fields since they're auto-populated
-        formio.on('render', () => {
-            const parentRefContainer = formio.element.querySelector('[ref="parentRef"]');
-            if (parentRefContainer) {
-                parentRefContainer.style.display = 'none';
-            }
-        });
-
-        // Handle successful submission
-        formio.on('submitDone', async (submission) => {
-            actions.showToast?.('Note added successfully', 'success');
-            hideInlineNoteForm();
-            await loadNotesTable(parentType, parentId);
-        });
-
-        // Handle errors
-        formio.on('error', (errors) => {
-            console.error('Note form error:', errors);
-        });
-
-        // Store form instance for cleanup
-        state.inlineNoteFormInstance = formio;
-
-    } catch (error) {
-        console.error('Error creating note form:', error);
-        noteFormRender.innerHTML = `
-            <div class="alert alert-danger small mb-0">
-                Unable to load note form. Please try again.
-            </div>
-        `;
-    }
+    // Show inline form at top of table for adding
+    await showInlineNoteFormRow(table, null, null, parentType, parentId, 'add');
 }
 
 /**
- * Hides the inline note form
+ * Hides the inline note form - removes any inline form rows
  */
 function hideInlineNoteForm() {
     const { state } = getAppBridge();
-    const noteFormContainer = document.getElementById('noteFormInlineContainer');
-    const addNoteBtn = document.getElementById('addNoteInlineBtn');
-    
-    if (noteFormContainer) {
-        noteFormContainer.classList.add('d-none');
-        noteFormContainer.innerHTML = '';
-    }
-    
-    if (addNoteBtn) {
-        addNoteBtn.classList.remove('d-none');
-    }
-
-    // Destroy form instance
-    if (state.inlineNoteFormInstance) {
-        try {
-            state.inlineNoteFormInstance.destroy();
-        } catch (e) {
-            console.warn('Error destroying note form:', e);
-        }
-        state.inlineNoteFormInstance = null;
+    if (state.inlineNotesTableInstance) {
+        removeInlineFormRows(state.inlineNotesTableInstance);
     }
 }
 
@@ -444,6 +342,9 @@ function destroyInlineNotes() {
     
     // Destroy Tabulator instance
     if (state.inlineNotesTableInstance) {
+        // Remove inline form rows first
+        removeInlineFormRows(state.inlineNotesTableInstance);
+        
         try {
             state.inlineNotesTableInstance.destroy();
         } catch (e) {
@@ -451,9 +352,6 @@ function destroyInlineNotes() {
         }
         state.inlineNotesTableInstance = null;
     }
-
-    // Destroy form instance if open
-    hideInlineNoteForm();
 
     // Clear state
     state.inlineNotesSubmissionId = null;
@@ -527,7 +425,6 @@ export async function renderNotesInFormView(parentSubmission, parentFormMeta, co
                 </button>
             </div>
             <div id="notesTableFormViewContainer"></div>
-            <div id="noteFormFormViewContainer" class="d-none mt-3"></div>
         </div>
     `;
 
@@ -547,7 +444,7 @@ export async function renderNotesInFormView(parentSubmission, parentFormMeta, co
  * Loads notes table in form view
  */
 async function loadNotesTableFormView(parentType, parentId) {
-    const { actions } = getAppBridge();
+    const { actions, state } = getAppBridge();
     const notesTableContainer = document.getElementById('notesTableFormViewContainer');
     if (!notesTableContainer) return;
 
@@ -571,10 +468,8 @@ async function loadNotesTableFormView(parentType, parentId) {
         });
 
         if (!notes || notes.length === 0) {
-            notesTableContainer.innerHTML = `
-                <p class="text-muted small mb-0">No notes yet. Click "Add Note" to create one.</p>
-            `;
-            return;
+            notesTableContainer.innerHTML = '';
+            // Create empty table with placeholder
         }
 
         // Transform notes data for Tabulator
@@ -583,7 +478,7 @@ async function loadNotesTableFormView(parentType, parentId) {
             author: note.data?.author || 'Unknown',
             noteType: note.data?.noteType || 'general',
             title: note.data?.title || '',
-            note: note.data?.note || '',
+            content: note.data?.content || '',
             followUpDate: note.data?.followUpDate || null,
             created: note.created,
             modified: note.modified,
@@ -595,7 +490,6 @@ async function loadNotesTableFormView(parentType, parentId) {
             data: tableData,
             layout: "fitColumns",
             responsiveLayout: "collapse",
-            height: "300px",
             placeholder: "No notes found",
             columns: [
                 {
@@ -625,12 +519,16 @@ async function loadNotesTableFormView(parentType, parentId) {
                 },
                 {
                     title: "Note",
-                    field: "note",
+                    field: "content",
                     responsive: 1,
                     minWidth: 200,
                     formatter: (cell) => {
                         const value = cell.getValue();
-                        return value ? value.substring(0, 100) + (value.length > 100 ? '...' : '') : '';
+                        if (!value) return '';
+                        const tmp = document.createElement('div');
+                        tmp.innerHTML = value;
+                        const plainText = tmp.textContent || tmp.innerText || '';
+                        return plainText.substring(0, 100) + (plainText.length > 100 ? '...' : '');
                     }
                 },
                 {
@@ -652,7 +550,7 @@ async function loadNotesTableFormView(parentType, parentId) {
                 {
                     title: "Actions",
                     field: "_id",
-                    width: 100,
+                    width: 120,
                     responsive: 0,
                     hozAlign: "center",
                     formatter: (cell) => {
@@ -660,6 +558,9 @@ async function loadNotesTableFormView(parentType, parentId) {
                             <div class="btn-group btn-group-sm" role="group">
                                 <button class="btn btn-outline-primary btn-view-note" title="View">
                                     <i class="bi bi-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-edit-note" title="Edit">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
                                 <button class="btn btn-outline-danger btn-delete-note" title="Delete">
                                     <i class="bi bi-trash"></i>
@@ -671,10 +572,13 @@ async function loadNotesTableFormView(parentType, parentId) {
                         const target = e.target.closest('button');
                         if (!target) return;
 
-                        const rowData = cell.getRow().getData();
+                        const row = cell.getRow();
+                        const rowData = row.getData();
                         
                         if (target.classList.contains('btn-view-note')) {
-                            viewNoteDetails(rowData);
+                            await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'view');
+                        } else if (target.classList.contains('btn-edit-note')) {
+                            await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'edit');
                         } else if (target.classList.contains('btn-delete-note')) {
                             await deleteNoteFormView(rowData._id, parentType, parentId);
                         }
@@ -682,6 +586,11 @@ async function loadNotesTableFormView(parentType, parentId) {
                 }
             ]
         });
+
+        // Store table instance and parent info for add button
+        state.notesTableFormView = table;
+        state.notesTableParentType = parentType;
+        state.notesTableParentId = parentId;
 
     } catch (error) {
         console.error('Error loading notes:', error);
@@ -694,122 +603,239 @@ async function loadNotesTableFormView(parentType, parentId) {
 }
 
 /**
- * Shows note form in form view
+ * Shows inline note form row in the Tabulator table
+ * @param {Tabulator} table - The Tabulator table instance
+ * @param {Row} row - The selected row (for edit/view) or null (for add)
+ * @param {Object} noteData - The note data (for edit/view) or null (for add)
+ * @param {string} parentType - The parent resource type
+ * @param {string} parentId - The parent submission ID
+ * @param {string} mode - 'add', 'edit', or 'view'
  */
-async function showFormViewNoteForm(parentSubmission, parentFormMeta) {
+async function showInlineNoteFormRow(table, row, noteData, parentType, parentId, mode = 'view') {
     const { actions, state } = getAppBridge();
-    const noteFormContainer = document.getElementById('noteFormFormViewContainer');
-    const addNoteBtn = document.getElementById('addNoteFormViewBtn');
     
-    if (!noteFormContainer) return;
-
-    const parentType = parentFormMeta.path.replace(/^\/+/, '');
-    const parentId = parentSubmission._id;
-
-    // Hide add button, show form
-    if (addNoteBtn) addNoteBtn.classList.add('d-none');
-    noteFormContainer.classList.remove('d-none');
+    // Remove any existing inline form rows first
+    removeInlineFormRows(table);
     
-    noteFormContainer.innerHTML = `
-        <div class="card">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">New Note</h6>
-                <button type="button" class="btn-close" id="cancelNoteFormViewBtn" aria-label="Close"></button>
-            </div>
-            <div class="card-body">
-                <div id="noteFormFormViewRender"></div>
-            </div>
-        </div>
-    `;
-
-    const noteFormRender = document.getElementById('noteFormFormViewRender');
-    const cancelNoteBtn = document.getElementById('cancelNoteFormViewBtn');
-
-    // Wire up cancel button
-    if (cancelNoteBtn) {
-        cancelNoteBtn.addEventListener('click', () => {
-            hideFormViewNoteForm();
-        });
-    }
-
+    // Generate unique ID for this inline form row
+    const inlineRowId = `inline-form-${Date.now()}`;
+    
+    // Create inline form row data
+    const inlineRowData = {
+        _id: inlineRowId,
+        _isInlineForm: true,
+        _mode: mode,
+        _parentNoteId: noteData?._id || null
+    };
+    
     try {
         const currentUser = await getCurrentUserWithRoles();
         const noteFormMeta = await formioRequest('/note', { method: 'GET' });
         const notePerms = getSubmissionPermissions(currentUser, noteFormMeta, { isAdmin: state.adminMode });
-
-        if (!notePerms.canCreateAll && !notePerms.canCreateOwn) {
-            noteFormRender.innerHTML = `
-                <div class="alert alert-warning small mb-0">
-                    You do not have permission to create notes.
-                </div>
-            `;
+        
+        // Check permissions
+        if (mode === 'add' && !notePerms.canCreateAll && !notePerms.canCreateOwn) {
+            actions.showToast?.('You do not have permission to create notes', 'warning');
             return;
         }
-
-        const formio = await Formio.createForm(
-            noteFormRender,
-            buildUrl('/note'),
-            {
-                readOnly: false,
-                user: currentUser
-            }
-        );
-
-        // Pre-populate the parent reference fields
-        const submissionData = {
-            parentRef: {
-                parentType: parentType,
-                parentId: parentId,
-            },
-            author: currentUser.data?.email || currentUser.data?.name || 'Unknown'
-        };
+        if (mode === 'edit' && !notePerms.canUpdateAll && !notePerms.canUpdateOwn) {
+            actions.showToast?.('You do not have permission to edit notes', 'warning');
+            return;
+        }
         
-        submissionData.parentRef[`parentId_${parentType}`] = parentId;
-        formio.submission = { data: submissionData };
-
-        // Hide the parent reference fields
-        formio.on('render', () => {
-            const parentRefContainer = formio.element.querySelector('[ref="parentRef"]');
-            if (parentRefContainer) {
-                parentRefContainer.style.display = 'none';
+        // Add the inline row
+        let inlineRow;
+        if (mode === 'add') {
+            // Add at the top of the table
+            inlineRow = await table.addRow(inlineRowData, true);
+        } else {
+            // Add after the selected row for edit/view
+            inlineRow = await table.addRow(inlineRowData, false, row);
+        }
+        
+        // Get the row element and replace its content with the form
+        const rowElement = inlineRow.getElement();
+        if (rowElement) {
+            // Clear the row content and create a full-width cell for the form
+            rowElement.innerHTML = '';
+            rowElement.classList.add('inline-note-form-row');
+            rowElement.style.backgroundColor = '#f8f9fa';
+            
+            const formCell = document.createElement('td');
+            formCell.colSpan = table.getColumns().length;
+            formCell.style.padding = '15px';
+            formCell.style.border = '2px solid #dee2e6';
+            
+            // Create form header with cancel button
+            const headerTitle = mode === 'add' ? 'New Note' : (mode === 'edit' ? 'Edit Note' : 'View Note');
+            const headerClass = mode === 'add' ? 'bg-primary' : (mode === 'edit' ? 'bg-warning' : 'bg-info');
+            const textClass = mode === 'view' ? 'text-dark' : 'text-white';
+            
+            formCell.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center py-2 px-3 ${headerClass} ${textClass} rounded-top">
+                    <h6 class="mb-0">
+                        <i class="bi ${mode === 'add' ? 'bi-plus-circle' : (mode === 'edit' ? 'bi-pencil' : 'bi-eye')} me-2"></i>
+                        ${headerTitle}
+                    </h6>
+                    <button type="button" class="btn btn-sm ${mode === 'view' ? 'btn-outline-dark' : 'btn-outline-light'}" id="cancelInlineForm-${inlineRowId}">
+                        <i class="bi bi-x-lg me-1"></i>Cancel
+                    </button>
+                </div>
+                <div id="inlineFormRender-${inlineRowId}" class="p-3"></div>
+            `;
+            
+            rowElement.appendChild(formCell);
+            
+            // Render the Form.io form
+            const formRenderContainer = document.getElementById(`inlineFormRender-${inlineRowId}`);
+            
+            // Determine readOnly mode and form URL
+            const isReadOnly = mode === 'view';
+            
+            // For edit/view, use the submission URL; for add, use the form URL
+            let formUrl;
+            if ((mode === 'edit' || mode === 'view') && noteData?.rawData?._id) {
+                formUrl = buildUrl(`/note/submission/${noteData.rawData._id}`);
+            } else {
+                formUrl = buildUrl('/note');
             }
-        });
-
-        // Handle successful submission
-        formio.on('submitDone', async (submission) => {
-            actions.showToast?.('Note added successfully', 'success');
-            hideFormViewNoteForm();
-            await loadNotesTableFormView(parentType, parentId);
-        });
-
-        formio.on('error', (errors) => {
-            console.error('Note form error:', errors);
-        });
-
+            
+            const formio = await Formio.createForm(
+                formRenderContainer,
+                formUrl,
+                {
+                    readOnly: isReadOnly,
+                    user: currentUser
+                }
+            );
+            
+            // For edit/view, explicitly set the submission to ensure Form.io knows it's an update
+            if ((mode === 'edit' || mode === 'view') && noteData?.rawData) {
+                const existingSubmission = {
+                    _id: noteData.rawData._id,
+                    data: noteData.rawData.data || {}
+                };
+                formio.submission = existingSubmission;
+            }
+            
+            // Prepare submission data for add mode only
+            if (mode === 'add') {
+                const submissionData = {
+                    parentRef: {
+                        parentType: parentType,
+                        parentId: parentId,
+                    },
+                    author: currentUser.data?.email || currentUser.data?.name || 'Unknown'
+                };
+                submissionData.parentRef[`parentId_${parentType}`] = parentId;
+                formio.submission = { data: submissionData };
+            }
+            
+            // Hide the parent reference fields
+            formio.on('render', () => {
+                const parentRefContainer = formio.element.querySelector('[ref="parentRef"]');
+                if (parentRefContainer) {
+                    parentRefContainer.style.display = 'none';
+                }
+            });
+            
+            // Wire up cancel button
+            const cancelBtn = document.getElementById(`cancelInlineForm-${inlineRowId}`);
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    removeInlineFormRows(table);
+                });
+            }
+            
+            // Handle submit event - manually update for edit mode to ensure PUT instead of POST
+            formio.on('submit', async (submission) => {
+                // For edit mode, manually PUT to ensure update instead of create
+                if (mode === 'edit' && noteData?.rawData?._id) {
+                    try {
+                        await formioRequest(`/note/submission/${noteData.rawData._id}`, {
+                            method: 'PUT',
+                            body: JSON.stringify(submission)
+                        });
+                        actions.showToast?.('Note updated successfully', 'success');
+                        removeInlineFormRows(table);
+                        await loadNotesTableFormView(parentType, parentId);
+                    } catch (error) {
+                        console.error('Error updating note:', error);
+                        actions.showToast?.('Error updating note', 'danger');
+                    }
+                    return false; // Prevent default submission
+                }
+                // For add mode, let default submission proceed
+            });
+            
+            // Handle successful submission (for add mode only since edit is handled above)
+            formio.on('submitDone', async (submission) => {
+                if (mode === 'add') {
+                    actions.showToast?.('Note added successfully', 'success');
+                    removeInlineFormRows(table);
+                    await loadNotesTableFormView(parentType, parentId);
+                }
+            });
+            
+            // Handle errors
+            formio.on('error', (errors) => {
+                console.error('Note form error:', errors);
+                actions.showToast?.('Form error: ' + (errors.message || errors.toString()), 'danger');
+            });
+            
+            // Scroll the inline form into view
+            rowElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+        }
     } catch (error) {
-        console.error('Error creating note form:', error);
-        noteFormRender.innerHTML = `
-            <div class="alert alert-danger small mb-0">
-                Unable to load note form. Please try again.
-            </div>
-        `;
+        console.error('Error showing inline note form:', error);
+        actions.showToast?.('Error loading note form', 'danger');
+        // Remove the inline row if form failed to load
+        removeInlineFormRows(table);
     }
 }
 
 /**
- * Hides form view note form
+ * Removes all inline form rows from the table
  */
-function hideFormViewNoteForm() {
-    const noteFormContainer = document.getElementById('noteFormFormViewContainer');
-    const addNoteBtn = document.getElementById('addNoteFormViewBtn');
+function removeInlineFormRows(table) {
+    if (!table) return;
     
-    if (noteFormContainer) {
-        noteFormContainer.classList.add('d-none');
-        noteFormContainer.innerHTML = '';
+    const rows = table.getRows();
+    rows.forEach(row => {
+        const data = row.getData();
+        if (data._isInlineForm) {
+            table.deleteRow(row);
+        }
+    });
+}
+
+/**
+ * Shows inline note form for adding a new note (at top of table)
+ */
+async function showFormViewNoteForm(parentSubmission, parentFormMeta) {
+    const { state } = getAppBridge();
+    const table = state.notesTableFormView;
+    
+    if (!table) {
+        console.error('Notes table not found');
+        return;
     }
     
-    if (addNoteBtn) {
-        addNoteBtn.classList.remove('d-none');
+    const parentType = parentFormMeta.path.replace(/^\/+/, '');
+    const parentId = parentSubmission._id;
+    
+    // Show inline form at top of table for adding
+    await showInlineNoteFormRow(table, null, null, parentType, parentId, 'add');
+}
+
+/**
+ * Hides form view note form - removes any inline form rows
+ */
+function hideFormViewNoteForm() {
+    const { state } = getAppBridge();
+    if (state.notesTableFormView) {
+        removeInlineFormRows(state.notesTableFormView);
     }
 }
 

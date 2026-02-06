@@ -298,6 +298,49 @@ label.todo-list__label input[type="checkbox"] {
     max-height: 600px;
 }
 
+/* Fix CKEditor text wrapping inside Tabulator inline note form rows */
+.tabulator-row.inline-note-form-row {
+    display: block !important;
+    overflow: visible !important;
+    width: 100% !important;
+}
+
+.tabulator-row.inline-note-form-row > td {
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+}
+
+.tabulator-row.inline-note-form-row .ck-editor {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+.tabulator-row.inline-note-form-row .ck-editor__editable {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    min-height: 120px;
+}
+
+.tabulator-row.inline-note-form-row .ck-content {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+}
+
+.tabulator-row.inline-note-form-row .formio-component {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+.tabulator-row.inline-note-form-row .formio-component-textarea {
+    max-width: 100% !important;
+}
+
 /* Mobile optimizations for nested accordions */
 @media (max-width: 767.98px) {
     .editgrid-accordion .accordion-button {
