@@ -119,7 +119,6 @@ async function loadNotesTable(parentType, parentId) {
         const tableData = notes.map(note => ({
             _id: note._id,
             author: note.data?.author || 'Unknown',
-            noteType: note.data?.noteType || 'general',
             title: note.data?.title || '',
             content: note.data?.content || '',
             followUpDate: note.data?.followUpDate || null,
@@ -135,24 +134,6 @@ async function loadNotesTable(parentType, parentId) {
             responsiveLayout: "collapse",
             placeholder: "No notes found",
             columns: [
-                {
-                    title: "Type",
-                    field: "noteType",
-                    width: 100,
-                    responsive: 0,
-                    formatter: (cell) => {
-                        const value = cell.getValue();
-                        const badges = {
-                            'general': '<span class="badge bg-secondary">General</span>',
-                            'follow-up': '<span class="badge bg-warning text-dark">Follow-up</span>',
-                            'important': '<span class="badge bg-danger">Important</span>',
-                            'meeting': '<span class="badge bg-info">Meeting</span>',
-                            'phone': '<span class="badge bg-primary">Phone</span>',
-                            'email': '<span class="badge bg-success">Email</span>'
-                        };
-                        return badges[value] || badges['general'];
-                    }
-                },
                 {
                     title: "Title",
                     field: "title",
@@ -191,38 +172,58 @@ async function loadNotesTable(parentType, parentId) {
                     }
                 },
                 {
-                    title: "Actions",
+                    title: '',
                     field: "_id",
-                    width: 120,
+                    width: 50,
                     responsive: 0,
                     hozAlign: "center",
+                    headerSort: false,
+                    resizable: false,
+                    cssClass: 'rfp-actions-cell',
                     formatter: (cell) => {
-                        return `
-                            <div class="btn-group btn-group-sm" role="group">
-                                <button class="btn btn-outline-primary btn-view-note" title="View">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary btn-edit-note" title="Edit">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-outline-danger btn-delete-note" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                        const id = cell.getValue();
+                        if (!id) return '';
+                        return `<div class="rfp-kebab-dropdown">
+                            <button type="button" class="rfp-kebab-btn" aria-label="Actions"><i class="bi bi-three-dots-vertical"></i></button>
+                            <div class="rfp-kebab-menu">
+                                <button class="rfp-kebab-item" data-action="view-note">View</button>
+                                <button class="rfp-kebab-item" data-action="edit-note">Edit</button>
+                                <div class="rfp-kebab-divider"></div>
+                                <button class="rfp-kebab-item text-danger" data-action="delete-note">Delete</button>
                             </div>
-                        `;
+                        </div>`;
                     },
                     cellClick: async (e, cell) => {
-                        const target = e.target.closest('button');
+                        const kebabBtn = e?.target?.closest?.('.rfp-kebab-btn');
+                        if (kebabBtn) {
+                            const menu = kebabBtn.nextElementSibling;
+                            if (!menu) return;
+                            document.querySelectorAll('.rfp-kebab-menu.show').forEach(m => {
+                                if (m !== menu) m.classList.remove('show');
+                            });
+                            const rect = kebabBtn.getBoundingClientRect();
+                            menu.classList.toggle('rfp-dropup', (window.innerHeight - rect.bottom) < 200);
+                            menu.classList.toggle('show');
+                            e.stopPropagation();
+                            return;
+                        }
+
+                        const target = e?.target?.closest?.('.rfp-kebab-item');
                         if (!target) return;
+                        const action = target.dataset.action;
+                        if (!action) return;
+
+                        const openMenu = target.closest('.rfp-kebab-menu');
+                        if (openMenu) openMenu.classList.remove('show');
 
                         const row = cell.getRow();
                         const rowData = row.getData();
                         
-                        if (target.classList.contains('btn-view-note')) {
+                        if (action === 'view-note') {
                             await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'view');
-                        } else if (target.classList.contains('btn-edit-note')) {
+                        } else if (action === 'edit-note') {
                             await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'edit');
-                        } else if (target.classList.contains('btn-delete-note')) {
+                        } else if (action === 'delete-note') {
                             await deleteNote(rowData._id, parentType, parentId);
                         }
                     }
@@ -281,10 +282,6 @@ function viewNoteDetails(noteData) {
     
     const modalContent = `
         <div class="note-details">
-            <div class="mb-3">
-                <strong>Type:</strong> 
-                <span class="badge ${getNoteTypeBadgeClass(noteData.noteType)}">${noteData.noteType}</span>
-            </div>
             <div class="mb-3">
                 <strong>Title:</strong> ${escapeHtml(noteData.title)}
             </div>
@@ -362,18 +359,6 @@ function destroyInlineNotes() {
 /**
  * Helper functions
  */
-function getNoteTypeBadgeClass(noteType) {
-    const badges = {
-        'general': 'bg-secondary',
-        'follow-up': 'bg-warning text-dark',
-        'important': 'bg-danger',
-        'meeting': 'bg-info',
-        'phone': 'bg-primary',
-        'email': 'bg-success'
-    };
-    return badges[noteType] || 'bg-secondary';
-}
-
 function formatRelativeDate(date) {
     const now = new Date();
     const diff = now - date;
@@ -476,7 +461,6 @@ async function loadNotesTableFormView(parentType, parentId) {
         const tableData = notes.map(note => ({
             _id: note._id,
             author: note.data?.author || 'Unknown',
-            noteType: note.data?.noteType || 'general',
             title: note.data?.title || '',
             content: note.data?.content || '',
             followUpDate: note.data?.followUpDate || null,
@@ -492,24 +476,6 @@ async function loadNotesTableFormView(parentType, parentId) {
             responsiveLayout: "collapse",
             placeholder: "No notes found",
             columns: [
-                {
-                    title: "Type",
-                    field: "noteType",
-                    width: 100,
-                    responsive: 0,
-                    formatter: (cell) => {
-                        const value = cell.getValue();
-                        const badges = {
-                            'general': '<span class="badge bg-secondary">General</span>',
-                            'follow-up': '<span class="badge bg-warning text-dark">Follow-up</span>',
-                            'important': '<span class="badge bg-danger">Important</span>',
-                            'meeting': '<span class="badge bg-info">Meeting</span>',
-                            'phone': '<span class="badge bg-primary">Phone</span>',
-                            'email': '<span class="badge bg-success">Email</span>'
-                        };
-                        return badges[value] || badges['general'];
-                    }
-                },
                 {
                     title: "Title",
                     field: "title",
@@ -548,38 +514,58 @@ async function loadNotesTableFormView(parentType, parentId) {
                     }
                 },
                 {
-                    title: "Actions",
+                    title: '',
                     field: "_id",
-                    width: 120,
+                    width: 50,
                     responsive: 0,
                     hozAlign: "center",
+                    headerSort: false,
+                    resizable: false,
+                    cssClass: 'rfp-actions-cell',
                     formatter: (cell) => {
-                        return `
-                            <div class="btn-group btn-group-sm" role="group">
-                                <button class="btn btn-outline-primary btn-view-note" title="View">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary btn-edit-note" title="Edit">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-outline-danger btn-delete-note" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                        const id = cell.getValue();
+                        if (!id) return '';
+                        return `<div class="rfp-kebab-dropdown">
+                            <button type="button" class="rfp-kebab-btn" aria-label="Actions"><i class="bi bi-three-dots-vertical"></i></button>
+                            <div class="rfp-kebab-menu">
+                                <button class="rfp-kebab-item" data-action="view-note">View</button>
+                                <button class="rfp-kebab-item" data-action="edit-note">Edit</button>
+                                <div class="rfp-kebab-divider"></div>
+                                <button class="rfp-kebab-item text-danger" data-action="delete-note">Delete</button>
                             </div>
-                        `;
+                        </div>`;
                     },
                     cellClick: async (e, cell) => {
-                        const target = e.target.closest('button');
+                        const kebabBtn = e?.target?.closest?.('.rfp-kebab-btn');
+                        if (kebabBtn) {
+                            const menu = kebabBtn.nextElementSibling;
+                            if (!menu) return;
+                            document.querySelectorAll('.rfp-kebab-menu.show').forEach(m => {
+                                if (m !== menu) m.classList.remove('show');
+                            });
+                            const rect = kebabBtn.getBoundingClientRect();
+                            menu.classList.toggle('rfp-dropup', (window.innerHeight - rect.bottom) < 200);
+                            menu.classList.toggle('show');
+                            e.stopPropagation();
+                            return;
+                        }
+
+                        const target = e?.target?.closest?.('.rfp-kebab-item');
                         if (!target) return;
+                        const action = target.dataset.action;
+                        if (!action) return;
+
+                        const openMenu = target.closest('.rfp-kebab-menu');
+                        if (openMenu) openMenu.classList.remove('show');
 
                         const row = cell.getRow();
                         const rowData = row.getData();
                         
-                        if (target.classList.contains('btn-view-note')) {
+                        if (action === 'view-note') {
                             await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'view');
-                        } else if (target.classList.contains('btn-edit-note')) {
+                        } else if (action === 'edit-note') {
                             await showInlineNoteFormRow(table, row, rowData, parentType, parentId, 'edit');
-                        } else if (target.classList.contains('btn-delete-note')) {
+                        } else if (action === 'delete-note') {
                             await deleteNoteFormView(rowData._id, parentType, parentId);
                         }
                     }

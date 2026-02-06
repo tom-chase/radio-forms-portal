@@ -240,131 +240,6 @@ const dataTransforms = {
         });
     },
     /**
-     * Adds an 'actions' column to the Tabulator configuration with dynamic buttons
-     * based on user permissions.
-     */
-    addActionsColumn: (config, formMeta, permissions, user) => {
-        const isUserResource = formMeta.name === 'user' || formMeta.path === 'user';
-        const canManageRoles = permissions.some(p => p.type === 'role_management');
-        const canManageAdminRoles = permissions.some(p => p.type === 'admin_role_management');
-
-        const cols = config.columns || [];
-        
-        // Avoid adding if it already exists
-        if (!cols.find(c => c.field === '_actions')) {
-            cols.push({
-                title: "Actions",
-                field: "_actions",
-                formatter: (cell, formatterParams, onRendered) => {
-                    const rowData = cell.getRow().getData();
-                    const rawSub = rowData?._raw || {};
-                    const subPerms = rawSub.access || [];
-                    const userRoles = rawSub.roles || [];
-
-                    const canReadThis = subPerms.some(p => p.type === 'read_all' || (p.type === 'read_own' && rawSub.owner === user._id));
-                    const canEditThis = subPerms.some(p => p.type === 'update_all' || (p.type === 'update_own' && rawSub.owner === user._id));
-                    const canDeleteThis = subPerms.some(p => p.type === 'delete_all' || (p.type === 'delete_own' && rawSub.owner === user._id));
-
-                    let actionsHtml = '<div class="btn-group btn-group-sm">';
-
-                    if (isUserResource) {
-                        // Special actions for 'user' resource
-                        if (canManageRoles) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="role-mgmt" data-id="${rawSub._id}" title="Manage Roles"><i class="bi bi-person-gear"></i></button>`;
-                        }
-                        if (canManageAdminRoles) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-warning" data-action="role-mgmt-admin" data-id="${rawSub._id}" title="Manage Admin Roles"><i class="bi bi-person-fill-gear"></i></button>`;
-                        }
-                    } else {
-                        // Standard submission actions
-                        if (canReadThis) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="json" data-id="${rawSub._id}" title="View JSON data"><i class="bi bi-file-earmark-code"></i></button>`;
-                            actionsHtml += `<button type="button" class="btn btn-outline-info" data-action="view" data-id="${rawSub._id}" title="View submission read-only"><i class="bi bi-eye"></i></button>`;
-                        }
-                        
-                        if (canEditThis) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="edit" data-id="${rawSub._id}" title="Edit submission inline"><i class="bi bi-pencil-square"></i></button>`;
-                        }
-                        
-                        if (canDeleteThis) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-danger" data-action="delete" data-id="${rawSub._id}" title="Delete submission"><i class="bi bi-trash"></i></button>`;
-                        }
-                    }
-                    
-                    actionsHtml += '</div>';
-                    return actionsHtml;
-                },
-                cellClick: async (e, cell) => {
-                    const target = e?.target?.closest?.('button[data-action]');
-                    const action = target?.dataset?.action;
-                    const id = target?.dataset?.id;
-                    if (!action || !id) return;
-
-                    const rowData = cell.getRow().getData();
-                    const rawSub = rowData?._raw || rowData;
-                    
-                    if (!rawSub) return;
-                    
-                    // Handle different actions
-                    if (action === "json") {
-                        const { actions } = getAppBridge();
-                        actions.showJsonModal?.(rawSub.data || {});
-                    } else if (action === "edit" || action === "view") {
-                        const { startEditSubmission, startViewSubmission } = await import('./submissions.js?v=2.19');
-                        if (action === "edit") {
-                            startEditSubmission(rawSub);
-                        } else {
-                            startViewSubmission(rawSub);
-                        }
-                    } else if (action === "delete") {
-                        const { showConfirm } = await import('../ui/modalUtils.js');
-                        const { formioRequest } = await import('../services/formioService.js');
-                        const { loadSubmissions } = await import('./submissions.js?v=2.19');
-                        const { actions } = getAppBridge();
-                        
-                        const confirmed = await showConfirm("Delete this submission? This cannot be undone.");
-                        if (!confirmed) return;
-                        
-                        try {
-                            const path = String(formMeta?.path || '').replace(/^\/+/,'');
-                            await formioRequest(`/${path}/submission/${id}`, { method: "DELETE" });
-                            actions.showToast?.("Submission deleted.", "success");
-                            await loadSubmissions(formMeta, permissions, user);
-                        } catch (err) {
-                            console.error("deleteSubmission error", err);
-                            actions.showToast?.("Error deleting submission.", "danger");
-                        }
-                    } else if (action === "role-mgmt" || action === "role-mgmt-admin") {
-                        // Check permissions before proceeding
-                        if (action === 'role-mgmt' && !canManageRoles) return;
-                        if (action === 'role-mgmt-admin' && !canManageAdminRoles) return;
-                        
-                        const variant = action === 'role-mgmt-admin' ? 'roleMgmtAdmin' : 'roleMgmt';
-                        
-                        await openRoleMgmtModal({
-                            targetUserSubmission: rawSub,
-                            variant,
-                            onSaved: async () => {
-                                const { loadSubmissions } = await import('./submissions.js?v=2.19');
-                                await loadSubmissions(formMeta, permissions, user);
-                            }
-                        });
-                    } else if (action === "group-mgmt") {
-                        const { openGroupMgmtModal } = await import(`./groupMgmt.js?v=${Date.now()}`);
-                        await openGroupMgmtModal({
-                            targetUserSubmission: rawSub,
-                            onSaved: async () => {
-                                const { loadSubmissions } = await import('./submissions.js?v=2.19');
-                                await loadSubmissions(formMeta, permissions, user);
-                            }
-                        });
-                    }
-                }
-            });
-        }
-        return config;
-    },
-    /**
      * Transform user submissions to include role information
      * Matches the original user form tabulator behavior
      */
@@ -735,11 +610,13 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
         const hasActionsCol = cols.some(c => String(c?.field || '') === '_rfp_actions');
         if (!hasActionsCol) {
             cols.push({
-                title: 'Actions',
+                title: '',
                 field: '_rfp_actions',
-                hozAlign: 'right',
+                hozAlign: 'center',
                 headerSort: false,
-                width: 200,
+                width: 50,
+                resizable: false,
+                cssClass: 'rfp-actions-cell',
                 formatter: (cell, formatterParams, onRendered) => {
                     const rowData = cell.getRow().getData();
                     const rawSub = rowData?._raw || rowData;
@@ -752,75 +629,79 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                     const canEditThis = permissions?.canUpdateAll || (permissions?.canUpdateOwn && isOwner);
                     const canDeleteThis = permissions?.canDeleteAll || (permissions?.canDeleteOwn && isOwner);
                     const canViewThis = permissions?.canReadAll || (permissions?.canReadOwn && isOwner);
-                    
-                    // DEBUG: Check permissions for button rendering
-                    if (isUserResource) {
-                        log.debug(`Row ${rawSub._id}: canManageRoles=${canManageRoles}, canManageAdminRoles=${canManageAdminRoles}`);
-                    }
 
-                    let actionsHtml = '<div class="btn-group btn-group-sm" role="group">';
-                    
-                    // For user forms, only show role management buttons (special case)
+                    const items = [];
+
                     if (isUserResource) {
                         if (canManageRoles) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="role-mgmt" data-id="${rawSub._id}" title="Change roles">
-                                <i class="bi bi-shield-lock"></i>
-                            </button>`;
+                            items.push(`<button class="rfp-kebab-item" data-action="role-mgmt" data-id="${rawSub._id}">Change Roles</button>`);
                         }
                         if (canManageAdminRoles) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-warning" data-action="role-mgmt-admin" data-id="${rawSub._id}" title="Change admin role">
-                                <i class="bi bi-shield-exclamation"></i>
-                            </button>`;
+                            items.push(`<button class="rfp-kebab-item" data-action="role-mgmt-admin" data-id="${rawSub._id}">Change Admin Role</button>`);
                         }
-                        // Add Groups management button
-                        if (canManageRoles) { 
-                             actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="group-mgmt" data-id="${rawSub._id}" title="Manage Groups">
-                                <i class="bi bi-people"></i>
-                            </button>`;
+                        if (canManageRoles) {
+                            items.push(`<button class="rfp-kebab-item" data-action="group-mgmt" data-id="${rawSub._id}">Manage Groups</button>`);
                         }
                     } else {
-                        // For non-user forms, show standard edit/view/delete buttons
-                        // JSON view only for admins
-                        if (state.adminMode) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="json" data-id="${rawSub._id}" title="View JSON">
-                                <i class="bi bi-code-slash"></i>
-                            </button>`;
-                        }
-                        
                         if (canViewThis) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-info" data-action="view" data-id="${rawSub._id}" title="View submission inline">
-                                <i class="bi bi-eye"></i>
-                            </button>`;
+                            items.push(`<button class="rfp-kebab-item" data-action="view" data-id="${rawSub._id}">View</button>`);
                         }
-                        
                         if (canEditThis) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="edit" data-id="${rawSub._id}" title="Edit submission inline">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>`;
+                            items.push(`<button class="rfp-kebab-item" data-action="edit" data-id="${rawSub._id}">Edit</button>`);
                         }
-                        
+                        if (state.adminMode) {
+                            items.push(`<button class="rfp-kebab-item" data-action="json" data-id="${rawSub._id}">View JSON</button>`);
+                        }
                         if (canDeleteThis) {
-                            actionsHtml += `<button type="button" class="btn btn-outline-danger" data-action="delete" data-id="${rawSub._id}" title="Delete submission">
-                                <i class="bi bi-trash"></i>
-                            </button>`;
+                            if (items.length) items.push('<div class="rfp-kebab-divider"></div>');
+                            items.push(`<button class="rfp-kebab-item text-danger" data-action="delete" data-id="${rawSub._id}">Delete</button>`);
                         }
                     }
-                    
-                    actionsHtml += '</div>';
-                    return actionsHtml;
+
+                    if (!items.length) return '';
+
+                    return `<div class="rfp-kebab-dropdown">
+                        <button type="button" class="rfp-kebab-btn" aria-label="Actions"><i class="bi bi-three-dots-vertical"></i></button>
+                        <div class="rfp-kebab-menu">${items.join('')}</div>
+                    </div>`;
                 },
                 cellClick: async (e, cell) => {
-                    const target = e?.target?.closest?.('button[data-action]');
+                    // Handle kebab toggle
+                    const kebabBtn = e?.target?.closest?.('.rfp-kebab-btn');
+                    if (kebabBtn) {
+                        const menu = kebabBtn.nextElementSibling;
+                        if (!menu) return;
+
+                        // Close any other open menus first
+                        document.querySelectorAll('.rfp-kebab-menu.show').forEach(m => {
+                            if (m !== menu) m.classList.remove('show');
+                        });
+
+                        // Determine drop direction based on viewport position
+                        const rect = kebabBtn.getBoundingClientRect();
+                        const spaceBelow = window.innerHeight - rect.bottom;
+                        menu.classList.toggle('rfp-dropup', spaceBelow < 200);
+
+                        menu.classList.toggle('show');
+                        e.stopPropagation();
+                        return;
+                    }
+
+                    // Handle menu item click
+                    const target = e?.target?.closest?.('.rfp-kebab-item');
                     const action = target?.dataset?.action;
                     const id = target?.dataset?.id;
                     if (!action || !id) return;
+
+                    // Close the menu
+                    const openMenu = target.closest('.rfp-kebab-menu');
+                    if (openMenu) openMenu.classList.remove('show');
 
                     const rowData = cell.getRow().getData();
                     const rawSub = rowData?._raw || rowData;
                     
                     if (!rawSub) return;
                     
-                    // Handle different actions
                     if (action === "json") {
                         const { actions } = getAppBridge();
                         actions.showJsonModal?.(rawSub.data || {});
@@ -850,7 +731,6 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                             actions.showToast?.("Error deleting submission.", "danger");
                         }
                     } else if (action === "role-mgmt" || action === "role-mgmt-admin") {
-                        // Check permissions before proceeding
                         if (action === 'role-mgmt' && !canManageRoles) return;
                         if (action === 'role-mgmt-admin' && !canManageAdminRoles) return;
                         
@@ -923,6 +803,16 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
         });
 
         window.__rfpSubsTabulator = state.currentSubsTabulator;
+
+        // Close any open kebab menus when clicking outside
+        if (!window.__rfpKebabCloseHandler) {
+            window.__rfpKebabCloseHandler = (e) => {
+                if (!e.target.closest('.rfp-kebab-dropdown')) {
+                    document.querySelectorAll('.rfp-kebab-menu.show').forEach(m => m.classList.remove('show'));
+                }
+            };
+            document.addEventListener('click', window.__rfpKebabCloseHandler);
+        }
 
         return true;
     } catch (e) {

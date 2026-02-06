@@ -341,6 +341,101 @@ label.todo-list__label input[type="checkbox"] {
     max-width: 100% !important;
 }
 
+/* Kebab dropdown menu inside Tabulator cells */
+.tabulator-cell .rfp-kebab-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.tabulator-cell .rfp-kebab-btn {
+    background: none;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.15rem 0.4rem;
+    cursor: pointer;
+    color: #6c757d;
+    line-height: 1;
+    font-size: 1.1rem;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.tabulator-cell .rfp-kebab-btn:hover {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.tabulator-cell .rfp-kebab-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    z-index: 1050;
+    min-width: 10rem;
+    padding: 0.25rem 0;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+.tabulator-cell .rfp-kebab-menu.show {
+    display: block;
+}
+
+/* Auto-detect whether to drop up or down based on data attribute */
+.tabulator-cell .rfp-kebab-menu.rfp-dropup {
+    bottom: 100%;
+    top: auto;
+    margin-bottom: 0.25rem;
+}
+
+.tabulator-cell .rfp-kebab-menu:not(.rfp-dropup) {
+    top: 100%;
+    bottom: auto;
+    margin-top: 0.25rem;
+}
+
+.tabulator-cell .rfp-kebab-menu .rfp-kebab-item {
+    display: block;
+    width: 100%;
+    padding: 0.35rem 1rem;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.875rem;
+    color: #212529;
+    cursor: pointer;
+    line-height: 1.5;
+}
+
+.tabulator-cell .rfp-kebab-menu .rfp-kebab-item:hover {
+    background-color: #f8f9fa;
+}
+
+.tabulator-cell .rfp-kebab-menu .rfp-kebab-item.text-danger {
+    color: #dc3545;
+}
+
+.tabulator-cell .rfp-kebab-menu .rfp-kebab-item.text-danger:hover {
+    background-color: #fff5f5;
+}
+
+.tabulator-cell .rfp-kebab-menu .rfp-kebab-divider {
+    height: 0;
+    margin: 0.25rem 0;
+    overflow: hidden;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Ensure Tabulator cells allow overflow for dropdown */
+.tabulator .tabulator-row .tabulator-cell.rfp-actions-cell {
+    overflow: visible !important;
+}
+
+.tabulator .tabulator-tableholder {
+    overflow: visible auto;
+}
+
 /* Mobile optimizations for nested accordions */
 @media (max-width: 767.98px) {
     .editgrid-accordion .accordion-button {
