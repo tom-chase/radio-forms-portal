@@ -7476,7 +7476,7 @@
       "title": "Incident Report",
       "type": "resource",
       "name": "incidentReport",
-      "path": "incident-report",
+      "path": "incidentreport",
       "pdfComponents": [],
       "display": "form",
       "tags": [
@@ -9862,7 +9862,7 @@
     "uwContracts": {
       "title": "Underwriting Contracts",
       "name": "uwContracts",
-      "path": "uw-contracts",
+      "path": "uwcontracts",
       "type": "resource",
       "display": "form",
       "tags": [
@@ -10388,7 +10388,7 @@
     "uwCampaigns": {
       "title": "Underwriting Campaigns",
       "name": "uwCampaigns",
-      "path": "uw-campaigns",
+      "path": "uwcampaigns",
       "type": "resource",
       "display": "form",
       "tags": [
@@ -10691,7 +10691,7 @@
     "uwSpots": {
       "title": "Underwriting Spots",
       "name": "uwSpots",
-      "path": "uw-spots",
+      "path": "uwspots",
       "type": "resource",
       "display": "form",
       "tags": [
@@ -11103,7 +11103,7 @@
     "uwLogs": {
       "title": "Underwriting Log Entries",
       "name": "uwLogs",
-      "path": "uw-logs",
+      "path": "uwlogs",
       "type": "resource",
       "display": "form",
       "tags": [

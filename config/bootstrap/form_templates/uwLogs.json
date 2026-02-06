@@ -1,7 +1,7 @@
 {
   "title": "Underwriting Log Entries",
   "name": "uwLogs",
-  "path": "uw-logs",
+  "path": "uwlogs",
   "type": "resource",
   "display": "form",
   "tags": ["underwriting", "traffic"],

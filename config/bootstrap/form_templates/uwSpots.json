@@ -1,7 +1,7 @@
 {
   "title": "Underwriting Spots",
   "name": "uwSpots",
-  "path": "uw-spots",
+  "path": "uwspots",
   "type": "resource",
   "display": "form",
   "tags": ["underwriting"],
