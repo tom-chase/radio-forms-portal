@@ -307,7 +307,7 @@
         },
         {
           "title": "Org",
-          "field": "data.organization",
+          "field": "data.organization.data.name",
           "responsive": 1,
           "width": 150
         },
