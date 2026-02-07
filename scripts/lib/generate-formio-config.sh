@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Generate Form.io Configuration
-# Usage: ./scripts/generate-formio-config.sh [dev|staging|production]
+# Usage: ./scripts/lib/generate-formio-config.sh [dev|staging|production]
 
 set -e
 
 ENVIRONMENT=${1:-dev}
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 echo "🔧 Generating Form.io configuration for $ENVIRONMENT..."
 

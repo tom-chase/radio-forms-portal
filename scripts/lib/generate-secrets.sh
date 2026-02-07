@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Generate Secure Secrets
-# Usage: ./scripts/generate-secrets.sh
+# Usage: ./scripts/lib/generate-secrets.sh
 
 set -e
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 echo "🔐 Generating secure secrets..."
 

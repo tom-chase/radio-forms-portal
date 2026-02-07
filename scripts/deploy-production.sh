@@ -75,7 +75,7 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     rm /tmp/deploy.tar.gz
 
     # Ensure scripts are executable
-    chmod +x scripts/*.sh
+    chmod +x scripts/*.sh scripts/lib/*.sh
     
     # Regenerate Backend Configuration (Form.io)
     # This uses the fixed template and server's .env values
@@ -85,7 +85,7 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
         echo "⚠️  config/env/production.json is a directory (stale). Removing..."
         rm -rf config/env/production.json
     fi
-    ./scripts/generate-formio-config.sh production
+    ./scripts/lib/generate-formio-config.sh production
 
     # Debug: Check environment variables
     echo "🔍 Checking server environment variables..."

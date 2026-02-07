@@ -2,7 +2,7 @@
 #
 # Deploys a project template to the destination Form.io server.
 #
-# Usage: ./scripts/cli-deploy-template.sh <template_file>
+# Usage: ./scripts/deploy-formio.sh <template_file>
 #   - template_file: The path to the template file to deploy.
 
 set -e

@@ -5,7 +5,7 @@
 # This script provides a non-destructive way to apply form definition changes
 # during development without needing to wipe the database.
 #
-# Usage: ./scripts/cli-sync-dev.sh [form_name]
+# Usage: ./scripts/sync-dev.sh [form_name]
 #   - form_name: (Optional) The name of the form/resource to sync. Defaults to 'book'.
 
 set -e
@@ -29,7 +29,7 @@ fi
 
 # 1. Sync the individual form template into the main default-template.json
 echo "🔄 Syncing '$FORM_NAME' to $TEMPLATE_FILE..."
-./scripts/sync-form-templates.sh "$FORM_NAME"
+./scripts/lib/sync-form-templates.sh "$FORM_NAME"
 
 # 2. Deploy the updated default-template.json to the running dev server
 echo "🚀 Deploying updated template to dev server at $API_URL_BASE..."

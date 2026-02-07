@@ -2,7 +2,7 @@
 #
 # Exports the current project state from the source Form.io server to a JSON template file.
 #
-# Usage: ./scripts/cli-export-template.sh [output_file]
+# Usage: ./scripts/export-formio.sh [output_file]
 #   - output_file: (Optional) The path to save the template. Defaults to './config/bootstrap/cli-template.json'.
 
 set -e

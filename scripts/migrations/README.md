@@ -97,7 +97,7 @@ module.exports = {
 
 ## Running Migrations
 
-Migrations run automatically during deployment via `scripts/run-migrations.js`.
+Migrations run automatically during deployment via `scripts/lib/run-migrations.js`.
 
 ### Manual Execution
 

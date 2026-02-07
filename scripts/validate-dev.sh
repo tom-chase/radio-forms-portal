@@ -117,7 +117,7 @@ else
     echo -e "${YELLOW}🔧 Common fixes:${NC}"
     echo -e "   • Restart services: ${YELLOW}docker-compose -f docker-compose.dev.yml restart${NC}"
     echo -e "   • View logs:       ${YELLOW}docker-compose -f docker-compose.dev.yml logs -f${NC}"
-    echo -e "   • Rebuild:         ${YELLOW}./scripts/build-formio.sh${NC}"
+    echo -e "   • Rebuild:         ${YELLOW}./scripts/lib/build-formio.sh${NC}"
     echo -e "   • Full setup:      ${YELLOW}./scripts/setup-dev.sh${NC}"
 fi
 

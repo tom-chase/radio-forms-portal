@@ -68,13 +68,13 @@ if [[ "$ENVIRONMENT" == "dev" && $(uname -m) == "arm64" ]]; then
     
     # Generate Form.io configuration
     echo "🔧 Generating Form.io configuration..."
-    "$PROJECT_DIR/scripts/generate-formio-config.sh" "$ENVIRONMENT"
+    "$PROJECT_DIR/scripts/lib/generate-formio-config.sh" "$ENVIRONMENT"
     
     # Build Form.io for ARM64 if needed
     echo "🔨 Checking if Form.io ARM64 build is needed..."
     if ! docker images | grep -q "radio-forms_formio"; then
         echo "📦 Building Form.io from source for ARM64 (this may take 10-15 minutes)..."
-        "$PROJECT_DIR/scripts/build-formio.sh"
+        "$PROJECT_DIR/scripts/lib/build-formio.sh"
     else
         echo "✅ Form.io ARM64 image already exists"
     fi
@@ -119,7 +119,7 @@ fi
 
 # Generate Form.io configuration
 echo "🔧 Generating Form.io configuration..."
-"$PROJECT_DIR/scripts/generate-formio-config.sh" "$ENVIRONMENT"
+"$PROJECT_DIR/scripts/lib/generate-formio-config.sh" "$ENVIRONMENT"
 
 # Create necessary directories
 echo "📁 Creating directories..."
@@ -132,13 +132,14 @@ mkdir -p "$PROJECT_DIR/logs"
 echo "🔒 Setting permissions..."
 chmod 600 "$PROJECT_DIR/.env"
 chmod +x "$PROJECT_DIR/scripts/"*.sh
+chmod +x "$PROJECT_DIR/scripts/lib/"*.sh
 
 # Generate secrets if not present
 if ! grep -q "change_this" "$PROJECT_DIR/.env"; then
     echo "✅ Secrets already configured"
 else
     echo "🔐 Generating secure secrets..."
-    "$PROJECT_DIR/scripts/generate-secrets.sh"
+    "$PROJECT_DIR/scripts/lib/generate-secrets.sh"
 fi
 
 # Create environment-specific docker-compose file if it doesn't exist

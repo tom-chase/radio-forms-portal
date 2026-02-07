@@ -28,7 +28,7 @@ Contains Form.io Community Edition configuration files for different environment
 - Contains placeholder secrets that should be changed in production
 
 **Environment-specific files**:
-- Generated from `formio-config.json.template` using `generate-formio-config.sh`
+- Generated from `formio-config.json.template` using `scripts/lib/generate-formio-config.sh`
 - Contains real environment-specific settings and secrets
 - Ignored by Git for security
 
@@ -56,24 +56,24 @@ Contains Form.io project bootstrap templates.
 cp config/env/default.json config/env/development.json
 
 # Or generate from template
-./scripts/generate-formio-config.sh development
+./scripts/lib/generate-formio-config.sh development
 ```
 
 ### Production/Staging Setup
 ```bash
-./scripts/generate-formio-config.sh production
-./scripts/generate-formio-config.sh staging
+./scripts/lib/generate-formio-config.sh production
+./scripts/lib/generate-formio-config.sh staging
 ```
 
 ## 🔒 Security Notes
 
 - **Never commit** environment-specific JSON files with real secrets
-- **Always use** `generate-formio-config.sh` for production environments
+- **Always use** `scripts/lib/generate-formio-config.sh` for production environments
 - **Change default secrets** in `default.json` for any production use
 - **Environment variables** in `.env` file are never committed
 
 ## 📚 Related Documentation
 
 - **[DEPLOYMENT.md](../docs/DEPLOYMENT.md)** - Complete deployment guide
-- **[../scripts/generate-formio-config.sh](../scripts/generate-formio-config.sh)** - Configuration generation script
+- **[../scripts/lib/generate-formio-config.sh](../scripts/lib/generate-formio-config.sh)** - Configuration generation script
 - **[../formio-config.json.template](../formio-config.json.template)** - Configuration template

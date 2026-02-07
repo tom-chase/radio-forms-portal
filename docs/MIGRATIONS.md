@@ -4,7 +4,7 @@
 
 The Radio Forms Portal uses a hybrid approach for managing Form.io schema changes:
 
-1. **Automated Syncing** (`post-bootstrap.js`): Handles permissions, new forms/resources, dynamic IDs, and (for selected forms) schema syncing
+1. **Automated Syncing** (`scripts/lib/post-bootstrap.js`): Handles permissions, new forms/resources, dynamic IDs, and (for selected forms) schema syncing
 2. **Manual Migrations** (`scripts/migrations/`): Handles structural changes to existing forms
 
 This document focuses on the migration system for managing incremental changes to production forms.

@@ -72,7 +72,7 @@ See "Promotion Checklist" below.
 
 3. **Import to the running dev Form.io (non-destructive)**
    - Run:
-     - `./scripts/cli-sync-dev.sh <form>`
+     - `./scripts/sync-dev.sh <form>`
    - This runs `./scripts/lib/sync-form-templates.sh <form>` when `<form>` is specified or defaults to 'none' if not specified.
    - This calls `POST /import` with `{ "template": ... }` to update the live dev DB.
 
@@ -167,17 +167,17 @@ Use this when you changed any Form.io form/resource schema or `settings.*` (incl
    - Ensure the backup directory exists:
      - `mkdir -p ./backups`
    - Run:
-     - `FORMIO_DOMAIN="$PROD_FORMIO_DOMAIN" API_KEYS="$PROD_API_KEYS" ./scripts/cli-export-template.sh ./backups/prod-template-$(date +%F-%H%M).json`
+     - `FORMIO_DOMAIN="$PROD_FORMIO_DOMAIN" API_KEYS="$PROD_API_KEYS" ./scripts/export-formio.sh ./backups/prod-template-$(date +%F-%H%M).json`
 
 2. **Build the master template from git**
-   - `./scripts/sync-form-templates.sh`
+   - `./scripts/lib/sync-form-templates.sh`
 
 3. **Validate locally first (recommended)**
    - Apply to running local dev DB:
-     - `./scripts/cli-sync-dev.sh <form>`
+     - `./scripts/sync-dev.sh <form>`
 
 4. **Deploy template to production**
-   - `./scripts/cli-deploy-template.sh ./config/bootstrap/default-template.json`
+   - `./scripts/deploy-formio.sh ./config/bootstrap/default-template.json`
 
 5. **Run post-bootstrap after importing (recommended)**
    - `/import` updates forms/resources/settings, but it does not resolve dynamic IDs (roles/resources) in conditionals/groupPermissions.

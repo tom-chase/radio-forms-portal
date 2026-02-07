@@ -2,7 +2,7 @@
 
 # Form Template Sync Script
 # Syncs selected form templates from form_templates/ into default-template.json
-# Usage: ./scripts/sync-form-templates.sh form1,form2,form3
+# Usage: ./scripts/lib/sync-form-templates.sh form1,form2,form3
 
 set -e
 
@@ -11,7 +11,7 @@ FORMS_TO_SYNC=${1:-"book"}
 
 # Paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FORM_TEMPLATES_DIR="$REPO_ROOT/config/bootstrap/form_templates"
 DEFAULT_TEMPLATE="$REPO_ROOT/config/bootstrap/default-template.json"
 BACKUP_TEMPLATE="$REPO_ROOT/config/bootstrap/default-template.json.backup"

@@ -40,7 +40,7 @@ if [ "$FORMS_TO_SYNC" = "skip" ] || [ "$FORMS_TO_SYNC" = "none" ]; then
 else
     # Sync form templates to default-template.json
     echo "🔄 Syncing form templates..."
-    if ./scripts/sync-form-templates.sh "$FORMS_TO_SYNC"; then
+    if ./scripts/lib/sync-form-templates.sh "$FORMS_TO_SYNC"; then
         echo "✅ Form templates synced successfully"
     else
         echo "❌ Form template sync failed"
@@ -50,7 +50,7 @@ fi
 
 # Generate Form.io configuration for development
 echo "🔧 Generating Form.io configuration..."
-./scripts/generate-formio-config.sh dev
+./scripts/lib/generate-formio-config.sh dev
 
 # Generate Frontend Configuration for development
 echo "🔧 Generating frontend configuration..."

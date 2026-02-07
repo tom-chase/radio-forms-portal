@@ -28,8 +28,8 @@ services:
       - ./config/env/production.json:/app/config/production.json:ro
       - ./config/bootstrap/default-template.json:/app/default-template.json:ro
       - ./config/actions/UpdateLatestRoleLogId.js:/app/src/actions/UpdateLatestRoleLogId.js:ro
-      - ./scripts/post-bootstrap.js:/app/post-bootstrap.js:ro
-      - ./scripts/run-migrations.js:/app/run-migrations.js:ro
+      - ./scripts/lib/post-bootstrap.js:/app/post-bootstrap.js:ro
+      - ./scripts/lib/run-migrations.js:/app/run-migrations.js:ro
       - ./scripts/migrations:/app/migrations:ro
     networks:
       - radio-forms

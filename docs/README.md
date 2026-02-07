@@ -14,7 +14,8 @@ This directory contains comprehensive documentation for the Radio Forms Portal p
 | **[DEPLOYMENT.md](DEPLOYMENT.md)** | Deployment procedures, workflows, ARM64 setup | Developers, DevOps |
 | **[../README.md](../README.md)** | Project overview, getting started, ARM64 compatibility | All Contributors |
 | **[../scripts/README.md](../scripts/README.md)** | Script documentation | Developers, DevOps |
-| **[../AGENT.md](../AGENT.md)** | AI agent guidelines, ARM64 development patterns | AI Agents, Developers |
+| **[../AGENT.md](../AGENT.md)** | AI agent orientation, quick reference | AI Agents, Developers |
+| **[CASCADE_INTEGRATION.md](CASCADE_INTEGRATION.md)** | How Windsurf Cascade is used in this project | Developers, AI Agents |
 
 ---
 
@@ -99,8 +100,8 @@ Step-by-step deployment guides and workflows:
 
 **Integration with Scripts:**
 - `deploy-dev.sh` - Local development setup
-- `deploy-staging.sh` - Cloud testing deployment
 - `deploy-production.sh` - Production deployment
+- `deploy-formio.sh` - Form.io project promotion
 - `backup.sh` - Automated backup procedures
 - `health-check.sh` - System monitoring
 
@@ -199,76 +200,17 @@ docs/STAGING.md                 # Staging environment
 
 ---
 
-## 🌐 Public Repository Wiki Structure
+## 🤖 AI Agent Integration
 
-When you make the repository public, consider organizing documentation into GitHub Wiki tabs:
+This project uses **Windsurf Cascade** for AI-assisted development. Agent-facing guidance is separated from human documentation:
 
-### **Recommended Wiki Structure**
-```
-Infrastructure
-├── AWS Setup & Networking
-├── Staging Environment
-├── Production Environment
-├── Monitoring & Backup
-├── Scaling & Performance
-└── Cost Management
+- **Rules**: `.windsurf/rules/` — always-on constraints for Cascade
+- **Workflows**: `.windsurf/workflows/` — step-by-step procedures (dev setup, deployments, migrations)
+- **AGENT.md**: Quick orientation and memory bank for AI agents
 
-Security
-├── Security Architecture
-├── Access Control
-├── Incident Response
-├── Compliance
-└── Audit Procedures
-
-Deployment
-├── Environment Setup
-├── Staging Workflow
-├── CI/CD Pipeline
-├── Troubleshooting Guide
-└── Best Practices
-
-Development
-├── Getting Started
-├── Code Architecture
-├── Testing Guide
-├── Contributing
-└── Code Style Guide
-```
-
-### **Wiki Migration Strategy**
-```bash
-# Move current docs to wiki:
-1. Create wiki structure as shown above
-2. Copy content from docs/ folder
-3. Enhance with GitHub wiki features
-4. Add inter-wiki links and navigation
-5. Update README.md to point to wiki
-
-# Benefits:
-- Better navigation and search
-- Collaborative editing
-- Version history and tracking
-- Integration with GitHub issues
-- Easier maintenance and updates
-```
+See **[CASCADE_INTEGRATION.md](CASCADE_INTEGRATION.md)** for details on how to maintain this system.
 
 ---
 
-## 📞 Documentation Support
-
-### **Getting Help**
-- **Issues**: [Create GitHub Issue](https://github.com/tom-chase/radio-forms-portal/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/tom-chase/radio-forms-portal/discussions)
-- **Email**: tomchase@duck.com
-
-### **Contributing to Documentation**
-- Fork the repository
-- Create a documentation branch
-- Make your improvements
-- Submit a pull request
-- Follow the contribution guidelines in README.md
-
----
-
-**Documentation Hub Last Updated**: 2026-01-21
+**Documentation Hub Last Updated**: 2026-02-07
 **Maintainer**: tomchase@duck.com

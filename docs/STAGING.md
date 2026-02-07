@@ -1,5 +1,7 @@
 # Staging Environment Setup
 
+> ⚠️ **Status: Planned / Future** — Staging is not yet deployed. This document describes the intended configuration for when a staging environment is provisioned.
+
 ## 🎯 Staging Server Configuration
 
 ### **Server Specifications**
@@ -20,7 +22,7 @@
 ### **EC2 Instance Configuration**
 ```bash
 # Launch Configuration:
-AMI: Debian 13 (Trixie)
+AMI: Debian 12 (Bookworm)
 Instance: t3.medium
 Storage: 25GB gp3 SSD
 Security Group: RadioFormsStagingSG
@@ -122,13 +124,13 @@ NODE_ENV=staging
 ## 🚀 Staging Deployment Pipeline
 
 ### **Step 1: Deploy Develop → Staging**
+
+> **Note**: The `deploy-staging.sh` script was removed (staging is not yet deployed). When a staging environment is provisioned, a deployment script will be created following the same pattern as `deploy-production.sh`.
+
 ```bash
 # From develop branch:
 git checkout develop
 git pull origin develop
-
-# Deploy to staging:
-./scripts/deploy-staging.sh develop
 
 # Generate staging configuration:
 ./scripts/setup-environment.sh staging

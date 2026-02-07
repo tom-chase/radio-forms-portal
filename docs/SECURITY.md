@@ -83,7 +83,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self'
 
 ### **Operating System Security**
 ```bash
-# Debian 13 (Trixie) Hardening:
+# Debian 12 (Bookworm) Hardening:
 
 # 1. System Updates
 sudo apt update && sudo apt upgrade -y
@@ -235,7 +235,7 @@ Host radio-forms-prod
 ### **Vulnerability Management**
 ```bash
 # Regular Security Tasks:
-- Monthly dependency updates (./scripts/update-dependencies.sh)
+- Monthly dependency updates (manual version bumps in docker-compose files)
 - Quarterly security scans
 - Annual penetration testing
 - Continuous CVE monitoring
