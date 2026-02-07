@@ -79,6 +79,35 @@ export function initFormioService({ baseUrl, projectUrl, onAuthFailure } = {}) {
         Formio.projectUrl = _projectUrl;
     }
 
+    // Register a Fetch Plugin so that SDK-initiated requests (e.g. Formio.createForm()
+    // internal fetches) also get the triple-header auth used by formioRequest().
+    if (typeof Formio.registerPlugin === 'function') {
+        Formio.registerPlugin({
+            priority: 0,
+            preRequest(requestArgs) {
+                const token = getToken();
+                if (!token) return;
+                const jwt = normalizeJwtToken(token);
+                const opts = requestArgs.opts = requestArgs.opts || {};
+                const hdrs = opts.headers = opts.headers || {};
+                if (!hdrs['x-jwt-token'])   hdrs['x-jwt-token'] = jwt;
+                if (!hdrs.Authorization)     hdrs.Authorization = `Bearer ${jwt}`;
+                if (!hdrs['x-token'])        hdrs['x-token'] = jwt;
+            },
+            preStaticRequest(requestArgs) {
+                const token = getToken();
+                if (!token) return;
+                const jwt = normalizeJwtToken(token);
+                const opts = requestArgs.opts = requestArgs.opts || {};
+                const hdrs = opts.headers = opts.headers || {};
+                if (!hdrs['x-jwt-token'])   hdrs['x-jwt-token'] = jwt;
+                if (!hdrs.Authorization)     hdrs.Authorization = `Bearer ${jwt}`;
+                if (!hdrs['x-token'])        hdrs['x-token'] = jwt;
+            }
+        }, 'rfpAuthPlugin');
+        log.debug('Registered rfpAuthPlugin (triple-header auth for SDK requests)');
+    }
+
     _initialized = true;
     log.debug('Formio service initialized', { baseUrl: _baseUrl, projectUrl: _projectUrl });
 }
@@ -251,8 +280,6 @@ export async function formioRequest(pathOrUrl, options = {}) {
 
     // NOTE: We intentionally prefer direct fetch() over Formio.request().
     // It matches Postman behavior more closely (notably x-jwt-token) and avoids SDK edge-cases.
-    const isLoginRequest = pathOrUrl && (pathOrUrl.includes('/login') || pathOrUrl.includes('login'));
-
     const token = getToken();
     const fetchHeaders = {};
 
@@ -283,7 +310,7 @@ export async function formioRequest(pathOrUrl, options = {}) {
       body: (method === 'GET' || method === 'HEAD') ? undefined : (data ? JSON.stringify(data) : undefined)
     });
 
-    if (isLoginRequest && fetchResponse.ok) {
+    if (fetchResponse.ok) {
       const jwtToken = fetchResponse.headers.get('x-jwt-token');
       if (jwtToken) setToken(jwtToken);
     }
