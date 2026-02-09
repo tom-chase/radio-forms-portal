@@ -78,40 +78,52 @@ export async function renderLoginForm() {
     
     // Add submit button handler for manual submission (consistent with SPA using formioRequest)
     setTimeout(() => {
+      // Auto-focus the email field for faster login
+      const emailInput = domElements.loginFormContainer.querySelector('input[type="email"], input[name="data[email]"]');
+      if (emailInput) emailInput.focus();
+
       const submitBtn = domElements.loginFormContainer.querySelector('button[type="submit"], [data-bs-action="submit"], .btn-submit');
-      if (submitBtn) {
-        // Add click handler to use formioRequest instead of SDK submit
-        submitBtn.addEventListener('click', (e) => {
-          // Check if form is valid
-          if (typeof loginFormInstance.isValid === 'function') {
-            const valid = loginFormInstance.isValid();
-            
-            if (valid) {
-              // Get submission data
-              const submissionData = loginFormInstance.submission;
-              
-              // Submit using formioRequest (consistent with SPA pattern)
-              import('../services/formioService.js').then(({ formioRequest }) => {
-                formioRequest(`${CONFIG.API_BASE}/user/login`, {
-                  method: 'POST',
-                  data: submissionData
-                }).then(result => {
-                  // Login successful - reload page to show logged-in state
-                  showToast('Login successful! Redirecting...', 'success');
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 1000);
-                }).catch(err => {
-                  console.error('Login submission error:', err);
-                  showToast('Login failed. Please try again.', 'danger');
-                });
+
+      // Helper: programmatically submit the login form
+      const doLoginSubmit = () => {
+        if (typeof loginFormInstance.isValid === 'function') {
+          const valid = loginFormInstance.isValid();
+          if (valid) {
+            const submissionData = loginFormInstance.submission;
+            import('../services/formioService.js').then(({ formioRequest }) => {
+              formioRequest(`${CONFIG.API_BASE}/user/login`, {
+                method: 'POST',
+                data: submissionData
+              }).then(result => {
+                showToast('Login successful! Redirecting...', 'success');
+                setTimeout(() => { window.location.reload(); }, 1000);
+              }).catch(err => {
+                console.error('Login submission error:', err);
+                showToast('Login failed. Please try again.', 'danger');
               });
-            } else {
-              showToast('Please fill in all required fields.', 'warning');
-            }
+            });
           } else {
-            showToast('Form validation error. Please try again.', 'danger');
+            showToast('Please fill in all required fields.', 'warning');
           }
+        } else {
+          showToast('Form validation error. Please try again.', 'danger');
+        }
+      };
+
+      // Enter key in password field triggers login submit
+      const passwordInput = domElements.loginFormContainer.querySelector('input[type="password"]');
+      if (passwordInput) {
+        passwordInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            doLoginSubmit();
+          }
+        });
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', (e) => {
+          doLoginSubmit();
         });
       }
     }, 1000);

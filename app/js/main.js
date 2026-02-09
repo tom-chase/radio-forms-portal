@@ -45,6 +45,8 @@ initFormioService({
   projectUrl: CONFIG.API_BASE,
   onAuthFailure: (err) => {
     log.warn('Auth failure; forcing login UI', { status: err.status });
+    // Expired / invalid token → trigger full logout so the login form loads
+    if (domElements.logoutBtn) domElements.logoutBtn.click();
   }
 });
 
