@@ -496,6 +496,32 @@ async function openInlineSubmissionForm(
                 user: currentUser,
             }
         );
+
+        // Attach revision tracking by wrapping submit() for inline edits
+        const revSettings = formMeta?.settings?.revisionTracking;
+        if (revSettings?.enabled && !readOnly) {
+            const { hasRelevantChanges, buildRevisionEntry } = await import('../services/revisionService.js');
+            const origSubmit = formio.submit.bind(formio);
+            formio.submit = function (...args) {
+                try {
+                    const data = this.submission?.data;
+                    if (data) {
+                        const revisions = Array.isArray(data.copyRevisions) ? data.copyRevisions : [];
+                        const lastRevision = revisions.length > 0 ? revisions[revisions.length - 1] : null;
+                        if (hasRelevantChanges(data, lastRevision, revSettings)) {
+                            const entry = buildRevisionEntry(data, currentUser, revSettings);
+                            if (!Array.isArray(data.copyRevisions)) {
+                                data.copyRevisions = [];
+                            }
+                            data.copyRevisions.push(entry);
+                        }
+                    }
+                } catch (err) {
+                    console.error('[RevisionTracking] Error in inline submit wrapper:', err);
+                }
+                return origSubmit(...args);
+            };
+        }
         actions.attachFormioErrorHandler?.(formio, "Inline submission form");
         actions.attachUserAdminSubmitGuards?.(formio, formMeta);
 

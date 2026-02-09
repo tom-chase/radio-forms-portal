@@ -32,7 +32,12 @@
   "settings": {
     "ui": {
       "alternateTitle": "Spots",
-      "submissionsTitle": "Spots"
+      "submissionsTitle": "Spots List"
+    },
+    "revisionTracking": {
+      "enabled": true,
+      "trackedFields": ["copy"],
+      "trackApprovals": true
     },
     "tabulatorList": {
       "enabled": true,
@@ -46,7 +51,7 @@
           "headerFilter": "input"
         },
         {
-          "field": "data.campaign",
+          "field": "data.campaign.data.campaignName",
           "title": "Campaign",
           "responsive": 0,
           "minWidth": 150
@@ -103,6 +108,7 @@
             "required": true
           },
           "addResource": true,
+          "addResourceText": "Add Campaign",
           "reference": true
         },
         {
@@ -208,22 +214,23 @@
           "defaultValue": "draft"
         },
         {
-          "label": "Program Manager Approval",
-          "key": "programManagerApproval",
+          "label": "Program Director Approval",
+          "key": "programDirectorApproval",
           "type": "container",
+          "hideLabel": false,
           "input": false,
           "tableView": false,
           "components": [
             {
               "label": "Approved",
-              "key": "programManagerApproved",
+              "key": "programDirectorApproved",
               "type": "checkbox",
               "input": true,
               "tableView": true
             },
             {
               "label": "Approver",
-              "key": "programManagerApprover",
+              "key": "programDirectorApprover",
               "type": "select",
               "widget": "choicesjs",
               "input": true,
@@ -238,13 +245,13 @@
               "reference": true,
               "conditional": {
                 "show": true,
-                "when": "programManagerApproved",
+                "when": "programDirectorApproved",
                 "eq": true
               }
             },
             {
               "label": "Approval Date",
-              "key": "programManagerApprovalDate",
+              "key": "programDirectorApprovalDate",
               "type": "datetime",
               "input": true,
               "tableView": false,
@@ -252,7 +259,7 @@
               "format": "yyyy-MM-dd HH:mm",
               "conditional": {
                 "show": true,
-                "when": "programManagerApproved",
+                "when": "programDirectorApproved",
                 "eq": true
               }
             }
@@ -262,6 +269,7 @@
           "label": "General Manager Approval",
           "key": "generalManagerApproval",
           "type": "container",
+          "hideLabel": false,
           "input": false,
           "tableView": false,
           "components": [
@@ -313,6 +321,7 @@
           "label": "Compliance Officer Approval",
           "key": "complianceOfficerApproval",
           "type": "container",
+          "hideLabel": false,
           "input": false,
           "tableView": false,
           "components": [
@@ -361,6 +370,14 @@
           ]
         }
       ]
+    },
+    {
+      "label": "Copy Revisions",
+      "key": "copyRevisions",
+      "type": "hidden",
+      "input": true,
+      "tableView": false,
+      "defaultValue": []
     },
     {
       "label": "Submit",

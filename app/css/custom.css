@@ -436,6 +436,64 @@ label.todo-list__label input[type="checkbox"] {
     overflow: visible auto;
 }
 
+/* Revision History — Diff Styling */
+.rfp-revision-history .card-header {
+    background-color: #f8f9fa;
+}
+
+.rfp-revision-diff ins.diffins {
+    background-color: #b7e4c7;
+    text-decoration: none;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+.rfp-revision-diff del.diffdel {
+    background-color: #f8d7da;
+    text-decoration: line-through;
+}
+
+.rfp-revision-diff del.diffmod {
+    background-color: #f8d7da;
+    text-decoration: line-through;
+}
+
+.rfp-revision-diff ins.diffmod {
+    background-color: #d4edda;
+    text-decoration: none;
+}
+
+.rfp-revision-diff ins.mod {
+    background-color: #d4edda;
+    text-decoration: none;
+}
+
+.rfp-revision-diff {
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.rfp-revision-current-copy {
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.rfp-revision-snapshot {
+    line-height: 1.6;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+}
+
+.rfp-revision-history .accordion-button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.rfp-revision-history .accordion-body {
+    background-color: #fff;
+}
+
 /* Mobile optimizations for nested accordions */
 @media (max-width: 767.98px) {
     .editgrid-accordion .accordion-button {

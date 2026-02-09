@@ -10,6 +10,10 @@ import {
     getCurrentUserWithRoles
     } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
+import {
+    hasRelevantChanges,
+    buildRevisionEntry
+    } from '../services/revisionService.js';
 import { getAppBridge } from '../services/appBridge.js';
 import { loadSubmissions } from './submissions.js?v=2.19';
 
@@ -294,6 +298,17 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
             saveDraftThrottle: formMeta.settings?.saveDraftThrottle || 5000
         }
     );
+
+    // Attach revision tracking by wrapping submit() so we inject revision data
+    // into formio.submission.data *before* the SDK deep-clones it.
+    const revSettings = formMeta?.settings?.revisionTracking;
+    if (revSettings?.enabled) {
+        const origSubmit = formio.submit.bind(formio);
+        formio.submit = function (...args) {
+            injectRevisionEntry(this, revSettings, currentUser);
+            return origSubmit(...args);
+        };
+    }
     actions.attachFormioErrorHandler?.(formio, "Main form");
     actions.attachUserAdminSubmitGuards?.(formio, formMeta);
 
@@ -344,10 +359,45 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
             } catch (error) {
                 console.error('Error loading notes section:', error);
             }
+
+            // Render revision history if enabled for this form
+            if (formMeta.settings?.revisionTracking?.enabled) {
+                const revContainer = document.createElement('div');
+                revContainer.id = 'revisionHistoryContainer';
+                formRender.appendChild(revContainer);
+
+                try {
+                    const { renderRevisionHistory } = await import('./revisionHistory.js');
+                    await renderRevisionHistory(submission, formMeta, revContainer);
+                } catch (error) {
+                    console.error('Error loading revision history:', error);
+                }
+            }
         }
     }
     
     return formio;
+}
+
+function injectRevisionEntry(formio, revSettings, currentUser) {
+    try {
+        const data = formio.submission?.data;
+        if (!data) return;
+
+        const revisions = Array.isArray(data.copyRevisions) ? data.copyRevisions : [];
+        const lastRevision = revisions.length > 0 ? revisions[revisions.length - 1] : null;
+
+        if (hasRelevantChanges(data, lastRevision, revSettings)) {
+            const entry = buildRevisionEntry(data, currentUser, revSettings);
+            if (!Array.isArray(data.copyRevisions)) {
+                data.copyRevisions = [];
+            }
+            data.copyRevisions.push(entry);
+            console.log('[RevisionTracking] Revision injected. Total:', data.copyRevisions.length);
+        }
+    } catch (err) {
+        console.error('[RevisionTracking] Error injecting revision:', err);
+    }
 }
 
 export function populateBuilderFormSelect() {
