@@ -18,7 +18,7 @@ services:
       - radio-forms-dev
 
   formio:
-    image: formio/formio:4.6.0-rc.4
+    image: formio/formio:4.6.0
     platform: linux/amd64  # Use AMD64 emulation for ARM64 compatibility
     container_name: formio-dev
     restart: always

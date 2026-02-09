@@ -69,6 +69,104 @@ export async function userIsAdmin(user) {
   }
 }
 
+// Cache for hasShareSettings results keyed by form._id
+const _shareSettingsCache = new Map();
+
+/**
+ * Checks whether a form definition contains a Share Settings panel.
+ * Results are cached per form._id to avoid repeated component traversal.
+ * @param {Object} form - The form definition object
+ * @returns {boolean}
+ */
+export function hasShareSettings(form) {
+  if (!form) return false;
+  const cacheKey = form._id;
+  if (cacheKey && _shareSettingsCache.has(cacheKey)) return _shareSettingsCache.get(cacheKey);
+
+  const components = form.components || [];
+  const found = components.some(c => c.key === 'shareSettings' && c.type === 'panel');
+
+  if (cacheKey) _shareSettingsCache.set(cacheKey, found);
+  return found;
+}
+
+/**
+ * Check if a user can access a specific submission based on its share settings.
+ * Returns true if:
+ *   - The user is an admin
+ *   - The user owns the submission
+ *   - The form has no share settings panel (open access — form-level perms already handled)
+ *   - The submission matches at least one share criterion (public, roles, depts, committees, users)
+ *
+ * If the form HAS share settings but the submission has none set, the note is
+ * treated as private to the owner (and admins).
+ *
+ * @param {Object} user   - Current user ({_id, roles, data:{departments,committees,...}})
+ * @param {Object} submission - The submission to check ({owner, data:{sharePublic,...}})
+ * @param {Object} form   - The form definition (used to detect share settings)
+ * @param {Object} [options]
+ * @param {boolean} [options.isAdmin=false]
+ * @returns {boolean}
+ */
+export function checkSubmissionRowAccess(user, submission, form, { isAdmin = false } = {}) {
+  // 1. Admins always pass
+  if (isAdmin) return true;
+
+  // 2. Owner always passes
+  if (user?._id && submission?.owner && user._id === submission.owner) return true;
+
+  // 3. If the form doesn't use share settings, allow (form-level perms already handled)
+  if (!hasShareSettings(form)) return true;
+
+  const d = submission?.data || {};
+
+  // 4. Check each share criterion — any match grants access
+  // sharePublic
+  if (d.sharePublic === true) return true;
+
+  // shareRoles — array of role ID strings
+  if (Array.isArray(d.shareRoles) && d.shareRoles.length > 0) {
+    const userRoles = new Set(user?.roles || []);
+    if (d.shareRoles.some(rid => userRoles.has(typeof rid === 'object' ? rid._id : rid))) return true;
+  }
+
+  // shareDepartments — array of department submission IDs (or objects with _id)
+  if (Array.isArray(d.shareDepartments) && d.shareDepartments.length > 0) {
+    const userDepts = normalizeIdArray(user?.data?.departments);
+    const shareDepts = normalizeIdArray(d.shareDepartments);
+    if (setsOverlap(userDepts, shareDepts)) return true;
+  }
+
+  // shareCommittees — array of committee submission IDs (or objects with _id)
+  if (Array.isArray(d.shareCommittees) && d.shareCommittees.length > 0) {
+    const userComms = normalizeIdArray(user?.data?.committees);
+    const shareComms = normalizeIdArray(d.shareCommittees);
+    if (setsOverlap(userComms, shareComms)) return true;
+  }
+
+  // shareUsers — array of user submission IDs (or objects with _id)
+  if (Array.isArray(d.shareUsers) && d.shareUsers.length > 0) {
+    const uid = user?._id;
+    if (uid && d.shareUsers.some(v => (typeof v === 'object' ? v._id : v) === uid)) return true;
+  }
+
+  // 5. Form has share settings but no criteria matched → private to owner
+  return false;
+}
+
+/** Extracts a Set of ID strings from an array that may contain strings or {_id} objects. */
+function normalizeIdArray(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return new Set();
+  return new Set(arr.map(v => (typeof v === 'object' && v !== null ? v._id : v)).filter(Boolean));
+}
+
+/** Returns true if two Sets share at least one element. */
+function setsOverlap(a, b) {
+  if (!a.size || !b.size) return false;
+  for (const v of b) if (a.has(v)) return true;
+  return false;
+}
+
 export function getSubmissionPermissions(userOrRoles, formMeta, { isAdmin = false, user = null } = {}) {
   if (isAdmin) {
     return {

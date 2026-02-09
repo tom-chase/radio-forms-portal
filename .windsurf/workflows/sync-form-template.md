@@ -19,7 +19,7 @@ Use this workflow to apply form/resource definition changes to the **running** l
    ```bash
    ./scripts/sync-dev.sh <formName>
    ```
-   This internally runs `lib/sync-form-templates.sh` to update `default-template.json`, then POSTs it to the dev server's `/import` endpoint.
+   This internally runs `lib/sync-form-templates.sh` to update `default-template.json`, POSTs it to the dev server's `/import` endpoint, then runs `lib/post-bootstrap.js` to resolve dynamic IDs (roles, groups, conditionals, permissions).
 
 3. **Verify in browser**:
    - Refresh http://localhost:3000

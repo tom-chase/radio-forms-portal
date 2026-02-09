@@ -3732,6 +3732,7 @@
           "type": "read_all",
           "roles": [
             "administrator",
+            "authenticated",
             "management",
             "staff"
           ]
@@ -3779,9 +3780,7 @@
         {
           "type": "read_all",
           "roles": [
-            "administrator",
-            "management",
-            "staff"
+            "authenticated"
           ]
         },
         {
@@ -5489,7 +5488,7 @@
               "properties": {},
               "allowMultipleMasks": false,
               "addons": [],
-              "authenticate": false,
+              "authenticate": true,
               "ignoreCache": false,
               "idPath": "id",
               "clearOnRefresh": false,
@@ -5627,7 +5626,7 @@
               "sort": "",
               "redrawOn": "",
               "dataGridLabel": false,
-              "authenticate": false,
+              "authenticate": true,
               "minSearch": 0,
               "selectFields": ""
             },
@@ -5746,7 +5745,7 @@
               "sort": "",
               "redrawOn": "",
               "dataGridLabel": false,
-              "authenticate": false,
+              "authenticate": true,
               "minSearch": 0,
               "selectFields": ""
             },
@@ -5865,7 +5864,7 @@
               "sort": "",
               "redrawOn": "",
               "dataGridLabel": false,
-              "authenticate": false,
+              "authenticate": true,
               "minSearch": 0,
               "selectFields": ""
             }
@@ -6025,6 +6024,15 @@
         },
         {
           "type": "read_own",
+          "roles": [
+            "authenticated",
+            "programmer",
+            "staff",
+            "underwriting"
+          ]
+        },
+        {
+          "type": "read_all",
           "roles": [
             "authenticated",
             "programmer",

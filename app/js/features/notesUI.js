@@ -2,8 +2,9 @@
 
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
+import { getUIState } from '../state/uiState.js';
 import { getCurrentUserWithRoles } from '../services/sessionService.js';
-import { getSubmissionPermissions } from '../services/rbacService.js';
+import { getSubmissionPermissions, checkSubmissionRowAccess } from '../services/rbacService.js';
 
 /**
  * Renders a notes section for a given submission
@@ -70,7 +71,15 @@ async function loadNotes(parentType, parentId) {
             }
         });
 
-        if (!notes || notes.length === 0) {
+        // Filter notes by share settings
+        const currentUser = await getCurrentUserWithRoles();
+        const isAdmin = !!getUIState('adminMode');
+        const noteFormMeta = await formioRequest('/note', { method: 'GET' });
+        const visibleNotes = (notes || []).filter(note =>
+            checkSubmissionRowAccess(currentUser, note, noteFormMeta, { isAdmin })
+        );
+
+        if (visibleNotes.length === 0) {
             notesListContainer.innerHTML = `
                 <p class="text-muted small mb-0">No notes yet. Click "Add Note" to create one.</p>
             `;
@@ -80,7 +89,7 @@ async function loadNotes(parentType, parentId) {
         // Render notes list
         let html = '<div class="list-group list-group-flush">';
         
-        for (const note of notes) {
+        for (const note of visibleNotes) {
             const data = note.data || {};
             const created = new Date(note.created);
             const author = data.author || 'Unknown';

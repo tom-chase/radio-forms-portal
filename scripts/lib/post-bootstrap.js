@@ -74,7 +74,7 @@ async function main() {
     }, {});
     log(`Found ${forms.length} forms.`);
 
-    const templatePath = process.env.DEFAULT_TEMPLATE_PATH || '/app/default-template.json';
+    const templatePath = process.env.DEFAULT_TEMPLATE_PATH || './config/bootstrap/default-template.json';
     let templateForms = null;
     const getTemplateForms = () => {
         if (templateForms) return templateForms;

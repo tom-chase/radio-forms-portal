@@ -48,4 +48,9 @@ curl -X POST \
   --data "$JSON_PAYLOAD" \
   "$DST_URL"
 
+# 3. Run post-bootstrap to resolve dynamic IDs (roles, groups, conditionals, permissions)
+echo ""
+echo "🔧 Running post-bootstrap configuration..."
+node ./scripts/lib/post-bootstrap.js
+
 echo "✅ Sync complete. Refresh your browser to see the changes."

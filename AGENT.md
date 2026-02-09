@@ -25,7 +25,7 @@ Details live in rules, workflows, memories, and `docs/`. Brief pointers:
 
 - **Dual-Channel Deployment**: Code (tarball push) and Form.io project (/import) are independent. See `deploy-production-code` and `deploy-production-formio` workflows.
 - **Hardcoded Config Pattern**: Production configs generated on server from `.env`. See rule: `production-stability.md`.
-- **Post-Bootstrap**: `scripts/lib/post-bootstrap.js` resolves dynamic IDs after deploy/import. Run automatically by deploy scripts.
+- **Post-Bootstrap**: `scripts/lib/post-bootstrap.js` resolves dynamic IDs after deploy/import. Run automatically by `sync-dev.sh` and deploy scripts.
 - **Migration System**: Numbered scripts in `scripts/migrations/` for structural form changes. See `create-migration` workflow and `docs/MIGRATIONS.md`.
 - **Schema as Code**: Form templates in `config/bootstrap/form_templates/`. Sync via `sync-dev.sh`. See `sync-form-template` workflow.
 - **Group Permissions**: Resource-based access via `form.settings.groupPermissions`. See `docs/GROUP_PERMISSIONS.md`.

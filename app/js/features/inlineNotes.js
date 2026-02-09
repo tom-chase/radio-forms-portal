@@ -2,8 +2,9 @@
 
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
+import { getUIState } from '../state/uiState.js';
 import { getCurrentUserWithRoles } from '../services/sessionService.js';
-import { getSubmissionPermissions } from '../services/rbacService.js';
+import { getSubmissionPermissions, checkSubmissionRowAccess } from '../services/rbacService.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -85,7 +86,7 @@ export async function openInlineNotesView(parentSubmission, parentFormMeta, user
  * Loads notes and renders them in a Tabulator table
  */
 async function loadNotesTable(parentType, parentId) {
-    const { actions } = getAppBridge();
+    const { actions, state } = getAppBridge();
     const notesTableContainer = document.getElementById('notesTableContainer');
     if (!notesTableContainer) return;
 
@@ -108,7 +109,15 @@ async function loadNotesTable(parentType, parentId) {
             }
         });
 
-        if (!notes || notes.length === 0) {
+        // Filter notes by share settings
+        const currentUser = await getCurrentUserWithRoles();
+        const isAdmin = !!getUIState('adminMode');
+        const noteFormMeta = await formioRequest('/note', { method: 'GET' });
+        const visibleNotes = (notes || []).filter(note =>
+            checkSubmissionRowAccess(currentUser, note, noteFormMeta, { isAdmin })
+        );
+
+        if (visibleNotes.length === 0) {
             notesTableContainer.innerHTML = `
                 <p class="text-muted small mb-0">No notes yet. Click "Add Note" to create one.</p>
             `;
@@ -116,7 +125,7 @@ async function loadNotesTable(parentType, parentId) {
         }
 
         // Transform notes data for Tabulator
-        const tableData = notes.map(note => ({
+        const tableData = visibleNotes.map(note => ({
             _id: note._id,
             author: note.data?.author || 'Unknown',
             title: note.data?.title || '',
@@ -232,7 +241,6 @@ async function loadNotesTable(parentType, parentId) {
         });
 
         // Store table instance for cleanup
-        const { state } = getAppBridge();
         state.inlineNotesTableInstance = table;
 
     } catch (error) {
@@ -452,13 +460,20 @@ async function loadNotesTableFormView(parentType, parentId) {
             }
         });
 
-        if (!notes || notes.length === 0) {
+        // Filter notes by share settings
+        const currentUser = await getCurrentUserWithRoles();
+        const isAdmin = !!getUIState('adminMode');
+        const noteFormMeta = await formioRequest('/note', { method: 'GET' });
+        const visibleNotes = (notes || []).filter(note =>
+            checkSubmissionRowAccess(currentUser, note, noteFormMeta, { isAdmin })
+        );
+
+        if (visibleNotes.length === 0) {
             notesTableContainer.innerHTML = '';
-            // Create empty table with placeholder
         }
 
         // Transform notes data for Tabulator
-        const tableData = notes.map(note => ({
+        const tableData = visibleNotes.map(note => ({
             _id: note._id,
             author: note.data?.author || 'Unknown',
             title: note.data?.title || '',

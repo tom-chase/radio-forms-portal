@@ -1,11 +1,14 @@
 // app/js/features/submissions.js
 
 import {
-    getSubmissionPermissions 
+    getSubmissionPermissions,
+    hasShareSettings,
+    checkSubmissionRowAccess
     } from '../services/rbacService.js';
 import { getCurrentUserWithRoles } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
+import { getUIState } from '../state/uiState.js';
 import { handleS3Upload } from '../services/uploadsService.js';
 import { showConfirm } from '../ui/modalUtils.js';
 import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tabulatorLists.js?v=2.19';
@@ -73,7 +76,25 @@ export async function loadSubmissions(formMeta, permissions, user) {
         const path = String(formMeta?.path || '').replace(/^\/+/, '');
         const subs = await formioRequest(`/${path}/submission`, { method: "GET", query: params });
 
-        state.currentSubmissions = subs || [];
+        // Filter by share settings if the form uses them
+        // formMeta from the sidebar may lack components (loadForms uses select=),
+        // so fetch the full form definition when components are missing.
+        let filteredSubs = subs || [];
+        let fullFormDef = formMeta;
+        if (!formMeta.components) {
+            try {
+                fullFormDef = await formioRequest(`/${path}`, { method: 'GET' });
+            } catch (e) {
+                console.warn('[shareFilter] Could not fetch full form def, skipping share filter', e);
+            }
+        }
+        if (hasShareSettings(fullFormDef)) {
+            const isAdmin = !!getUIState('adminMode');
+            filteredSubs = filteredSubs.filter(s =>
+                checkSubmissionRowAccess(currentUser, s, fullFormDef, { isAdmin })
+            );
+        }
+        state.currentSubmissions = filteredSubs;
 
         // Always render view toggle if form has multiple view configurations
         const hasDayPilot = hasDayPilotConfig(formMeta);
@@ -89,7 +110,7 @@ export async function loadSubmissions(formMeta, permissions, user) {
             }
         };
 
-        if (!subs.length) {
+        if (!filteredSubs.length) {
             actions.destroyInlineForm?.();
             
             // Render view toggle even with no submissions
@@ -132,26 +153,26 @@ export async function loadSubmissions(formMeta, permissions, user) {
         if (state.currentSubmissionView === 'calendar' && hasDayPilot) {
             // For calendar, we need to render the toggle first, then let DayPilot handle the rest
             subsList.innerHTML = viewToggleHtml + '<div id="rfpDayPilotCalendar"></div>';
-            rendered = await renderDayPilotCalendar(subs, formMeta, currentUser, perms);
+            rendered = await renderDayPilotCalendar(filteredSubs, formMeta, currentUser, perms);
             if (!rendered && hasTabulator) {
                 // Calendar failed, try tabulator
                 state.currentSubmissionView = 'tabulator';
                 subsList.innerHTML = viewToggleHtml + '<div id="rfpSubsTabulator"></div>';
-                rendered = await renderTabulatorList(subs, formMeta, currentUser, perms);
+                rendered = await renderTabulatorList(filteredSubs, formMeta, currentUser, perms);
             }
         } else if (state.currentSubmissionView === 'tabulator' && hasTabulator) {
             subsList.innerHTML = viewToggleHtml + '<div id="rfpSubsTabulator"></div>';
-            rendered = await renderTabulatorList(subs, formMeta, currentUser, perms);
+            rendered = await renderTabulatorList(filteredSubs, formMeta, currentUser, perms);
         }
         
         // Fall back to regular table if needed
         if (!rendered) {
             state.currentSubmissionView = 'table';
-            contentHtml = await renderSubmissionsTable(subs, formMeta, currentUser, perms);
+            contentHtml = await renderSubmissionsTable(filteredSubs, formMeta, currentUser, perms);
             subsList.innerHTML = viewToggleHtml + contentHtml;
             
             // Wire up table view event handlers
-            await wireTableEventHandlers(subs, formMeta, currentUser, perms);
+            await wireTableEventHandlers(filteredSubs, formMeta, currentUser, perms);
         }
         
         // Wire up view toggle click handlers

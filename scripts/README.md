@@ -46,7 +46,7 @@ These are called by the scripts above and generally not run directly.
 | `lib/generate-formio-config.sh` | `setup-environment.sh`, `deploy-dev.sh`, `deploy-production.sh` |
 | `lib/generate-secrets.sh` | `setup-environment.sh` |
 | `lib/build-formio.sh` | `setup-environment.sh` |
-| `lib/post-bootstrap.js` | Mounted into Docker container (`/app/post-bootstrap.js`) |
+| `lib/post-bootstrap.js` | `sync-dev.sh`, Docker container (`/app/post-bootstrap.js`) |
 | `lib/run-migrations.js` | Mounted into Docker container (`/app/run-migrations.js`) |
 
 ## Script Details
@@ -69,7 +69,7 @@ POSTs a JSON template to the production Form.io `/import` endpoint. Reads `PROD_
 Exports the current project state from a running Form.io server to a JSON file. Useful for backups before `/import`.
 
 ### `sync-dev.sh`
-Non-destructive sync of form/resource definitions to the running local dev DB. Calls `lib/sync-form-templates.sh` then POSTs the updated `default-template.json` to `/import`.
+Non-destructive sync of form/resource definitions to the running local dev DB. Calls `lib/sync-form-templates.sh`, POSTs the updated `default-template.json` to `/import`, then runs `lib/post-bootstrap.js` to resolve dynamic IDs.
 
 ### `lib/sync-form-templates.sh`
 Merges individual form templates from `config/bootstrap/form_templates/` into `default-template.json`. Routes to `forms` or `resources` section based on the template's `type` property.
