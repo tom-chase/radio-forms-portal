@@ -80,6 +80,40 @@ const dataTransforms = {
             
             return eventObj;
         }).filter(event => event.start && event.end); // Filter out invalid events
+    },
+
+    eventTransform: (submissions, formMeta) => {
+        const colorMap = {
+            'meeting':         { back: '#e3f2fd', border: '#1976d2' },
+            'deadline':        { back: '#fce4ec', border: '#c62828' },
+            'community event': { back: '#e8f5e9', border: '#2e7d32' },
+            'partner event':   { back: '#fff3e0', border: '#f57c00' },
+            'outside event':   { back: '#f3e5f5', border: '#7b1fa2' },
+        };
+        const defaultColor = { back: '#f5f5f5', border: '#616161' };
+
+        return (submissions || []).map((submission) => {
+            const data = submission.data || {};
+            const start = data.startDateTime ? toLocalDateTimeString(data.startDateTime) : null;
+            const end   = data.endDateTime   ? toLocalDateTimeString(data.endDateTime)   : null;
+            const text  = data.title || data.eventType || `Event ${submission._id.substring(0, 8)}`;
+            const colors = colorMap[data.eventType] || defaultColor;
+
+            return {
+                id: submission._id,
+                text: text,
+                start: start,
+                end: end,
+                data: {
+                    submission: submission,
+                    eventType: data.eventType,
+                    author: data.author,
+                    description: data.description
+                },
+                backColor: colors.back,
+                borderColor: colors.border
+            };
+        }).filter(event => event.start && event.end);
     }
 };
 

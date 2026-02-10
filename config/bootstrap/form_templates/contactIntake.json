@@ -4,7 +4,7 @@
   "path": "contactintake",
   "type": "form",
   "display": "form",
-  "tags": ["public", "intake"],
+  "tags": ["Underwriting"],
   "access": [
     {
       "type": "read_all",

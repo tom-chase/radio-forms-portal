@@ -5,7 +5,7 @@
     "path": "user",
     "pdfComponents": [],
     "display": "form",
-    "tags": [],
+    "tags": ["General"],
     "settings": {
     "ui": {
         "alternateTitle": "Users",

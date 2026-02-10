@@ -4,7 +4,7 @@
     "path": "book",
     "type": "resource",
     "display": "form",
-    "tags": [],
+    "tags": ["General"],
     "access": [
         {
             "type": "read_all",

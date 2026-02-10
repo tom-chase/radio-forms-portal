@@ -4,7 +4,7 @@
   "path": "uwlogs",
   "type": "resource",
   "display": "form",
-  "tags": ["underwriting", "traffic"],
+  "tags": ["Underwriting"],
   "access": [
     {
       "type": "read_all",

@@ -239,7 +239,8 @@
                             { "label": "Contact", "value": "contact" },
                             { "label": "Contract", "value": "uwContracts" },
                             { "label": "Campaign", "value": "uwCampaigns" },
-                            { "label": "Spot", "value": "uwSpots" }
+                            { "label": "Spot", "value": "uwSpots" },
+                            { "label": "Event", "value": "event" }
                         ]
                     }
                 },
@@ -329,12 +330,29 @@
                     "customConditional": "show = data.parentType === 'uwSpots';"
                 },
                 {
+                    "label": "Event",
+                    "key": "parentId_event",
+                    "type": "select",
+                    "widget": "choicesjs",
+                    "input": true,
+                    "tableView": false,
+                    "dataSrc": "resource",
+                    "data": {
+                        "resource": "event"
+                    },
+                    "valueProperty": "_id",
+                    "template": "<span>{{ item.data.title }}</span>",
+                    "searchEnabled": true,
+                    "reference": true,
+                    "customConditional": "show = data.parentType === 'event';"
+                },
+                {
                     "label": "Parent ID (Calculated)",
                     "key": "parentId",
                     "type": "hidden",
                     "input": true,
                     "tableView": false,
-                    "calculateValue": "value = data.parentId_orgs || data.parentId_contact || data.parentId_uwContracts || data.parentId_uwCampaigns || data.parentId_uwSpots || value;"
+                    "calculateValue": "value = data.parentId_orgs || data.parentId_contact || data.parentId_uwContracts || data.parentId_uwCampaigns || data.parentId_uwSpots || data.parentId_event || value;"
                 }
             ]
         },
