@@ -226,7 +226,7 @@ async function main() {
             if (comp && comp.key === key) return true;
             if (componentKeyExists(comp && comp.components, key)) return true;
             if (componentKeyExists(comp && comp.columns && comp.columns.flatMap(c => c.components || []), key)) return true;
-            if (componentKeyExists(comp && comp.rows && comp.rows.flatMap(r => r.flatMap(c => c.components || [])), key)) return true;
+            if (componentKeyExists(comp && comp.rows && Array.isArray(comp.rows) ? comp.rows.flatMap(r => Array.isArray(r) ? r.flatMap(c => c.components || []) : []) : null, key)) return true;
         }
         return false;
     };
@@ -240,7 +240,7 @@ async function main() {
             const colComps = comp && comp.columns ? comp.columns.flatMap(c => c.components || []) : null;
             const inCols = findComponentByKey(colComps, key);
             if (inCols) return inCols;
-            const rowComps = comp && comp.rows ? comp.rows.flatMap(r => r.flatMap(c => c.components || [])) : null;
+            const rowComps = comp && comp.rows && Array.isArray(comp.rows) ? comp.rows.flatMap(r => Array.isArray(r) ? r.flatMap(c => c.components || []) : []) : null;
             const inRows = findComponentByKey(rowComps, key);
             if (inRows) return inRows;
         }
@@ -512,9 +512,46 @@ show = Array.isArray(user.roles) &&
         }
     }
 
-    // --- Task 3: Admin User & Role Assignment ---
-    // User requested to handle this manually in the Form.io Admin Portal for now.
-    // Parked logic removed to stabilize the post-bootstrap script.
+    // --- Task 3: Resolve shareRoles select values to role IDs ---
+    // Forms with a shareRoles field use dataSrc:"values" with role machine names
+    // as placeholders. Rewrite them to actual role IDs so checkSubmissionRowAccess works.
+    const formsWithShareRoles = ['note', 'event'];
+    for (const shareFormName of formsWithShareRoles) {
+        const shareFormId = formMap[shareFormName];
+        if (!shareFormId) continue;
+
+        log(`Checking shareRoles values in ${shareFormName} form...`);
+        const shareResp = await fetch(`${API_BASE}/form/${shareFormId}`, { headers });
+        if (!shareResp.ok) continue;
+
+        const shareForm = await shareResp.json();
+        const shareRolesComp = findComponentByKey(shareForm.components || [], 'shareRoles');
+        if (!shareRolesComp || !shareRolesComp.data || !Array.isArray(shareRolesComp.data.values)) continue;
+
+        let changed = false;
+        shareRolesComp.data.values = shareRolesComp.data.values.map(v => {
+            const machName = v.value;
+            if (machName && roleMap[machName] && machName !== roleMap[machName]) {
+                changed = true;
+                return { label: v.label, value: roleMap[machName] };
+            }
+            return v;
+        });
+        if (changed) {
+            const putResp = await fetch(`${API_BASE}/form/${shareFormId}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(shareForm)
+            });
+            if (putResp.ok) {
+                log(`Updated ${shareFormName} shareRoles values with role IDs.`);
+            } else {
+                log(`ERROR: Failed to update ${shareFormName} shareRoles: ${putResp.status}`);
+            }
+        } else {
+            log(`${shareFormName} shareRoles values already resolved.`);
+        }
+    }
 
     log('Post-bootstrap configuration complete.');
 }

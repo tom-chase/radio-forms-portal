@@ -1,8 +1,8 @@
 {
-    "title": "Department",
+    "title": "Committee",
     "type": "resource",
-    "name": "department",
-    "path": "department",
+    "name": "committee",
+    "path": "committee",
     "pdfComponents": [],
     "display": "form",
     "tags": [],
@@ -30,7 +30,7 @@
         "maxLength": "",
         "pattern": ""
         },
-        "id": "ecf7zh9",
+        "id": "ex5ckgn",
         "placeholder": "",
         "prefix": "",
         "customClass": "",
@@ -98,7 +98,7 @@
         "action": "submit",
         "input": true,
         "theme": "primary",
-        "id": "edp1gj",
+        "id": "e9klw75",
         "placeholder": "",
         "prefix": "",
         "customClass": "",
@@ -185,8 +185,8 @@
         "administrator",
         "authenticated",
         "management",
-        "programmer",
         "staff",
+        "programmer",
         "volunteer"
         ]
     },

@@ -531,12 +531,13 @@
                 "multiple": true,
                 "data": {
                 "values": [
-                    {
-                    "label": "",
-                    "value": ""
-                    }
+                    { "label": "Administrator", "value": "administrator" },
+                    { "label": "Management", "value": "management" },
+                    { "label": "Staff", "value": "staff" },
+                    { "label": "Programmer", "value": "programmer" },
+                    { "label": "Volunteer", "value": "volunteer" }
                 ],
-                "url": "/role",
+                "url": "",
                 "headers": [
                     {
                     "key": "",
@@ -548,14 +549,14 @@
                 "custom": ""
                 },
                 "dataType": "auto",
-                "template": "<span>{{ item.title }}</span>",
-                "valueProperty": "_id",
+                "template": "<span>{{ item.label }}</span>",
+                "valueProperty": "value",
                 "key": "shareRoles",
                 "type": "select",
                 "input": true,
-                "dataSrc": "url",
+                "dataSrc": "values",
                 "lazyLoad": false,
-                "selectValues": "results",
+                "selectValues": "",
                 "searchEnabled": true,
                 "id": "ez2c6m",
                 "placeholder": "",
