@@ -7040,6 +7040,13 @@
       "pdfComponents": [],
       "display": "form",
       "tags": [],
+      "settings": {
+        "ui": {
+          "formsList": {
+            "hidden": true
+          }
+        }
+      },
       "components": [
         {
           "label": "Name",
@@ -7523,8 +7530,7 @@
       "pdfComponents": [],
       "display": "form",
       "tags": [
-        "engineering",
-        "compliance"
+        "engineering"
       ],
       "settings": {
         "ui": {
@@ -9224,7 +9230,7 @@
       "type": "resource",
       "display": "form",
       "tags": [
-        "crm"
+        "General"
       ],
       "access": [
         {

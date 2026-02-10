@@ -27,9 +27,36 @@ pre {
     float: right; /* or use Bootstrap class behavior */
 }
 
-/* Hide badge until tags are implemented */
-#formTagBadge {  
-    display: none; 
+/* Tag-grouped sidebar accordion sections */
+.rfp-tag-section {
+    border: none;
+}
+
+.rfp-tag-accordion-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.6rem;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    gap: 0.35rem;
+}
+
+.rfp-tag-accordion-btn:not(.collapsed) {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    box-shadow: none;
+}
+
+.rfp-tag-accordion-btn:focus {
+    box-shadow: none;
+}
+
+
+.rfp-tag-section .list-group-item {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    border-left: none;
+    border-right: none;
 }
 
 /* Notes Section Styling */

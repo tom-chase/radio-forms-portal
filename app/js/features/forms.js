@@ -109,6 +109,12 @@ export async function loadForms() {
     }
 }
 
+// Helper: normalize a tag string to title-case for display
+function titleCaseTag(tag) {
+    if (!tag) return '';
+    return tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+}
+
 export function renderFormsList(forms) {
     const { actions } = getAppBridge();
     const formsList = $("formsList");
@@ -124,38 +130,104 @@ export function renderFormsList(forms) {
         return;
     }
 
-    // Sort for display based on the display title
-    displayForms.sort((a, b) => 
-        getFormDisplayTitle(a).localeCompare(getFormDisplayTitle(b))
-    );
+    // Group forms by tag (case-insensitive, title-cased key).
+    // Forms with no/empty tags fall into "General".
+    // Multi-tag forms appear in each relevant section.
+    const DEFAULT_TAG = 'General';
+    const tagGroups = new Map();
 
-    formsList.innerHTML = "";
     displayForms.forEach((form) => {
+        const tags = (form.tags || []).filter(t => t && t.trim());
+        const normalizedTags = tags.length
+            ? tags.map(t => titleCaseTag(t.trim()))
+            : [DEFAULT_TAG];
+
+        normalizedTags.forEach((tag) => {
+            if (!tagGroups.has(tag)) tagGroups.set(tag, []);
+            tagGroups.get(tag).push(form);
+        });
+    });
+
+    // Sort tag keys: "General" first, then alphabetical
+    const sortedTags = [...tagGroups.keys()].sort((a, b) => {
+        if (a === DEFAULT_TAG) return -1;
+        if (b === DEFAULT_TAG) return 1;
+        return a.localeCompare(b);
+    });
+
+    // Sort forms within each group by display title
+    sortedTags.forEach((tag) => {
+        tagGroups.get(tag).sort((a, b) =>
+            getFormDisplayTitle(a).localeCompare(getFormDisplayTitle(b))
+        );
+    });
+
+    // Render tag-grouped accordion
+    formsList.innerHTML = "";
+    const accordionId = "formsTagAccordion";
+
+    sortedTags.forEach((tag, idx) => {
+        const groupForms = tagGroups.get(tag);
+        const collapseId = `formsTag-${idx}`;
+        const headingId = `formsTagHeading-${idx}`;
+        const isGeneral = (tag === DEFAULT_TAG);
+
+        const item = document.createElement("div");
+        item.className = "accordion-item rfp-tag-section";
+
+        const header = document.createElement("h2");
+        header.className = "accordion-header";
+        header.id = headingId;
+
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className =
-            "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
-        
-        // Use alternate title if configured
-        btn.textContent = getFormDisplayTitle(form);
+        btn.className = `accordion-button rfp-tag-accordion-btn${isGeneral ? '' : ' collapsed'}`;
+        btn.setAttribute("data-bs-toggle", "collapse");
+        btn.setAttribute("data-bs-target", `#${collapseId}`);
+        btn.setAttribute("aria-expanded", isGeneral ? "true" : "false");
+        btn.setAttribute("aria-controls", collapseId);
+        btn.textContent = tag;
 
-        btn.addEventListener("click", () =>
-        {
-            // Highlight the selected form
-            formsList
-                .querySelectorAll(".list-group-item.active")
-                .forEach((el) => el.classList.remove("active"));
-            btn.classList.add("active");
+        header.appendChild(btn);
+        item.appendChild(header);
 
-            renderForm(form);
+        const collapseDiv = document.createElement("div");
+        collapseDiv.id = collapseId;
+        collapseDiv.className = `accordion-collapse collapse${isGeneral ? ' show' : ''}`;
+        collapseDiv.setAttribute("aria-labelledby", headingId);
+
+        const body = document.createElement("div");
+        body.className = "accordion-body p-0";
+
+        const listGroup = document.createElement("div");
+        listGroup.className = "list-group list-group-flush small";
+
+        groupForms.forEach((form) => {
+            const formBtn = document.createElement("button");
+            formBtn.type = "button";
+            formBtn.className =
+                "list-group-item list-group-item-action";
+
+            // Use alternate title if configured
+            formBtn.textContent = getFormDisplayTitle(form);
+
+            formBtn.addEventListener("click", () => {
+                // Highlight the selected form across all tag sections
+                formsList
+                    .querySelectorAll(".list-group-item.active")
+                    .forEach((el) => el.classList.remove("active"));
+                formBtn.classList.add("active");
+
+                renderForm(form);
+            });
+            listGroup.appendChild(formBtn);
         });
-        formsList.appendChild(btn);
+
+        body.appendChild(listGroup);
+        collapseDiv.appendChild(body);
+        item.appendChild(collapseDiv);
+        formsList.appendChild(item);
     });
-    // If all forms were filtered out as non user-facing, show a helpful message.
-    if (!formsList.children.length) {
-        formsList.innerHTML =
-            '<div class="text-muted small p-2">No matching forms.</div>';
-    }
 }
 
 // Render a form and prepare new-submission panel  submissions list

@@ -1,0 +1,1424 @@
+{
+    "title": "Incident Report",
+    "type": "resource",
+    "name": "incidentReport",
+    "path": "incidentreport",
+    "pdfComponents": [],
+    "display": "form",
+    "tags": [ "engineering" ],
+    "settings": {
+        "ui": {
+            "alternateTitle": "Incident Reports"
+        },
+        "groupPermissions": [
+            {
+            "resource": "697366dcc6c9d7e9190e1ced",
+            "fieldName": "departments",
+            "access": [
+                "read_all",
+                "create_all"
+            ]
+            },
+            {
+            "resource": "697366ddc6c9d7e9190e1cf9",
+            "fieldName": "departments",
+            "access": [
+                "read_all",
+                "create_all",
+                "delete_all"
+            ]
+            }
+        ],
+        "tabulatorList": {
+            "enabled": true,
+            "dataTransform": "javascript: const serviceLabels = { fmBroadcast: 'FM Broadcast', liveStream: 'Live Stream', studio: 'Studio Equipment', itNetwork: 'IT / Network', powerHvac: 'Power / HVAC' }; return (submissions || []).map(sub => { const data = sub.data || {}; const services = []; if (data.affectedServices) { Object.entries(data.affectedServices).forEach(([key, value]) => { if (value === true) { services.push(serviceLabels[key] || key); } }); } return { ...sub, affectedServicesDisplay: services.join(', ') }; });",
+            "initialSort": [
+            {
+                "column": "data.incidentDate",
+                "dir": "desc"
+            }
+            ],
+            "layout": "fitColumns",
+            "paginationSize": 20,
+            "responsiveLayout": true,
+            "columns": [
+            {
+                "title": "Time",
+                "field": "data.incidentDate",
+                "width": 170,
+                "formatter": "datetime",
+                "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "yyyy-MM-dd HH:mm",
+                "invalidPlaceholder": ""
+                },
+                "responsive": 0
+            },
+            {
+                "title": "Severity",
+                "field": "data.severity",
+                "width": 120,
+                "headerFilter": "input",
+                "formatter": "lookup",
+                "formatterParams": {
+                "critical": "CRITICAL",
+                "major": "MAJOR",
+                "minor": "Minor",
+                "info": "Info"
+                },
+                "responsive": 0
+            },
+            {
+                "title": "Affected Services",
+                "field": "affectedServicesDisplay",
+                "headerFilter": "input",
+                "width": 200,
+                "responsive": 1
+            },
+            {
+                "title": "Summary",
+                "field": "data.summary",
+                "formatter": "textarea",
+                "headerFilter": "input",
+                "width": 240,
+                "responsive": 0
+            },
+            {
+                "title": "Status",
+                "field": "data.status",
+                "width": 130,
+                "headerFilter": "list",
+                "headerFilterParams": {
+                "values": {
+                    "new": "New",
+                    "inProgress": "In Progress",
+                    "monitoring": "Monitoring",
+                    "resolved": "Resolved",
+                    "closed": "Closed"
+                }
+                },
+                "formatter": "lookup",
+                "formatterParams": {
+                "new": "New",
+                "inProgress": "In Progress",
+                "monitoring": "Monitoring",
+                "resolved": "Resolved",
+                "closed": "Closed"
+                },
+                "responsive": 2
+            },
+            {
+                "title": "Reporter",
+                "field": "data.reporter",
+                "width": 160,
+                "headerFilter": "input",
+                "responsive": 3
+            }
+            ]
+        }
+    },
+    "components": [
+    {
+        "title": "Incident Details",
+        "collapsible": false,
+        "key": "incidentDetails",
+        "type": "panel",
+        "label": "Incident Details",
+        "components": [
+        {
+            "label": "Date & Time of Incident",
+            "format": "yyyy-MM-dd hh:mm a",
+            "enableTime": true,
+            "defaultDate": "moment()",
+            "key": "incidentDate",
+            "type": "datetime",
+            "input": true,
+            "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+            },
+            "id": "e1qrjgr",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": "",
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": false,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "calendar",
+            "displayInTimezone": "viewer",
+            "locale": "en",
+            "useLocaleSettings": false,
+            "allowInput": true,
+            "mode": "single",
+            "enableTime": true,
+            "noCalendar": false,
+            "format": "yyyy-MM-dd hh:mm a",
+            "hourIncrement": 1,
+            "minuteIncrement": 1,
+            "time_24hr": false,
+            "minDate": null,
+            "maxDate": null
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "useLocaleSettings": false,
+            "allowInput": true,
+            "enableDate": true,
+            "displayInTimezone": "viewer",
+            "timezone": "",
+            "datepickerMode": "day",
+            "datePicker": {
+            "showWeeks": true,
+            "startingDay": 0,
+            "initDate": "",
+            "minMode": "day",
+            "maxMode": "year",
+            "yearRows": 4,
+            "yearColumns": 5,
+            "minDate": null,
+            "maxDate": null
+            },
+            "timePicker": {
+            "hourStep": 1,
+            "minuteStep": 1,
+            "showMeridian": true,
+            "readonlyInput": false,
+            "mousewheel": true,
+            "arrowkeys": true
+            },
+            "customOptions": {}
+        },
+        {
+            "label": "Reporter",
+            "key": "reporter",
+            "type": "textfield",
+            "defaultValue": "",
+            "calculateValue": "value = data.reporter || (user ? user.data.email : '')",
+            "input": true,
+            "disabled": true,
+            "id": "e02vnz",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": true,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+            },
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "plain",
+            "inputMask": "",
+            "displayMask": "",
+            "spellcheck": true,
+            "truncateMultipleSpaces": false
+        },
+        {
+            "label": "Severity Level",
+            "widget": "choicesjs",
+            "tableView": true,
+            "data": {
+            "values": [
+                {
+                "label": "CRITICAL (Off-Air / Dead Air)",
+                "value": "critical"
+                },
+                {
+                "label": "MAJOR (Impaired Audio / Streaming Down)",
+                "value": "major"
+                },
+                {
+                "label": "MINOR (Non-Critical Equipment Failure)",
+                "value": "minor"
+                },
+                {
+                "label": "INFO (Maintenance / Warning)",
+                "value": "info"
+                }
+            ],
+            "json": "",
+            "url": "",
+            "resource": "",
+            "custom": ""
+            },
+            "key": "severity",
+            "type": "select",
+            "input": true,
+            "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+            },
+            "id": "e08jykf",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "attributes": {},
+            "validateOn": "change",
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "dataSrc": "values",
+            "authenticate": false,
+            "ignoreCache": false,
+            "template": "<span>{{ item.label }}</span>",
+            "idPath": "id",
+            "clearOnRefresh": false,
+            "limit": 100,
+            "valueProperty": "",
+            "lazyLoad": true,
+            "filter": "",
+            "searchEnabled": true,
+            "searchDebounce": 0.3,
+            "searchField": "",
+            "minSearch": 0,
+            "readOnlyValue": false,
+            "selectFields": "",
+            "selectThreshold": 0.3,
+            "uniqueOptions": false,
+            "fuseOptions": {
+            "include": "score",
+            "threshold": 0.3
+            },
+            "indexeddb": {
+            "filter": {}
+            },
+            "customOptions": {},
+            "useExactSearch": false
+        },
+        {
+            "label": "Affected Services",
+            "description": "Select all that apply.",
+            "key": "affectedServices",
+            "type": "selectboxes",
+            "values": [
+            {
+                "label": "FM Broadcast (Over-the-Air)",
+                "value": "fmBroadcast"
+            },
+            {
+                "label": "Live Stream",
+                "value": "liveStream"
+            },
+            {
+                "label": "Studio Equipment",
+                "value": "studio"
+            },
+            {
+                "label": "IT / Network",
+                "value": "itNetwork"
+            },
+            {
+                "label": "Power / HVAC",
+                "value": "powerHvac"
+            }
+            ],
+            "inline": false,
+            "input": true,
+            "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+            },
+            "id": "e2b2wcf",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": false,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": null,
+            "attributes": {},
+            "validateOn": "change",
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "dataSrc": "values",
+            "authenticate": false,
+            "ignoreCache": false,
+            "template": "<span>{{ item.label }}</span>",
+            "inputType": "checkbox",
+            "data": {
+            "url": ""
+            },
+            "fieldSet": false
+        }
+        ],
+        "id": "etgp6vl",
+        "input": false,
+        "placeholder": "",
+        "prefix": "",
+        "customClass": "",
+        "suffix": "",
+        "multiple": false,
+        "defaultValue": null,
+        "protected": false,
+        "unique": false,
+        "persistent": false,
+        "hidden": false,
+        "clearOnHide": false,
+        "refreshOn": "",
+        "redrawOn": "",
+        "tableView": false,
+        "modalEdit": false,
+        "dataGridLabel": false,
+        "labelPosition": "top",
+        "description": "",
+        "errorLabel": "",
+        "tooltip": "",
+        "hideLabel": false,
+        "tabindex": "",
+        "disabled": false,
+        "autofocus": false,
+        "dbIndex": false,
+        "customDefaultValue": "",
+        "calculateValue": "",
+        "calculateServer": false,
+        "widget": null,
+        "attributes": {},
+        "validateOn": "change",
+        "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+        },
+        "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+        },
+        "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+        },
+        "allowCalculateOverride": false,
+        "encrypted": false,
+        "showCharCount": false,
+        "showWordCount": false,
+        "properties": {},
+        "allowMultipleMasks": false,
+        "addons": [],
+        "tree": false,
+        "lazyLoad": false,
+        "theme": "default",
+        "breadcrumb": "default"
+    },
+    {
+        "title": "Description",
+        "key": "descriptionPanel",
+        "type": "panel",
+        "label": "Description",
+        "components": [
+        {
+            "label": "Incident Summary",
+            "placeholder": "Brief title of the issue (e.g., 'Transmitter VSWR High')",
+            "key": "summary",
+            "type": "textfield",
+            "input": true,
+            "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+            },
+            "id": "e4svofp",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": true,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "plain",
+            "inputMask": "",
+            "displayMask": "",
+            "spellcheck": true,
+            "truncateMultipleSpaces": false
+        },
+        {
+            "label": "Detailed Description",
+            "placeholder": "Describe what happened, error messages observed, and initial symptoms.",
+            "key": "description",
+            "type": "textarea",
+            "rows": 4,
+            "editor": "",
+            "input": true,
+            "id": "e44jg9",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": true,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": "",
+            "minWords": "",
+            "maxWords": ""
+            },
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "html",
+            "inputMask": "",
+            "displayMask": "",
+            "spellcheck": true,
+            "truncateMultipleSpaces": false,
+            "wysiwyg": false,
+            "fixedSize": true
+        },
+        {
+            "label": "Immediate Actions Taken",
+            "placeholder": "What steps were taken to mitigate or resolve the issue immediately?",
+            "key": "actionsTaken",
+            "type": "textarea",
+            "rows": 3,
+            "input": true,
+            "id": "ebf2tjr",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": true,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": "",
+            "minWords": "",
+            "maxWords": ""
+            },
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "html",
+            "inputMask": "",
+            "displayMask": "",
+            "spellcheck": true,
+            "truncateMultipleSpaces": false,
+            "wysiwyg": false,
+            "editor": "",
+            "fixedSize": true
+        }
+        ],
+        "id": "enkvb2g",
+        "input": false,
+        "placeholder": "",
+        "prefix": "",
+        "customClass": "",
+        "suffix": "",
+        "multiple": false,
+        "defaultValue": null,
+        "protected": false,
+        "unique": false,
+        "persistent": false,
+        "hidden": false,
+        "clearOnHide": false,
+        "refreshOn": "",
+        "redrawOn": "",
+        "tableView": false,
+        "modalEdit": false,
+        "dataGridLabel": false,
+        "labelPosition": "top",
+        "description": "",
+        "errorLabel": "",
+        "tooltip": "",
+        "hideLabel": false,
+        "tabindex": "",
+        "disabled": false,
+        "autofocus": false,
+        "dbIndex": false,
+        "customDefaultValue": "",
+        "calculateValue": "",
+        "calculateServer": false,
+        "widget": null,
+        "attributes": {},
+        "validateOn": "change",
+        "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+        },
+        "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+        },
+        "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+        },
+        "allowCalculateOverride": false,
+        "encrypted": false,
+        "showCharCount": false,
+        "showWordCount": false,
+        "properties": {},
+        "allowMultipleMasks": false,
+        "addons": [],
+        "tree": false,
+        "lazyLoad": false,
+        "theme": "default",
+        "breadcrumb": "default"
+    },
+    {
+        "title": "Engineering Resolution",
+        "key": "resolutionPanel",
+        "type": "panel",
+        "label": "Engineering Resolution",
+        "collapsible": true,
+        "collapsed": false,
+        "customConditional": "show = (data.status !== 'new');",
+        "components": [
+        {
+            "label": "Root Cause Analysis",
+            "key": "rootCause",
+            "type": "textarea",
+            "input": true,
+            "id": "exowgc",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": true,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": "",
+            "minWords": "",
+            "maxWords": ""
+            },
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "mask": false,
+            "inputType": "text",
+            "inputFormat": "html",
+            "inputMask": "",
+            "displayMask": "",
+            "spellcheck": true,
+            "truncateMultipleSpaces": false,
+            "rows": 3,
+            "wysiwyg": false,
+            "editor": "",
+            "fixedSize": true
+        },
+        {
+            "label": "Resolution Status",
+            "widget": "choicesjs",
+            "tableView": true,
+            "data": {
+            "values": [
+                {
+                "label": "New / Open",
+                "value": "new"
+                },
+                {
+                "label": "In Progress",
+                "value": "inProgress"
+                },
+                {
+                "label": "Monitoring",
+                "value": "monitoring"
+                },
+                {
+                "label": "Resolved",
+                "value": "resolved"
+                },
+                {
+                "label": "Closed",
+                "value": "closed"
+                }
+            ],
+            "json": "",
+            "url": "",
+            "resource": "",
+            "custom": ""
+            },
+            "defaultValue": "new",
+            "key": "status",
+            "type": "select",
+            "input": true,
+            "id": "e94sici",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+            },
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": [],
+            "dataSrc": "values",
+            "authenticate": false,
+            "ignoreCache": false,
+            "template": "<span>{{ item.label }}</span>",
+            "idPath": "id",
+            "clearOnRefresh": false,
+            "limit": 100,
+            "valueProperty": "",
+            "lazyLoad": true,
+            "filter": "",
+            "searchEnabled": true,
+            "searchDebounce": 0.3,
+            "searchField": "",
+            "minSearch": 0,
+            "readOnlyValue": false,
+            "selectFields": "",
+            "selectThreshold": 0.3,
+            "uniqueOptions": false,
+            "fuseOptions": {
+            "include": "score",
+            "threshold": 0.3
+            },
+            "indexeddb": {
+            "filter": {}
+            },
+            "customOptions": {},
+            "useExactSearch": false
+        },
+        {
+            "label": "Incident Duration (Minutes)",
+            "description": "Total time off-air or impaired.",
+            "key": "durationMinutes",
+            "type": "number",
+            "input": true,
+            "id": "eok2tj",
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "refreshOn": "",
+            "redrawOn": "",
+            "tableView": false,
+            "modalEdit": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "calculateServer": false,
+            "widget": {
+            "type": "input"
+            },
+            "attributes": {},
+            "validateOn": "change",
+            "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "min": "",
+            "max": "",
+            "step": "any",
+            "integer": ""
+            },
+            "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+            },
+            "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+            },
+            "allowCalculateOverride": false,
+            "encrypted": false,
+            "showCharCount": false,
+            "showWordCount": false,
+            "properties": {},
+            "allowMultipleMasks": false,
+            "addons": []
+        }
+        ],
+        "id": "eu6lwq",
+        "input": false,
+        "placeholder": "",
+        "prefix": "",
+        "customClass": "",
+        "suffix": "",
+        "multiple": false,
+        "defaultValue": null,
+        "protected": false,
+        "unique": false,
+        "persistent": false,
+        "hidden": false,
+        "clearOnHide": false,
+        "refreshOn": "",
+        "redrawOn": "",
+        "tableView": false,
+        "modalEdit": false,
+        "dataGridLabel": false,
+        "labelPosition": "top",
+        "description": "",
+        "errorLabel": "",
+        "tooltip": "",
+        "hideLabel": false,
+        "tabindex": "",
+        "disabled": false,
+        "autofocus": false,
+        "dbIndex": false,
+        "customDefaultValue": "",
+        "calculateValue": "",
+        "calculateServer": false,
+        "widget": null,
+        "attributes": {},
+        "validateOn": "change",
+        "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+        },
+        "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+        },
+        "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+        },
+        "allowCalculateOverride": false,
+        "encrypted": false,
+        "showCharCount": false,
+        "showWordCount": false,
+        "properties": {},
+        "allowMultipleMasks": false,
+        "addons": [],
+        "tree": false,
+        "lazyLoad": false,
+        "theme": "default",
+        "breadcrumb": "default"
+    },
+    {
+        "type": "button",
+        "label": "Submit Report",
+        "key": "submit",
+        "disableOnInvalid": true,
+        "action": "submit",
+        "input": true,
+        "tableView": false,
+        "id": "e6cyhr",
+        "placeholder": "",
+        "prefix": "",
+        "customClass": "",
+        "suffix": "",
+        "multiple": false,
+        "defaultValue": null,
+        "protected": false,
+        "unique": false,
+        "persistent": false,
+        "hidden": false,
+        "clearOnHide": true,
+        "refreshOn": "",
+        "redrawOn": "",
+        "modalEdit": false,
+        "dataGridLabel": true,
+        "labelPosition": "top",
+        "description": "",
+        "errorLabel": "",
+        "tooltip": "",
+        "hideLabel": false,
+        "tabindex": "",
+        "disabled": false,
+        "autofocus": false,
+        "dbIndex": false,
+        "customDefaultValue": "",
+        "calculateValue": "",
+        "calculateServer": false,
+        "widget": {
+        "type": "input"
+        },
+        "attributes": {},
+        "validateOn": "change",
+        "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+        },
+        "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+        },
+        "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+        },
+        "allowCalculateOverride": false,
+        "encrypted": false,
+        "showCharCount": false,
+        "showWordCount": false,
+        "properties": {},
+        "allowMultipleMasks": false,
+        "addons": [],
+        "size": "md",
+        "leftIcon": "",
+        "rightIcon": "",
+        "block": false,
+        "theme": "primary"
+    }
+    ],
+    "access": [
+    {
+        "type": "read_own",
+        "roles": []
+    },
+    {
+        "type": "update_own",
+        "roles": []
+    },
+    {
+        "type": "delete_own",
+        "roles": []
+    },
+    {
+        "type": "read_all",
+        "roles": [
+        "administrator",
+        "management",
+        "staff",
+        "programmer"
+        ]
+    },
+    {
+        "type": "update_all",
+        "roles": []
+    },
+    {
+        "type": "delete_all",
+        "roles": []
+    }
+    ],
+    "submissionAccess": [
+    {
+        "type": "create_own",
+        "roles": [
+        "management",
+        "staff",
+        "programmer"
+        ]
+    },
+    {
+        "type": "read_own",
+        "roles": [
+        "management",
+        "staff",
+        "programmer"
+        ]
+    },
+    {
+        "type": "update_own",
+        "roles": [
+        "management",
+        "staff",
+        "programmer"
+        ]
+    },
+    {
+        "type": "delete_own",
+        "roles": [
+        "administrator"
+        ]
+    },
+    {
+        "type": "create_all",
+        "roles": [
+        "administrator"
+        ]
+    },
+    {
+        "type": "read_all",
+        "roles": [
+        "management",
+        "programmer",
+        "staff"
+        ]
+    },
+    {
+        "type": "update_all",
+        "roles": [
+        "management"
+        ]
+    },
+    {
+        "type": "delete_all",
+        "roles": [
+        "administrator"
+        ]
+    }
+    ]
+}

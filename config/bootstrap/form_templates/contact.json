@@ -4,7 +4,7 @@
   "path": "contact",
   "type": "resource",
   "display": "form",
-  "tags": ["crm"],
+  "tags": ["General"],
   "access": [
     {
       "type": "read_all",
