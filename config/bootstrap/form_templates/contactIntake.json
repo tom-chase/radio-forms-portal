@@ -122,7 +122,9 @@
   ],
   "settings": {
       "ui": {
-          "submissionsTitle": "Contact Intake List"
+          "alternateTitle": "Contact Intake",
+          "submissionsTitle": "Contact Intake List",
+          "sortOrder": 1
       },
       "tabulatorList": {
           "enabled": true,
@@ -135,27 +137,33 @@
           "dataTransform": "contactIntakeDataTransform",
           "columns": [
              {
-                "title": "First Name",
-                "field": "data.firstName",
-                "headerFilter": "input",
-                "minWidth": 70
+                  "title": "First Name",
+                  "field": "data.firstName",
+                  "headerFilter": "input",
+                  "minWidth": 50
              },
              {
-                "title": "Last Name",
-                "field": "data.lastName",
-                "headerFilter": "input",
-                "minWidth": 70
+                  "title": "Last Name",
+                  "field": "data.lastName",
+                  "headerFilter": "input",
+                  "minWidth": 50
               },
               {
                   "title": "Organization",
                   "field": "data.organization",
                   "headerFilter": "input",
-                  "minWidth": 120
+                  "minWidth": 70
               },
               {
                   "title": "Email",
                   "field": "data.email",
-                  "width": 80,
+                  "width": 70,
+                  "headerFilter": "input"
+              },
+              {
+                  "title": "Message",
+                  "field": "data.message",
+                  "width": 150,
                   "headerFilter": "input"
               }
           ]

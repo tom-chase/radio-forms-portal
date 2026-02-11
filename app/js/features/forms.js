@@ -155,11 +155,14 @@ export function renderFormsList(forms) {
         return a.localeCompare(b);
     });
 
-    // Sort forms within each group by display title
+    // Sort forms within each group by sortOrder (low→high), then by display title
     sortedTags.forEach((tag) => {
-        tagGroups.get(tag).sort((a, b) =>
-            getFormDisplayTitle(a).localeCompare(getFormDisplayTitle(b))
-        );
+        tagGroups.get(tag).sort((a, b) => {
+            const orderA = a.settings?.ui?.sortOrder ?? Number.MAX_SAFE_INTEGER;
+            const orderB = b.settings?.ui?.sortOrder ?? Number.MAX_SAFE_INTEGER;
+            if (orderA !== orderB) return orderA - orderB;
+            return getFormDisplayTitle(a).localeCompare(getFormDisplayTitle(b));
+        });
     });
 
     // Render tag-grouped accordion

@@ -13,24 +13,20 @@
   ],
   "submissionAccess": [
     {
-      "type": "read_own",
+      "type": "read_all",
       "roles": ["authenticated"]
     },
     {
-      "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
-    },
-    {
       "type": "create_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "update_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "delete_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["management", "administrator"]
     }
   ],
   "components": [

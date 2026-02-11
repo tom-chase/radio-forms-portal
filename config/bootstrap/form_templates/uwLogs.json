@@ -32,7 +32,8 @@
   "settings": {
     "ui": {
       "alternateTitle": "Aircheck Logs",
-      "submissionsTitle": "Aircheck Logs"
+      "submissionsTitle": "Aircheck Logs",
+      "sortOrder": 6
     },
     "tabulatorList": {
       "enabled": true,

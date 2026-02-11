@@ -1,7 +1,7 @@
 {
   "title": "Underwriting Contracts",
   "name": "uwContracts",
-  "path": "uwcontracts",
+  "path": "uwcontract",
   "type": "resource",
   "display": "form",
   "tags": ["Underwriting"],
@@ -32,12 +32,19 @@
   "settings": {
     "ui": {
       "alternateTitle": "Contracts",
-      "submissionsTitle": "Contracts"
+      "submissionsTitle": "Underwriting Contracts List",
+      "sortOrder": 3
     },
     "tabulatorList": {
       "enabled": true,
       "responsiveLayout": "hide",
       "columns": [
+        {
+          "field": "data.status",
+          "title": "Status",
+          "responsive": 1,
+          "width": 100
+        },
         {
           "field": "data.contractName",
           "title": "Contract",
@@ -46,7 +53,7 @@
           "headerFilter": "input"
         },
         {
-          "field": "data.organization",
+          "field": "data.organization.data.name",
           "title": "Sponsor",
           "responsive": 0,
           "minWidth": 150
@@ -63,12 +70,6 @@
             "symbol": "$",
             "precision": 2
           }
-        },
-        {
-          "field": "data.status",
-          "title": "Status",
-          "responsive": 1,
-          "width": 100
         },
         {
           "field": "data.endDate",

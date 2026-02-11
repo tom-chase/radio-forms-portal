@@ -1,14 +1,14 @@
 {
   "title": "Underwriting Campaigns",
   "name": "uwCampaigns",
-  "path": "uwcampaigns",
+  "path": "uwcampaign",
   "type": "resource",
   "display": "form",
   "tags": ["Underwriting"],
   "access": [
     {
       "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["underwriting", "management", "administrator"]
     }
   ],
   "submissionAccess": [
@@ -32,7 +32,8 @@
   "settings": {
     "ui": {
       "alternateTitle": "Campaigns",
-      "submissionsTitle": "Campaigns"
+      "submissionsTitle": "Campaigns List",
+      "sortOrder": 4
     },
     "tabulatorList": {
       "enabled": true,

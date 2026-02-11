@@ -32,7 +32,8 @@
   "settings": {
     "ui": {
       "alternateTitle": "Spots",
-      "submissionsTitle": "Spots List"
+      "submissionsTitle": "Spots List",
+      "sortOrder": 5
     },
     "revisionTracking": {
       "enabled": true,
