@@ -48,7 +48,7 @@ backups/
 tools/
 docs/chats_ext/
 config/bootstrap/form_templates/editgrid_templates/
-config/bootstrap/form_templates/pdf_outputs/
+config/bootstrap/docs/pdf_outputs/
 config/bootstrap/form_templates/submissions/
 
 
