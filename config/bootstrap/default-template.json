@@ -13944,6 +13944,1896 @@
           "input": true
         }
       ]
+    },
+    "task": {
+      "title": "Task",
+      "name": "task",
+      "path": "task",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        ""
+      ],
+      "components": [
+        {
+          "label": "Task Title",
+          "tableView": true,
+          "key": "title",
+          "type": "textfield",
+          "input": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Details / Checklist",
+          "autoExpand": false,
+          "tableView": false,
+          "key": "details",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "description": "Use the todo-list toolbar in the editor to track subtasks."
+        },
+        {
+          "label": "Status",
+          "widget": "choicesjs",
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Open",
+                "value": "open"
+              },
+              {
+                "label": "In progress",
+                "value": "in_progress"
+              },
+              {
+                "label": "Blocked",
+                "value": "blocked"
+              },
+              {
+                "label": "Done",
+                "value": "done"
+              }
+            ]
+          },
+          "key": "status",
+          "type": "select",
+          "input": true,
+          "defaultValue": "open"
+        },
+        {
+          "label": "Priority",
+          "widget": "choicesjs",
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Low",
+                "value": "low"
+              },
+              {
+                "label": "Normal",
+                "value": "normal"
+              },
+              {
+                "label": "High",
+                "value": "high"
+              },
+              {
+                "label": "Urgent",
+                "value": "urgent"
+              }
+            ]
+          },
+          "key": "priority",
+          "type": "select",
+          "input": true,
+          "defaultValue": "normal"
+        },
+        {
+          "label": "Due Date",
+          "widget": "calendar",
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "key": "dueDate",
+          "type": "datetime",
+          "input": true
+        },
+        {
+          "label": "Category / Area",
+          "widget": "choicesjs",
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Underwriting",
+                "value": "underwriting"
+              },
+              {
+                "label": "Volunteers",
+                "value": "volunteers"
+              },
+              {
+                "label": "Programming / Shows",
+                "value": "programming"
+              },
+              {
+                "label": "Engineering / Tech",
+                "value": "engineering"
+              },
+              {
+                "label": "Fund Drive",
+                "value": "fund_drive"
+              },
+              {
+                "label": "Other",
+                "value": "other"
+              }
+            ]
+          },
+          "key": "category",
+          "type": "select",
+          "input": true
+        },
+        {
+          "label": "Internal Notes",
+          "autoExpand": false,
+          "tableView": false,
+          "key": "internalNotes",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "description": "For staff-only notes; you can later hide this from volunteers using conditional logic."
+        },
+        {
+          "title": "Share Settings",
+          "theme": "primary",
+          "collapsible": true,
+          "collapsed": true,
+          "key": "shareSettings",
+          "type": "panel",
+          "label": "Share Settings",
+          "input": false,
+          "tableView": false,
+          "persistent": false,
+          "clearOnHide": false,
+          "components": [
+            {
+              "label": "Share with Public",
+              "key": "sharePublic",
+              "type": "checkbox",
+              "input": true,
+              "defaultValue": false,
+              "labelPosition": "right",
+              "tableView": true,
+              "persistent": true,
+              "id": "task_sharepub"
+            },
+            {
+              "label": "Share with Roles",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Administrator",
+                    "value": "administrator"
+                  },
+                  {
+                    "label": "Management",
+                    "value": "management"
+                  },
+                  {
+                    "label": "Staff",
+                    "value": "staff"
+                  }
+                ]
+              },
+              "template": "<span>{{ item.label }}</span>",
+              "valueProperty": "value",
+              "key": "shareRoles",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "id": "task_shareroles"
+            },
+            {
+              "label": "Share with Departments",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "department"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareDepartments",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "task_sharedepts"
+            },
+            {
+              "label": "Share with Committees",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "committee"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareCommittees",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "task_sharecomms"
+            },
+            {
+              "label": "Share with Users",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "user"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.email }}</span>",
+              "key": "shareUsers",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "lazyLoad": true,
+              "id": "task_shareusers"
+            }
+          ]
+        },
+        {
+          "label": "Submit",
+          "showValidations": false,
+          "theme": "primary",
+          "key": "submit",
+          "type": "button",
+          "input": true,
+          "saveOnEnter": true
+        }
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ]
+    },
+    "uwCampaign": {
+      "title": "Underwriting Campaigns",
+      "name": "uwCampaign",
+      "path": "uwcampaign",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "Underwriting"
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Campaigns",
+          "submissionsTitle": "Campaigns List",
+          "sortOrder": 4
+        },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
+        "tabulatorList": {
+          "enabled": true,
+          "responsiveLayout": "hide",
+          "columns": [
+            {
+              "field": "data.campaignName",
+              "title": "Campaign",
+              "responsive": 0,
+              "minWidth": 150,
+              "headerFilter": "input"
+            },
+            {
+              "field": "data.organization",
+              "title": "Sponsor",
+              "responsive": 0,
+              "minWidth": 150
+            },
+            {
+              "field": "data.stationCampaign",
+              "title": "Station Campaign",
+              "responsive": 1,
+              "width": 150
+            },
+            {
+              "field": "data.status",
+              "title": "Status",
+              "responsive": 1,
+              "width": 100
+            },
+            {
+              "field": "data.startDate",
+              "title": "Start",
+              "responsive": 2,
+              "width": 120,
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MMM d, yyyy"
+              }
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Campaign Information",
+          "key": "campaignInfo",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Campaign Name",
+              "key": "campaignName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              },
+              "description": "Sponsor-specific campaign name (e.g., 'Acme Spring 2025')"
+            },
+            {
+              "label": "Organization",
+              "key": "organization",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "orgs"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.name }}</span>",
+              "searchEnabled": true,
+              "validate": {
+                "required": true
+              },
+              "addResource": true,
+              "reference": true
+            },
+            {
+              "label": "Contract",
+              "key": "contract",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "uwContracts"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.contractName }}</span>",
+              "searchEnabled": true,
+              "description": "Link to parent contract (optional)",
+              "addResource": true,
+              "reference": true
+            },
+            {
+              "label": "Primary Contact",
+              "key": "primaryContact",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "contact"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
+              "searchEnabled": true,
+              "addResource": true,
+              "reference": true
+            },
+            {
+              "label": "Station-Wide Campaign",
+              "key": "stationCampaign",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "description": "Station-wide campaign period this sponsor participates in (e.g., 'Fall Fund Drive 2025', 'Spring Pledge Drive 2026')"
+            }
+          ]
+        },
+        {
+          "label": "On-Air Details",
+          "key": "onAirDetails",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "On-Air Name",
+              "key": "onAirName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "description": "Short on-air label for this campaign"
+            }
+          ]
+        },
+        {
+          "label": "Campaign Period",
+          "key": "campaignPeriod",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Start Date",
+              "key": "startDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": false,
+              "format": "yyyy-MM-dd"
+            },
+            {
+              "label": "End Date",
+              "key": "endDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": false,
+              "format": "yyyy-MM-dd"
+            }
+          ]
+        },
+        {
+          "label": "Scheduling",
+          "key": "scheduling",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Spots Per Week",
+              "key": "spotsPerWeek",
+              "type": "number",
+              "input": true,
+              "tableView": true,
+              "description": "Target number of spots per week"
+            },
+            {
+              "label": "Scheduling Notes",
+              "key": "notes",
+              "type": "textarea",
+              "input": true,
+              "tableView": false,
+              "rows": 3,
+              "description": "Scheduling instructions, preferred time slots, restrictions"
+            }
+          ]
+        },
+        {
+          "label": "Status",
+          "key": "status",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              {
+                "label": "Planned",
+                "value": "planned"
+              },
+              {
+                "label": "Active",
+                "value": "active"
+              },
+              {
+                "label": "Paused",
+                "value": "paused"
+              },
+              {
+                "label": "Completed",
+                "value": "completed"
+              },
+              {
+                "label": "Cancelled",
+                "value": "cancelled"
+              }
+            ]
+          },
+          "defaultValue": "planned"
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
+        }
+      ]
+    },
+    "uwContract": {
+      "title": "Underwriting Contracts",
+      "name": "uwContract",
+      "path": "uwcontract",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "Underwriting"
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Contracts",
+          "submissionsTitle": "Underwriting Contracts List",
+          "sortOrder": 3
+        },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
+        "tabulatorList": {
+          "enabled": true,
+          "responsiveLayout": "hide",
+          "columns": [
+            {
+              "field": "data.status",
+              "title": "Status",
+              "responsive": 1,
+              "width": 100
+            },
+            {
+              "field": "data.contractName",
+              "title": "Contract",
+              "responsive": 0,
+              "minWidth": 150,
+              "headerFilter": "input"
+            },
+            {
+              "field": "data.organization.data.name",
+              "title": "Sponsor",
+              "responsive": 0,
+              "minWidth": 150
+            },
+            {
+              "field": "data.totalValue",
+              "title": "Value",
+              "responsive": 1,
+              "width": 100,
+              "formatter": "money",
+              "formatterParams": {
+                "decimal": ".",
+                "thousand": ",",
+                "symbol": "$",
+                "precision": 2
+              }
+            },
+            {
+              "field": "data.endDate",
+              "title": "End Date",
+              "responsive": 2,
+              "width": 120,
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MMM d, yyyy"
+              }
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Contract Information",
+          "key": "contractInfo",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Contract Name",
+              "key": "contractName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Organization",
+              "key": "organization",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "orgs"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.name }}</span>",
+              "searchEnabled": true,
+              "validate": {
+                "required": true
+              },
+              "addResource": true,
+              "reference": true
+            },
+            {
+              "label": "Primary Contact",
+              "key": "primaryContact",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "contact"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
+              "searchEnabled": true,
+              "addResource": true,
+              "reference": true
+            }
+          ]
+        },
+        {
+          "label": "Contract Period",
+          "key": "contractPeriod",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Start Date",
+              "key": "startDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": false,
+              "format": "yyyy-MM-dd",
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "End Date",
+              "key": "endDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": false,
+              "format": "yyyy-MM-dd",
+              "validate": {
+                "required": true
+              }
+            }
+          ]
+        },
+        {
+          "label": "Financial Details",
+          "key": "financialDetails",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Total Value (USD)",
+              "key": "totalValue",
+              "type": "number",
+              "input": true,
+              "tableView": true,
+              "delimiter": true,
+              "requireDecimal": true,
+              "validate": {
+                "min": 0
+              }
+            },
+            {
+              "label": "Billing Frequency",
+              "key": "billingFrequency",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "One-time",
+                    "value": "one_time"
+                  },
+                  {
+                    "label": "Monthly",
+                    "value": "monthly"
+                  },
+                  {
+                    "label": "Quarterly",
+                    "value": "quarterly"
+                  },
+                  {
+                    "label": "Custom",
+                    "value": "custom"
+                  }
+                ]
+              }
+            },
+            {
+              "label": "Billing Notes",
+              "key": "billingNotes",
+              "type": "textarea",
+              "input": true,
+              "tableView": false,
+              "rows": 3,
+              "description": "Payment schedule, terms, special arrangements"
+            }
+          ]
+        },
+        {
+          "label": "Copy & Messaging",
+          "key": "copyMessaging",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Copy Summary",
+              "key": "copySummary",
+              "type": "textarea",
+              "editor": "ckeditor",
+              "input": true,
+              "inputFormat": "html",
+              "tableView": false,
+              "description": "Overview of messaging, key points to include"
+            }
+          ]
+        },
+        {
+          "label": "Attachments",
+          "key": "attachments",
+          "type": "datagrid",
+          "input": true,
+          "tableView": false,
+          "reorder": true,
+          "components": [
+            {
+              "label": "File Name",
+              "key": "fileName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "File URL",
+              "key": "fileUrl",
+              "type": "url",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "Description",
+              "key": "description",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            }
+          ]
+        },
+        {
+          "label": "Approval Workflow",
+          "key": "approvalWorkflow",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Status",
+              "key": "status",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Draft",
+                    "value": "draft"
+                  },
+                  {
+                    "label": "Pending Approval",
+                    "value": "pending"
+                  },
+                  {
+                    "label": "Active",
+                    "value": "active"
+                  },
+                  {
+                    "label": "Expired",
+                    "value": "expired"
+                  },
+                  {
+                    "label": "Cancelled",
+                    "value": "cancelled"
+                  }
+                ]
+              },
+              "defaultValue": "draft"
+            },
+            {
+              "label": "Program Manager Approval",
+              "key": "programManagerApproval",
+              "type": "container",
+              "input": false,
+              "tableView": false,
+              "components": [
+                {
+                  "label": "Approved",
+                  "key": "programManagerApproved",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true
+                },
+                {
+                  "label": "Approver",
+                  "key": "programManagerApprover",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": false,
+                  "dataSrc": "resource",
+                  "data": {
+                    "resource": "user"
+                  },
+                  "valueProperty": "_id",
+                  "template": "<span>{{ item.data.email }}</span>",
+                  "searchEnabled": true,
+                  "reference": true,
+                  "conditional": {
+                    "show": true,
+                    "when": "programManagerApproved",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Approval Date",
+                  "key": "programManagerApprovalDate",
+                  "type": "datetime",
+                  "input": true,
+                  "tableView": false,
+                  "enableTime": true,
+                  "format": "yyyy-MM-dd HH:mm",
+                  "conditional": {
+                    "show": true,
+                    "when": "programManagerApproved",
+                    "eq": true
+                  }
+                }
+              ]
+            },
+            {
+              "label": "General Manager Approval",
+              "key": "generalManagerApproval",
+              "type": "container",
+              "input": false,
+              "tableView": false,
+              "components": [
+                {
+                  "label": "Approved",
+                  "key": "generalManagerApproved",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true
+                },
+                {
+                  "label": "Approver",
+                  "key": "generalManagerApprover",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": false,
+                  "dataSrc": "resource",
+                  "data": {
+                    "resource": "user"
+                  },
+                  "valueProperty": "_id",
+                  "template": "<span>{{ item.data.email }}</span>",
+                  "searchEnabled": true,
+                  "reference": true,
+                  "conditional": {
+                    "show": true,
+                    "when": "generalManagerApproved",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Approval Date",
+                  "key": "generalManagerApprovalDate",
+                  "type": "datetime",
+                  "input": true,
+                  "tableView": false,
+                  "enableTime": true,
+                  "format": "yyyy-MM-dd HH:mm",
+                  "conditional": {
+                    "show": true,
+                    "when": "generalManagerApproved",
+                    "eq": true
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Compliance Officer Approval",
+              "key": "complianceOfficerApproval",
+              "type": "container",
+              "input": false,
+              "tableView": false,
+              "components": [
+                {
+                  "label": "Approved",
+                  "key": "complianceOfficerApproved",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true
+                },
+                {
+                  "label": "Approver",
+                  "key": "complianceOfficerApprover",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": false,
+                  "dataSrc": "resource",
+                  "data": {
+                    "resource": "user"
+                  },
+                  "valueProperty": "_id",
+                  "template": "<span>{{ item.data.email }}</span>",
+                  "searchEnabled": true,
+                  "reference": true,
+                  "conditional": {
+                    "show": true,
+                    "when": "complianceOfficerApproved",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Approval Date",
+                  "key": "complianceOfficerApprovalDate",
+                  "type": "datetime",
+                  "input": true,
+                  "tableView": false,
+                  "enableTime": true,
+                  "format": "yyyy-MM-dd HH:mm",
+                  "conditional": {
+                    "show": true,
+                    "when": "complianceOfficerApproved",
+                    "eq": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Internal Notes",
+          "key": "notes",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "inputFormat": "html",
+          "tableView": false
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
+        }
+      ]
+    },
+    "uwLog": {
+      "title": "Underwriting Log Entries",
+      "name": "uwLog",
+      "path": "uwlog",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "Underwriting"
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Aircheck Logs",
+          "submissionsTitle": "Aircheck Logs",
+          "sortOrder": 6
+        },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
+        "tabulatorList": {
+          "enabled": true,
+          "responsiveLayout": "hide",
+          "columns": [
+            {
+              "field": "data.airDateTime",
+              "title": "Air Date/Time",
+              "responsive": 0,
+              "minWidth": 150,
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MMM d, yyyy HH:mm",
+                "timezone": "America/New_York"
+              }
+            },
+            {
+              "field": "data.campaign",
+              "title": "Campaign",
+              "responsive": 0,
+              "minWidth": 150
+            },
+            {
+              "field": "data.spot",
+              "title": "Spot",
+              "responsive": 1,
+              "minWidth": 150
+            },
+            {
+              "field": "data.programName",
+              "title": "Program",
+              "responsive": 1,
+              "width": 120
+            },
+            {
+              "field": "data.source",
+              "title": "Source",
+              "responsive": 2,
+              "width": 100
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Air Information",
+          "key": "airInfo",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Air Date/Time",
+              "key": "airDateTime",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": true,
+              "format": "yyyy-MM-dd HH:mm",
+              "validate": {
+                "required": true
+              },
+              "description": "When the spot aired"
+            },
+            {
+              "label": "Campaign",
+              "key": "campaign",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "uwCampaigns"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.campaignName }}</span>",
+              "searchEnabled": true,
+              "reference": true
+            },
+            {
+              "label": "Spot",
+              "key": "spot",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "uwSpots"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.spotName }}</span>",
+              "searchEnabled": true,
+              "description": "Which spot was aired",
+              "reference": true
+            }
+          ]
+        },
+        {
+          "label": "Program Details",
+          "key": "programDetails",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Program Name",
+              "key": "programName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "description": "Show/program name"
+            },
+            {
+              "label": "Position Notes",
+              "key": "positionNotes",
+              "type": "textfield",
+              "input": true,
+              "tableView": false,
+              "description": "Break position (e.g., 'Top of hour', 'Mid-break')"
+            }
+          ]
+        },
+        {
+          "label": "Source",
+          "key": "source",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              {
+                "label": "Manual Entry",
+                "value": "manual"
+              },
+              {
+                "label": "Automation Import",
+                "value": "automation"
+              },
+              {
+                "label": "Digital Upload",
+                "value": "digital_upload"
+              }
+            ]
+          },
+          "defaultValue": "manual",
+          "description": "How this log entry was created"
+        },
+        {
+          "label": "Audio File Reference",
+          "key": "audioFileRef",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "description": "For future integration with digital audio serving",
+          "components": [
+            {
+              "label": "Audio File URL",
+              "key": "audioFileUrl",
+              "type": "url",
+              "input": true,
+              "tableView": false,
+              "description": "URL to served audio file (for future upload/serving integration)"
+            },
+            {
+              "label": "File Hash/Checksum",
+              "key": "fileHash",
+              "type": "textfield",
+              "input": true,
+              "tableView": false,
+              "description": "For verification and deduplication"
+            }
+          ]
+        },
+        {
+          "label": "Notes",
+          "key": "notes",
+          "type": "textarea",
+          "input": true,
+          "tableView": false,
+          "rows": 3,
+          "description": "Any additional notes about this airing"
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
+        }
+      ]
+    },
+    "uwSpot": {
+      "title": "Underwriting Spots",
+      "name": "uwSpot",
+      "path": "uwspot",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "Underwriting"
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Spots",
+          "submissionsTitle": "Spots List",
+          "sortOrder": 5
+        },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
+        "revisionTracking": {
+          "enabled": true,
+          "trackedFields": [
+            "copy"
+          ],
+          "trackApprovals": true
+        },
+        "tabulatorList": {
+          "enabled": true,
+          "responsiveLayout": "hide",
+          "columns": [
+            {
+              "field": "data.spotName",
+              "title": "Spot",
+              "responsive": 0,
+              "minWidth": 150,
+              "headerFilter": "input"
+            },
+            {
+              "field": "data.campaign.data.campaignName",
+              "title": "Campaign",
+              "responsive": 0,
+              "minWidth": 150
+            },
+            {
+              "field": "data.lengthSeconds",
+              "title": "Length",
+              "responsive": 1,
+              "width": 80,
+              "formatter": "plaintext"
+            },
+            {
+              "field": "data.status",
+              "title": "Status",
+              "responsive": 1,
+              "width": 100
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Spot Information",
+          "key": "spotInfo",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Spot Name",
+              "key": "spotName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Campaign",
+              "key": "campaign",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "uwCampaigns"
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.campaignName }}</span>",
+              "searchEnabled": true,
+              "validate": {
+                "required": true
+              },
+              "addResource": true,
+              "addResourceText": "Add Campaign",
+              "reference": true
+            },
+            {
+              "label": "Length (seconds)",
+              "key": "lengthSeconds",
+              "type": "number",
+              "input": true,
+              "tableView": true,
+              "description": "Duration in seconds (e.g., 30, 60)"
+            }
+          ]
+        },
+        {
+          "label": "Copy & Script",
+          "key": "copyScript",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Copy/Script",
+              "key": "copy",
+              "type": "textarea",
+              "editor": "ckeditor",
+              "input": true,
+              "inputFormat": "html",
+              "tableView": false,
+              "description": "Full script text for the spot"
+            }
+          ]
+        },
+        {
+          "label": "Audio File",
+          "key": "audioFile",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Audio URL",
+              "key": "audioUrl",
+              "type": "url",
+              "input": true,
+              "tableView": true,
+              "description": "URL to audio file (for future upload/serving integration)"
+            }
+          ]
+        },
+        {
+          "label": "Attachments",
+          "key": "attachments",
+          "type": "datagrid",
+          "input": true,
+          "tableView": false,
+          "reorder": true,
+          "components": [
+            {
+              "label": "File Name",
+              "key": "fileName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "File URL",
+              "key": "fileUrl",
+              "type": "url",
+              "input": true,
+              "tableView": true
+            },
+            {
+              "label": "Description",
+              "key": "description",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            }
+          ]
+        },
+        {
+          "label": "Approval Workflow",
+          "key": "approvalWorkflow",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Status",
+              "key": "status",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Draft",
+                    "value": "draft"
+                  },
+                  {
+                    "label": "Pending Approval",
+                    "value": "pending"
+                  },
+                  {
+                    "label": "Approved",
+                    "value": "approved"
+                  },
+                  {
+                    "label": "Deprecated",
+                    "value": "deprecated"
+                  }
+                ]
+              },
+              "defaultValue": "draft"
+            },
+            {
+              "label": "Program Director Approval",
+              "key": "programDirectorApproval",
+              "type": "container",
+              "hideLabel": false,
+              "input": false,
+              "tableView": false,
+              "components": [
+                {
+                  "label": "Approved",
+                  "key": "programDirectorApproved",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true
+                },
+                {
+                  "label": "Approver",
+                  "key": "programDirectorApprover",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": false,
+                  "dataSrc": "resource",
+                  "data": {
+                    "resource": "user"
+                  },
+                  "valueProperty": "_id",
+                  "template": "<span>{{ item.data.email }}</span>",
+                  "searchEnabled": true,
+                  "reference": true,
+                  "conditional": {
+                    "show": true,
+                    "when": "programDirectorApproved",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Approval Date",
+                  "key": "programDirectorApprovalDate",
+                  "type": "datetime",
+                  "input": true,
+                  "tableView": false,
+                  "enableTime": true,
+                  "format": "yyyy-MM-dd HH:mm",
+                  "conditional": {
+                    "show": true,
+                    "when": "programDirectorApproved",
+                    "eq": true
+                  }
+                }
+              ]
+            },
+            {
+              "label": "General Manager Approval",
+              "key": "generalManagerApproval",
+              "type": "container",
+              "hideLabel": false,
+              "input": false,
+              "tableView": false,
+              "components": [
+                {
+                  "label": "Approved",
+                  "key": "generalManagerApproved",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true
+                },
+                {
+                  "label": "Approver",
+                  "key": "generalManagerApprover",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": false,
+                  "dataSrc": "resource",
+                  "data": {
+                    "resource": "user"
+                  },
+                  "valueProperty": "_id",
+                  "template": "<span>{{ item.data.email }}</span>",
+                  "searchEnabled": true,
+                  "reference": true,
+                  "conditional": {
+                    "show": true,
+                    "when": "generalManagerApproved",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Approval Date",
+                  "key": "generalManagerApprovalDate",
+                  "type": "datetime",
+                  "input": true,
+                  "tableView": false,
+                  "enableTime": true,
+                  "format": "yyyy-MM-dd HH:mm",
+                  "conditional": {
+                    "show": true,
+                    "when": "generalManagerApproved",
+                    "eq": true
+                  }
+                }
+              ]
+            },
+            {
+              "label": "Compliance Officer Approval",
+              "key": "complianceOfficerApproval",
+              "type": "container",
+              "hideLabel": false,
+              "input": false,
+              "tableView": false,
+              "components": [
+                {
+                  "label": "Approved",
+                  "key": "complianceOfficerApproved",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true
+                },
+                {
+                  "label": "Approver",
+                  "key": "complianceOfficerApprover",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": false,
+                  "dataSrc": "resource",
+                  "data": {
+                    "resource": "user"
+                  },
+                  "valueProperty": "_id",
+                  "template": "<span>{{ item.data.email }}</span>",
+                  "searchEnabled": true,
+                  "reference": true,
+                  "conditional": {
+                    "show": true,
+                    "when": "complianceOfficerApproved",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Approval Date",
+                  "key": "complianceOfficerApprovalDate",
+                  "type": "datetime",
+                  "input": true,
+                  "tableView": false,
+                  "enableTime": true,
+                  "format": "yyyy-MM-dd HH:mm",
+                  "conditional": {
+                    "show": true,
+                    "when": "complianceOfficerApproved",
+                    "eq": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Copy Revisions",
+          "key": "copyRevisions",
+          "type": "hidden",
+          "input": true,
+          "tableView": false,
+          "defaultValue": []
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
+        }
+      ]
     }
   },
   "revisions": {}
