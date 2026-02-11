@@ -8,13 +8,13 @@
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
       "type": "create_all",

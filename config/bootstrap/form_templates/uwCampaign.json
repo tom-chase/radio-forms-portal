@@ -1,6 +1,6 @@
 {
   "title": "Underwriting Campaigns",
-  "name": "uwCampaigns",
+  "name": "uwCampaign",
   "path": "uwcampaign",
   "type": "resource",
   "display": "form",
@@ -8,25 +8,25 @@
   "access": [
     {
       "type": "read_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
       "type": "create_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "update_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "delete_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["management", "administrator"]
     }
   ],
   "settings": {
@@ -35,6 +35,14 @@
       "submissionsTitle": "Campaigns List",
       "sortOrder": 4
     },
+    "groupPermissions": [
+      {
+        "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+        "fieldName": "departments",
+        "access": ["read_all", "create_all"],
+        "_groupName": "Underwriting"
+      }
+    ],
     "tabulatorList": {
       "enabled": true,
       "responsiveLayout": "hide",

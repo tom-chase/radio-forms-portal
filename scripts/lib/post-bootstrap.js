@@ -397,69 +397,79 @@ async function main() {
         }
     };
 
-    const engineeringDeptId = await ensureSubmission('department', { name: 'Engineering' }, { name: 'Engineering', description: 'Engineering Department' });
-    const technologyCommId = await ensureSubmission('committee', { name: 'Technology' }, { name: 'Technology', description: 'Technology Committee' });
+    // --- Declarative group submission map ---
+    // To add a new group: add one entry here + _groupName in the form template + form name to formsToUpdate.
+    const groupSubmissions = {
+        Engineering: await ensureSubmission('department', { name: 'Engineering' }, { name: 'Engineering', description: 'Engineering Department' }),
+        Underwriting: await ensureSubmission('department', { name: 'Underwriting' }, { name: 'Underwriting', description: 'Underwriting Department' }),
+        Programming: await ensureSubmission('department', { name: 'Programming' }, { name: 'Programming', description: 'Programming Department' }),
+        Technology: await ensureSubmission('committee', { name: 'Technology' }, { name: 'Technology', description: 'Technology Committee' }),
+    };
 
-    const formsToUpdate = ['incidentReport', 'engineeringSchedule'];
-    
-    if (!engineeringDeptId) {
-        log('WARNING: Could not ensure Engineering Department. Skipping related permissions updates.');
-    } else {
-        for (const formName of formsToUpdate) {
-            const formId = formMap[formName];
-            if (!formId) {
-                log(`Form ${formName} not found.`);
-                continue;
-            }
+    log(`Group submission IDs: ${JSON.stringify(Object.fromEntries(Object.entries(groupSubmissions).filter(([, v]) => v)))}`);
 
-            log(`Updating group permissions for ${formName}...`);
-            const formResp = await fetch(`${API_BASE}/form/${formId}`, { headers });
-            const form = await formResp.json();
+    // All forms that use groupPermissions
+    const formsToUpdate = [
+        'incidentReport', 'engineeringSchedule',
+        'contactIntake', 'uwContracts', 'uwCampaigns', 'uwSpots', 'uwLogs',
+        'programmingShow', 'programmingRundown'
+    ];
 
-            let updated = false;
-            if (form.settings && form.settings.groupPermissions) {
-                form.settings.groupPermissions = form.settings.groupPermissions.map(perm => {
-                    // Match by fieldName or resource machine name hint from template
-                    // Entry 1: fieldName='departments', access includes create_all/read_all -> Engineering Dept
-                    // Entry 2: fieldName='departments', access includes delete_all -> Technology Committee
-                    
-                    // Logic: If it looks like a Department link, point to Engineering Dept ID.
-                    // If it looks like a Committee link, point to Technology Comm ID.
+    for (const formName of formsToUpdate) {
+        const formId = formMap[formName];
+        if (!formId) {
+            log(`Form ${formName} not found. Skipping group permissions.`);
+            continue;
+        }
 
-                    // Check if it's the Department entry
-                    // In default-template, the first one is department (no delete_all), second is committee (has delete_all)
-                    // But relying on index is risky.
-                    // Rely on 'resource' value matching the placeholder string "department" or "committee" 
-                    // OR matching the WRONG ID if we ran this before.
-                    
-                    const isDept = (perm.resource === 'department' || perm.resource === formMap['department'] || !perm.access.includes('delete_all'));
-                    const isComm = (perm.resource === 'committee' || perm.resource === formMap['committee'] || perm.access.includes('delete_all'));
+        const formResp = await fetch(`${API_BASE}/form/${formId}`, { headers });
+        if (!formResp.ok) {
+            log(`WARNING: Could not fetch form ${formName} for group permissions update.`);
+            continue;
+        }
+        const form = await formResp.json();
 
-                    if (isDept && engineeringDeptId) {
-                        if (perm.resource !== engineeringDeptId) {
-                             perm.resource = engineeringDeptId;
-                             updated = true;
-                        }
-                    } else if (isComm && technologyCommId) {
-                        if (perm.resource !== technologyCommId) {
-                            perm.resource = technologyCommId;
-                            updated = true;
-                        }
+        let updated = false;
+        if (form.settings && Array.isArray(form.settings.groupPermissions)) {
+            form.settings.groupPermissions = form.settings.groupPermissions.map(perm => {
+                // Data-driven resolution via _groupName marker
+                if (perm._groupName && groupSubmissions[perm._groupName]) {
+                    const targetId = groupSubmissions[perm._groupName];
+                    if (perm.resource !== targetId) {
+                        perm.resource = targetId;
+                        updated = true;
                     }
                     return perm;
-                });
-            }
+                }
 
-            if (updated) {
-                await fetch(`${API_BASE}/form/${formId}`, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(form)
-                });
-                log(`Updated ${formName} group permissions.`);
-            } else {
-                log(`No changes needed for ${formName}.`);
-            }
+                // Legacy fallback for entries without _groupName (backward compat)
+                const isDept = (perm.resource === 'department' || perm.resource === formMap['department'] || !perm.access.includes('delete_all'));
+                const isComm = (perm.resource === 'committee' || perm.resource === formMap['committee'] || perm.access.includes('delete_all'));
+
+                if (isDept && groupSubmissions.Engineering) {
+                    if (perm.resource !== groupSubmissions.Engineering) {
+                        perm.resource = groupSubmissions.Engineering;
+                        updated = true;
+                    }
+                } else if (isComm && groupSubmissions.Technology) {
+                    if (perm.resource !== groupSubmissions.Technology) {
+                        perm.resource = groupSubmissions.Technology;
+                        updated = true;
+                    }
+                }
+                return perm;
+            });
+        }
+
+        if (updated) {
+            await fetch(`${API_BASE}/form/${formId}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(form)
+            });
+            log(`Updated ${formName} group permissions.`);
+        } else {
+            log(`No changes needed for ${formName}.`);
         }
     }
 

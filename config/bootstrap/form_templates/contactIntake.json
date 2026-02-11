@@ -18,11 +18,11 @@
     },
     {
       "type": "read_all",
-      "roles": ["staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
       "type": "update_all",
-      "roles": ["staff", "underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "delete_all",
@@ -126,6 +126,14 @@
           "submissionsTitle": "Contact Intake List",
           "sortOrder": 1
       },
+      "groupPermissions": [
+          {
+              "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+              "fieldName": "departments",
+              "access": ["read_all"],
+              "_groupName": "Underwriting"
+          }
+      ],
       "tabulatorList": {
           "enabled": true,
           "layout": "fitColumns",

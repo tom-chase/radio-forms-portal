@@ -1,89 +1,109 @@
 {
-  "title": "Underwriting Spots",
-  "name": "uwSpots",
-  "path": "uwspots",
+  "title": "Underwriting Contracts",
+  "name": "uwContract",
+  "path": "uwcontract",
   "type": "resource",
   "display": "form",
   "tags": ["Underwriting"],
   "access": [
     {
       "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
       "type": "create_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "update_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "delete_all",
-      "roles": ["underwriting", "management", "administrator"]
+      "roles": ["management", "administrator"]
     }
   ],
   "settings": {
     "ui": {
-      "alternateTitle": "Spots",
-      "submissionsTitle": "Spots List",
-      "sortOrder": 5
+      "alternateTitle": "Contracts",
+      "submissionsTitle": "Underwriting Contracts List",
+      "sortOrder": 3
     },
-    "revisionTracking": {
-      "enabled": true,
-      "trackedFields": ["copy"],
-      "trackApprovals": true
-    },
+    "groupPermissions": [
+      {
+        "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+        "fieldName": "departments",
+        "access": ["read_all", "create_all"],
+        "_groupName": "Underwriting"
+      }
+    ],
     "tabulatorList": {
       "enabled": true,
       "responsiveLayout": "hide",
       "columns": [
         {
-          "field": "data.spotName",
-          "title": "Spot",
+          "field": "data.status",
+          "title": "Status",
+          "responsive": 1,
+          "width": 100
+        },
+        {
+          "field": "data.contractName",
+          "title": "Contract",
           "responsive": 0,
           "minWidth": 150,
           "headerFilter": "input"
         },
         {
-          "field": "data.campaign.data.campaignName",
-          "title": "Campaign",
+          "field": "data.organization.data.name",
+          "title": "Sponsor",
           "responsive": 0,
           "minWidth": 150
         },
         {
-          "field": "data.lengthSeconds",
-          "title": "Length",
+          "field": "data.totalValue",
+          "title": "Value",
           "responsive": 1,
-          "width": 80,
-          "formatter": "plaintext"
+          "width": 100,
+          "formatter": "money",
+          "formatterParams": {
+            "decimal": ".",
+            "thousand": ",",
+            "symbol": "$",
+            "precision": 2
+          }
         },
         {
-          "field": "data.status",
-          "title": "Status",
-          "responsive": 1,
-          "width": 100
+          "field": "data.endDate",
+          "title": "End Date",
+          "responsive": 2,
+          "width": 120,
+          "formatter": "datetime",
+          "formatterParams": {
+            "inputFormat": "iso",
+            "outputFormat": "MMM d, yyyy"
+          }
         }
       ]
     }
   },
   "components": [
     {
-      "label": "Spot Information",
-      "key": "spotInfo",
+      "label": "Contract Information",
+      "key": "contractInfo",
       "type": "panel",
       "input": false,
       "tableView": false,
       "components": [
         {
-          "label": "Spot Name",
-          "key": "spotName",
+          "label": "Contract Name",
+          "key": "contractName",
           "type": "textfield",
           "input": true,
           "tableView": true,
@@ -92,69 +112,140 @@
           }
         },
         {
-          "label": "Campaign",
-          "key": "campaign",
+          "label": "Organization",
+          "key": "organization",
           "type": "select",
           "widget": "choicesjs",
           "input": true,
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "uwCampaigns"
+            "resource": "orgs"
           },
           "valueProperty": "_id",
-          "template": "<span>{{ item.data.campaignName }}</span>",
+          "template": "<span>{{ item.data.name }}</span>",
           "searchEnabled": true,
           "validate": {
             "required": true
           },
           "addResource": true,
-          "addResourceText": "Add Campaign",
           "reference": true
         },
         {
-          "label": "Length (seconds)",
-          "key": "lengthSeconds",
-          "type": "number",
+          "label": "Primary Contact",
+          "key": "primaryContact",
+          "type": "select",
+          "widget": "choicesjs",
           "input": true,
           "tableView": true,
-          "description": "Duration in seconds (e.g., 30, 60)"
+          "dataSrc": "resource",
+          "data": {
+            "resource": "contact"
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
+          "searchEnabled": true,
+          "addResource": true,
+          "reference": true
         }
       ]
     },
     {
-      "label": "Copy & Script",
-      "key": "copyScript",
+      "label": "Contract Period",
+      "key": "contractPeriod",
       "type": "panel",
       "input": false,
       "tableView": false,
       "components": [
         {
-          "label": "Copy/Script",
-          "key": "copy",
+          "label": "Start Date",
+          "key": "startDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "End Date",
+          "key": "endDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "validate": {
+            "required": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "Financial Details",
+      "key": "financialDetails",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Total Value (USD)",
+          "key": "totalValue",
+          "type": "number",
+          "input": true,
+          "tableView": true,
+          "delimiter": true,
+          "requireDecimal": true,
+          "validate": {
+            "min": 0
+          }
+        },
+        {
+          "label": "Billing Frequency",
+          "key": "billingFrequency",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              { "label": "One-time", "value": "one_time" },
+              { "label": "Monthly", "value": "monthly" },
+              { "label": "Quarterly", "value": "quarterly" },
+              { "label": "Custom", "value": "custom" }
+            ]
+          }
+        },
+        {
+          "label": "Billing Notes",
+          "key": "billingNotes",
+          "type": "textarea",
+          "input": true,
+          "tableView": false,
+          "rows": 3,
+          "description": "Payment schedule, terms, special arrangements"
+        }
+      ]
+    },
+    {
+      "label": "Copy & Messaging",
+      "key": "copyMessaging",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Copy Summary",
+          "key": "copySummary",
           "type": "textarea",
           "editor": "ckeditor",
           "input": true,
           "inputFormat": "html",
           "tableView": false,
-          "description": "Full script text for the spot"
-        }
-      ]
-    },
-    {
-      "label": "Audio File",
-      "key": "audioFile",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Audio URL",
-          "key": "audioUrl",
-          "type": "url",
-          "input": true,
-          "tableView": true,
-          "description": "URL to audio file (for future upload/serving integration)"
+          "description": "Overview of messaging, key points to include"
         }
       ]
     },
@@ -208,30 +299,30 @@
             "values": [
               { "label": "Draft", "value": "draft" },
               { "label": "Pending Approval", "value": "pending" },
-              { "label": "Approved", "value": "approved" },
-              { "label": "Deprecated", "value": "deprecated" }
+              { "label": "Active", "value": "active" },
+              { "label": "Expired", "value": "expired" },
+              { "label": "Cancelled", "value": "cancelled" }
             ]
           },
           "defaultValue": "draft"
         },
         {
-          "label": "Program Director Approval",
-          "key": "programDirectorApproval",
+          "label": "Program Manager Approval",
+          "key": "programManagerApproval",
           "type": "container",
-          "hideLabel": false,
           "input": false,
           "tableView": false,
           "components": [
             {
               "label": "Approved",
-              "key": "programDirectorApproved",
+              "key": "programManagerApproved",
               "type": "checkbox",
               "input": true,
               "tableView": true
             },
             {
               "label": "Approver",
-              "key": "programDirectorApprover",
+              "key": "programManagerApprover",
               "type": "select",
               "widget": "choicesjs",
               "input": true,
@@ -246,13 +337,13 @@
               "reference": true,
               "conditional": {
                 "show": true,
-                "when": "programDirectorApproved",
+                "when": "programManagerApproved",
                 "eq": true
               }
             },
             {
               "label": "Approval Date",
-              "key": "programDirectorApprovalDate",
+              "key": "programManagerApprovalDate",
               "type": "datetime",
               "input": true,
               "tableView": false,
@@ -260,7 +351,7 @@
               "format": "yyyy-MM-dd HH:mm",
               "conditional": {
                 "show": true,
-                "when": "programDirectorApproved",
+                "when": "programManagerApproved",
                 "eq": true
               }
             }
@@ -270,7 +361,6 @@
           "label": "General Manager Approval",
           "key": "generalManagerApproval",
           "type": "container",
-          "hideLabel": false,
           "input": false,
           "tableView": false,
           "components": [
@@ -322,7 +412,6 @@
           "label": "Compliance Officer Approval",
           "key": "complianceOfficerApproval",
           "type": "container",
-          "hideLabel": false,
           "input": false,
           "tableView": false,
           "components": [
@@ -373,12 +462,13 @@
       ]
     },
     {
-      "label": "Copy Revisions",
-      "key": "copyRevisions",
-      "type": "hidden",
+      "label": "Internal Notes",
+      "key": "notes",
+      "type": "textarea",
+      "editor": "ckeditor",
       "input": true,
-      "tableView": false,
-      "defaultValue": []
+      "inputFormat": "html",
+      "tableView": false
     },
     {
       "label": "Submit",

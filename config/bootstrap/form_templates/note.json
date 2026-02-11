@@ -533,9 +533,7 @@
                 "values": [
                     { "label": "Administrator", "value": "administrator" },
                     { "label": "Management", "value": "management" },
-                    { "label": "Staff", "value": "staff" },
-                    { "label": "Programmer", "value": "programmer" },
-                    { "label": "Volunteer", "value": "volunteer" }
+                    { "label": "Staff", "value": "staff" }
                 ],
                 "url": "",
                 "headers": [
@@ -1129,37 +1127,25 @@
     "access": [
         {
             "type": "read_all",
-            "roles": ["authenticated", "programmer", "staff", "underwriting", "management", "administrator"]
+            "roles": ["authenticated", "staff", "management", "administrator"]
         }
     ],
     "submissionAccess": [
         {
-            "type": "create_own",
-            "roles": ["authenticated", "programmer", "staff", "underwriting"]
-        },
-        {
-            "type": "read_own",
-            "roles": ["authenticated", "programmer", "staff", "underwriting"]
-        },
-        {
             "type": "read_all",
-            "roles": ["authenticated", "programmer", "staff", "underwriting"]
-        },
-        {
-            "type": "update_own",
-            "roles": ["authenticated", "programmer", "staff", "underwriting"]
-        },
-        {
-            "type": "delete_own",
-            "roles": ["authenticated", "programmer", "staff", "underwriting"]
-        },
-        {
-            "type": "read_all",
-            "roles": ["management", "administrator"]
+            "roles": ["authenticated", "staff", "management", "administrator"]
         },
         {
             "type": "create_all",
-            "roles": ["management", "administrator"]
+            "roles": ["authenticated", "staff", "management", "administrator"]
+        },
+        {
+            "type": "update_own",
+            "roles": ["authenticated", "staff", "management", "administrator"]
+        },
+        {
+            "type": "delete_own",
+            "roles": ["authenticated", "staff", "management", "administrator"]
         },
         {
             "type": "update_all",

@@ -168,80 +168,26 @@
     ],
     "access": [
     {
-        "type": "read_own",
-        "roles": []
-    },
-    {
-        "type": "update_own",
-        "roles": []
-    },
-    {
-        "type": "delete_own",
-        "roles": []
-    },
-    {
         "type": "read_all",
-        "roles": [
-        "administrator",
-        "authenticated",
-        "management",
-        "staff",
-        "programmer",
-        "volunteer"
-        ]
-    },
-    {
-        "type": "update_all",
-        "roles": []
-    },
-    {
-        "type": "delete_all",
-        "roles": []
+        "roles": ["authenticated", "staff", "management", "administrator"]
     }
     ],
     "submissionAccess": [
     {
-        "type": "create_own",
-        "roles": [
-        "administrator",
-        "management",
-        "staff"
-        ]
-    },
-    {
-        "type": "read_own",
-        "roles": []
-    },
-    {
-        "type": "update_own",
-        "roles": []
-    },
-    {
-        "type": "delete_own",
-        "roles": []
+        "type": "read_all",
+        "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
         "type": "create_all",
-        "roles": []
-    },
-    {
-        "type": "read_all",
-        "roles": [
-        "administrator",
-        "authenticated",
-        "management",
-        "programmer",
-        "staff",
-        "volunteer"
-        ]
+        "roles": ["management", "administrator"]
     },
     {
         "type": "update_all",
-        "roles": []
+        "roles": ["management", "administrator"]
     },
     {
         "type": "delete_all",
-        "roles": []
+        "roles": ["administrator"]
     }
     ]
 }

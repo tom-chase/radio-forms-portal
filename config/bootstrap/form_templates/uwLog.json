@@ -1,32 +1,32 @@
 {
   "title": "Underwriting Log Entries",
-  "name": "uwLogs",
-  "path": "uwlogs",
+  "name": "uwLog",
+  "path": "uwlog",
   "type": "resource",
   "display": "form",
   "tags": ["Underwriting"],
   "access": [
     {
       "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["programmer", "staff", "underwriting", "management", "administrator"]
+      "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
       "type": "create_all",
-      "roles": ["programmer", "underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "update_all",
-      "roles": ["programmer", "underwriting", "management", "administrator"]
+      "roles": ["staff", "management", "administrator"]
     },
     {
       "type": "delete_all",
-      "roles": ["programmer", "underwriting", "management", "administrator"]
+      "roles": ["management", "administrator"]
     }
   ],
   "settings": {
@@ -35,6 +35,14 @@
       "submissionsTitle": "Aircheck Logs",
       "sortOrder": 6
     },
+    "groupPermissions": [
+      {
+        "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+        "fieldName": "departments",
+        "access": ["read_all", "create_all"],
+        "_groupName": "Underwriting"
+      }
+    ],
     "tabulatorList": {
       "enabled": true,
       "responsiveLayout": "hide",

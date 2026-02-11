@@ -28,7 +28,9 @@ Details live in rules, workflows, memories, and `docs/`. Brief pointers:
 - **Post-Bootstrap**: `scripts/lib/post-bootstrap.js` resolves dynamic IDs after deploy/import. Run automatically by `sync-dev.sh` and deploy scripts.
 - **Migration System**: Numbered scripts in `scripts/migrations/` for structural form changes. See `create-migration` workflow and `docs/MIGRATIONS.md`.
 - **Schema as Code**: Form templates in `config/bootstrap/form_templates/`. Sync via `sync-dev.sh`. See `sync-form-template` workflow.
-- **Group Permissions**: Resource-based access via `form.settings.groupPermissions`. See `docs/GROUP_PERMISSIONS.md`.
+- **Three-Layer Access**: Roles (server) → Groups (client sidebar) → Shares (client row-level). See rule: `formio-patterns.md` and `docs/GROUP_PERMISSIONS.md`.
+- **Role Hierarchy**: `anonymous` → `authenticated` → `staff` → `management` → `administrator`. Dept scoping uses groups, not roles.
+- **Departments**: Engineering, Underwriting, Programming. **Committees**: Technology.
 - **Tabulator Display**: Columns driven by `form.settings.tabulatorList` and data transforms, not form components.
 
 ## Debugging Reminders

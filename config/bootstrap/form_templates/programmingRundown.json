@@ -1,0 +1,478 @@
+{
+  "title": "Show Rundown",
+  "name": "programmingRundown",
+  "path": "programmingrundown",
+  "type": "resource",
+  "display": "form",
+  "tags": ["Programming"],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["authenticated", "staff", "management", "administrator"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": ["authenticated", "staff", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["management", "administrator"]
+    }
+  ],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Show Rundowns",
+      "submissionsTitle": "Show Rundowns"
+    },
+    "groupPermissions": [
+      {
+        "resource": "PROGRAMMING_DEPT_PLACEHOLDER",
+        "fieldName": "departments",
+        "access": ["read_all", "create_all"],
+        "_groupName": "Programming"
+      },
+      {
+        "resource": "TECHNOLOGY_COMM_PLACEHOLDER",
+        "fieldName": "committees",
+        "access": ["read_all", "create_all", "delete_all"],
+        "_groupName": "Technology"
+      }
+    ],
+    "tabulatorList": {
+      "enabled": true,
+      "layout": "fitColumns",
+      "height": "60vh",
+      "pagination": "local",
+      "paginationSize": 25,
+      "movableColumns": true,
+      "placeholder": "No rundowns found.",
+      "columns": [
+        {
+          "title": "Show",
+          "field": "data.show.data.title",
+          "headerFilter": "input",
+          "minWidth": 180
+        },
+        {
+          "title": "Broadcast Date",
+          "field": "data.broadcastDateTime",
+          "formatter": "datetime",
+          "formatterParams": {
+            "inputFormat": "iso",
+            "outputFormat": "MMM d, yyyy HH:mm a",
+            "invalidPlaceholder": "(invalid)",
+            "timezone": "America/New_York"
+          },
+          "minWidth": 200
+        },
+        {
+          "title": "Producer",
+          "field": "data.producerName",
+          "headerFilter": "input",
+          "minWidth": 150
+        },
+        {
+          "title": "Status",
+          "field": "data.status",
+          "width": 120
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "label": "Show Information",
+      "key": "showInfoPanel",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Show",
+          "key": "show",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "programmingShow"
+          },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.title }}</span>",
+          "searchEnabled": true,
+          "authenticate": true,
+          "reference": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Broadcast Date / Time",
+          "key": "broadcastDateTime",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": true,
+          "format": "yyyy-MM-dd HH:mm",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Producer Name",
+          "key": "producerName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "Guest Information",
+      "key": "guestInfoPanel",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Guests",
+          "key": "guests",
+          "type": "editgrid",
+          "input": true,
+          "tableView": false,
+          "reorder": true,
+          "description": "List all guests with primary and backup phone numbers.",
+          "templates": {
+            "header": "<div class=\"row\">\n  <div class=\"col-sm-4\"><strong>Guest Name</strong></div>\n  <div class=\"col-sm-4\"><strong>Primary Phone</strong></div>\n  <div class=\"col-sm-4\"><strong>Backup Phone</strong></div>\n</div>",
+            "row": "<div class=\"row\">\n  <div class=\"col-sm-4\">{{ row.guestName }}</div>\n  <div class=\"col-sm-4\">{{ row.primaryPhone }}</div>\n  <div class=\"col-sm-4\">{{ row.backupPhone }}</div>\n</div>"
+          },
+          "components": [
+            {
+              "label": "Guest Name",
+              "key": "guestName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Primary Phone",
+              "key": "primaryPhone",
+              "type": "phoneNumber",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Backup Phone",
+              "key": "backupPhone",
+              "type": "phoneNumber",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Audio / Actualities",
+      "key": "audioPanel",
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Audio Files",
+          "key": "audioFiles",
+          "type": "editgrid",
+          "input": true,
+          "tableView": false,
+          "reorder": true,
+          "description": "Submit audio in MP3 format. If editing or conversion is needed, submit at least 48 hours in advance.",
+          "templates": {
+            "header": "<div class=\"row\">\n  <div class=\"col-sm-3\"><strong>Label</strong></div>\n  <div class=\"col-sm-3\"><strong>Link</strong></div>\n  <div class=\"col-sm-2\"><strong>Format</strong></div>\n  <div class=\"col-sm-2\"><strong>Needs Edit</strong></div>\n  <div class=\"col-sm-2\"><strong>Profanity</strong></div>\n</div>",
+            "row": "<div class=\"row\">\n  <div class=\"col-sm-3\">{{ row.fileLabel }}</div>\n  <div class=\"col-sm-3\"><a href=\"{{ row.fileLink }}\" target=\"_blank\">Link</a></div>\n  <div class=\"col-sm-2\">{{ row.format }}</div>\n  <div class=\"col-sm-2\">{{ row.needsEditing ? 'Yes' : 'No' }}</div>\n  <div class=\"col-sm-2\">{{ row.containsProfanity ? 'Yes' : 'No' }}</div>\n</div>"
+          },
+          "components": [
+            {
+              "label": "File Label",
+              "key": "fileLabel",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "description": "Program name, broadcast date, segment or guest reference",
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "File Link",
+              "key": "fileLink",
+              "type": "url",
+              "input": true,
+              "tableView": true,
+              "description": "Link to the audio file"
+            },
+            {
+              "label": "Format",
+              "key": "format",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  { "label": "MP3", "value": "mp3" },
+                  { "label": "Other", "value": "other" }
+                ]
+              },
+              "defaultValue": "mp3"
+            },
+            {
+              "label": "Needs Editing / Conversion",
+              "key": "needsEditing",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true,
+              "defaultValue": false,
+              "description": "Check if the file requires editing or conversion to MP3"
+            },
+            {
+              "label": "Editing Notes",
+              "key": "editingNotes",
+              "type": "textarea",
+              "input": true,
+              "tableView": false,
+              "rows": 3,
+              "description": "Describe the required editing or conversion work",
+              "conditional": {
+                "show": true,
+                "when": "needsEditing",
+                "eq": true
+              }
+            },
+            {
+              "label": "Contains Profanity Requiring Removal",
+              "key": "containsProfanity",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true,
+              "defaultValue": false
+            },
+            {
+              "label": "Profanity Edit Notes",
+              "key": "profanityNotes",
+              "type": "textarea",
+              "input": true,
+              "tableView": false,
+              "rows": 3,
+              "description": "Describe where profanity occurs and what needs to be removed",
+              "conditional": {
+                "show": true,
+                "when": "containsProfanity",
+                "eq": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Submission Deadline",
+      "key": "deadlineMet",
+      "type": "radio",
+      "input": true,
+      "tableView": true,
+      "values": [
+        { "label": "24+ hours in advance (standard)", "value": "24h" },
+        { "label": "48+ hours in advance (editing/conversion needed)", "value": "48h" },
+        { "label": "Late submission", "value": "late" }
+      ],
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Producer Checklist",
+      "key": "checklist",
+      "type": "selectboxes",
+      "input": true,
+      "tableView": false,
+      "description": "Confirm all items before submitting your rundown.",
+      "values": [
+        { "label": "Rundown emailed to Production", "value": "emailedProduction" },
+        { "label": "Program Director (PD) copied", "value": "pdCopied" },
+        { "label": "Submitted at least 24 hours before airtime", "value": "deadline24h" },
+        { "label": "Guest names included", "value": "guestNames" },
+        { "label": "Primary and backup phone numbers included", "value": "phoneNumbers" },
+        { "label": "All audio submitted in MP3 format", "value": "mp3Format" },
+        { "label": "Files clearly labeled", "value": "filesLabeled" },
+        { "label": "Editing or conversion requests clearly stated (if applicable)", "value": "editingRequests" },
+        { "label": "Editing/conversion requests submitted 48 hours in advance", "value": "editing48h" },
+        { "label": "All audio reviewed and free of profanity", "value": "profanityFree" }
+      ]
+    },
+    {
+      "label": "Internal Notes",
+      "key": "internalNotes",
+      "type": "textarea",
+      "editor": "ckeditor",
+      "input": true,
+      "inputFormat": "html",
+      "tableView": false
+    },
+    {
+      "label": "Status",
+      "key": "status",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Draft", "value": "draft" },
+          { "label": "Submitted", "value": "submitted" },
+          { "label": "Reviewed", "value": "reviewed" },
+          { "label": "Approved", "value": "approved" },
+          { "label": "Rejected", "value": "rejected" }
+        ]
+      },
+      "defaultValue": "draft"
+    },
+    {
+      "title": "Share Settings",
+      "theme": "primary",
+      "collapsible": true,
+      "collapsed": true,
+      "key": "shareSettings",
+      "type": "panel",
+      "label": "Share Settings",
+      "input": false,
+      "tableView": false,
+      "persistent": false,
+      "clearOnHide": false,
+      "components": [
+        {
+          "label": "Share with Public",
+          "key": "sharePublic",
+          "type": "checkbox",
+          "input": true,
+          "defaultValue": false,
+          "labelPosition": "right",
+          "tableView": true,
+          "persistent": true,
+          "id": "rundown_sharepub"
+        },
+        {
+          "label": "Share with Roles",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              { "label": "Administrator", "value": "administrator" },
+              { "label": "Management", "value": "management" },
+              { "label": "Staff", "value": "staff" }
+            ]
+          },
+          "template": "<span>{{ item.label }}</span>",
+          "valueProperty": "value",
+          "key": "shareRoles",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "id": "rundown_shareroles"
+        },
+        {
+          "label": "Share with Departments",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": { "resource": "department" },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.name }}</span>",
+          "key": "shareDepartments",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "authenticate": true,
+          "id": "rundown_sharedepts"
+        },
+        {
+          "label": "Share with Committees",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": { "resource": "committee" },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.name }}</span>",
+          "key": "shareCommittees",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "authenticate": true,
+          "id": "rundown_sharecomms"
+        },
+        {
+          "label": "Share with Users",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": { "resource": "user" },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.email }}</span>",
+          "key": "shareUsers",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "authenticate": true,
+          "lazyLoad": true,
+          "id": "rundown_shareusers"
+        }
+      ]
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

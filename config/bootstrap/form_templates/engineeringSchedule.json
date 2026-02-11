@@ -17,7 +17,8 @@
         "access": [
             "read_all",
             "create_all"
-        ]
+        ],
+        "_groupName": "Engineering"
         },
         {
         "resource": "697366ddc6c9d7e9190e1cf9",
@@ -26,7 +27,8 @@
             "read_all",
             "create_all",
             "delete_all"
-        ]
+        ],
+        "_groupName": "Technology"
         }
     ],
     "tabulatorList": {
@@ -819,89 +821,26 @@
     ],
     "access": [
     {
-        "type": "read_own",
-        "roles": []
-    },
-    {
-        "type": "update_own",
-        "roles": []
-    },
-    {
-        "type": "delete_own",
-        "roles": []
-    },
-    {
         "type": "read_all",
-        "roles": [
-        "administrator",
-        "management",
-        "staff",
-        "programmer"
-        ]
-    },
-    {
-        "type": "update_all",
-        "roles": []
-    },
-    {
-        "type": "delete_all",
-        "roles": []
+        "roles": ["authenticated", "staff", "management", "administrator"]
     }
     ],
     "submissionAccess": [
     {
-        "type": "create_own",
-        "roles": [
-        "management",
-        "staff"
-        ]
-    },
-    {
-        "type": "read_own",
-        "roles": [
-        "management",
-        "staff"
-        ]
-    },
-    {
-        "type": "update_own",
-        "roles": [
-        "management",
-        "staff"
-        ]
-    },
-    {
-        "type": "delete_own",
-        "roles": [
-        "administrator",
-        "management"
-        ]
+        "type": "read_all",
+        "roles": ["authenticated", "staff", "management", "administrator"]
     },
     {
         "type": "create_all",
-        "roles": [
-        "administrator"
-        ]
-    },
-    {
-        "type": "read_all",
-        "roles": [
-        "management",
-        "staff",
-        "programmer"
-        ]
+        "roles": ["staff", "management", "administrator"]
     },
     {
         "type": "update_all",
-        "roles": [
-        "management"
-        ]
+        "roles": ["staff", "management", "administrator"]
     },
     {
         "type": "delete_all",
-        "roles": [
-        "administrator"
-        ]
+        "roles": ["management", "administrator"]
     }
     ]
 }

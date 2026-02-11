@@ -5,7 +5,8 @@
 # Examples:
 #   ./scripts/deploy-dev.sh                            # Current branch
 #   ./scripts/deploy-dev.sh main                       # Main branch
-#   ./scripts/deploy-dev.sh feature-branch book,tasks  # Feature branch, sync book and tasks forms [forms-to-sync]
+#   ./scripts/deploy-dev.sh feature-branch book,tasks  # Feature branch, sync book and tasks forms
+#   ./scripts/deploy-dev.sh main all                   # Sync all form templates
 
 set -e
 
@@ -32,6 +33,13 @@ fi
 if [ ! -f ".env" ]; then
     echo "📝 Setting up environment..."
     ./scripts/setup-environment.sh dev
+fi
+
+# Resolve 'all' to a comma-separated list of every form template
+if [ "$FORMS_TO_SYNC" = "all" ]; then
+    FORM_TEMPLATES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../config/bootstrap/form_templates" && pwd)"
+    FORMS_TO_SYNC=$(find "$FORM_TEMPLATES_DIR" -maxdepth 1 -name '*.json' -exec basename {} .json \; | sort | paste -sd ',' -)
+    echo "📋 Resolved 'all' to: $FORMS_TO_SYNC"
 fi
 
 # Check if we should skip sync

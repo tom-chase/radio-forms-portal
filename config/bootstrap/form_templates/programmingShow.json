@@ -1,0 +1,168 @@
+{
+  "title": "Programming Shows",
+  "name": "programmingShow",
+  "path": "programmingshow",
+  "type": "resource",
+  "display": "form",
+  "tags": ["Programming"],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": ["authenticated", "staff", "management", "administrator"]
+    }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": ["authenticated", "staff", "management", "administrator"]
+    },
+    {
+      "type": "create_all",
+      "roles": ["management", "administrator"]
+    },
+    {
+      "type": "update_all",
+      "roles": ["management", "administrator"]
+    },
+    {
+      "type": "delete_all",
+      "roles": ["management", "administrator"]
+    }
+  ],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Shows",
+      "submissionsTitle": "Show Registry"
+    },
+    "groupPermissions": [
+      {
+        "resource": "PROGRAMMING_DEPT_PLACEHOLDER",
+        "fieldName": "departments",
+        "access": ["read_all", "create_all"],
+        "_groupName": "Programming"
+      }
+    ],
+    "tabulatorList": {
+      "enabled": true,
+      "layout": "fitColumns",
+      "height": "60vh",
+      "pagination": "local",
+      "paginationSize": 25,
+      "movableColumns": true,
+      "placeholder": "No shows found.",
+      "columns": [
+        {
+          "title": "Show Title",
+          "field": "data.title",
+          "headerFilter": "input",
+          "minWidth": 200
+        },
+        {
+          "title": "Genre",
+          "field": "data.genre",
+          "width": 150
+        },
+        {
+          "title": "Time Slot",
+          "field": "data.timeSlot",
+          "width": 180
+        },
+        {
+          "title": "Active",
+          "field": "data.active",
+          "width": 80,
+          "formatter": "tickCross"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "label": "Show Title",
+      "key": "title",
+      "type": "textfield",
+      "input": true,
+      "tableView": true,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Day(s) of Week",
+      "key": "daysOfWeek",
+      "type": "selectboxes",
+      "input": true,
+      "tableView": false,
+      "values": [
+        { "label": "Monday", "value": "monday" },
+        { "label": "Tuesday", "value": "tuesday" },
+        { "label": "Wednesday", "value": "wednesday" },
+        { "label": "Thursday", "value": "thursday" },
+        { "label": "Friday", "value": "friday" },
+        { "label": "Saturday", "value": "saturday" },
+        { "label": "Sunday", "value": "sunday" }
+      ]
+    },
+    {
+      "label": "Time Slot",
+      "key": "timeSlot",
+      "type": "textfield",
+      "input": true,
+      "tableView": true,
+      "placeholder": "e.g. 10:00 AM – 12:00 PM",
+      "description": "The scheduled broadcast time window"
+    },
+    {
+      "label": "Producer(s)",
+      "key": "producers",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "multiple": true,
+      "dataSrc": "resource",
+      "data": {
+        "resource": "user"
+      },
+      "valueProperty": "_id",
+      "dataType": "resource",
+      "template": "<span>{{ item.data.email }}</span>",
+      "searchEnabled": true,
+      "authenticate": true,
+      "lazyLoad": true
+    },
+    {
+      "label": "Genre / Category",
+      "key": "genre",
+      "type": "select",
+      "widget": "choicesjs",
+      "input": true,
+      "tableView": true,
+      "dataSrc": "values",
+      "data": {
+        "values": [
+          { "label": "Public Affairs", "value": "public_affairs" },
+          { "label": "Music", "value": "music" },
+          { "label": "News", "value": "news" },
+          { "label": "Other", "value": "other" }
+        ]
+      }
+    },
+    {
+      "label": "Active",
+      "key": "active",
+      "type": "checkbox",
+      "input": true,
+      "tableView": true,
+      "defaultValue": true
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true
+    }
+  ]
+}

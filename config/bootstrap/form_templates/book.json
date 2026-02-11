@@ -8,10 +8,35 @@
     "access": [
         {
             "type": "read_all",
-            "roles": []
+            "roles": ["authenticated", "staff", "management", "administrator"]
         }
     ],
-    "submissionAccess": [],
+    "submissionAccess": [
+        {
+            "type": "read_all",
+            "roles": ["authenticated", "staff", "management", "administrator"]
+        },
+        {
+            "type": "create_all",
+            "roles": ["authenticated", "staff", "management", "administrator"]
+        },
+        {
+            "type": "update_own",
+            "roles": ["authenticated", "staff", "management", "administrator"]
+        },
+        {
+            "type": "delete_own",
+            "roles": ["authenticated", "staff", "management", "administrator"]
+        },
+        {
+            "type": "update_all",
+            "roles": ["management", "administrator"]
+        },
+        {
+            "type": "delete_all",
+            "roles": ["management", "administrator"]
+        }
+    ],
     "components": [
         {
             "label": "Preface",
@@ -193,6 +218,109 @@
             "saveRow": "Save Chapter",
             "removeRow": "Delete Chapter",
             "cancelRow": "Cancel"
+        },
+        {
+            "title": "Share Settings",
+            "theme": "primary",
+            "collapsible": true,
+            "collapsed": true,
+            "key": "shareSettings",
+            "type": "panel",
+            "label": "Share Settings",
+            "input": false,
+            "tableView": false,
+            "persistent": false,
+            "clearOnHide": false,
+            "components": [
+                {
+                    "label": "Share with Public",
+                    "key": "sharePublic",
+                    "type": "checkbox",
+                    "input": true,
+                    "defaultValue": false,
+                    "labelPosition": "right",
+                    "tableView": true,
+                    "persistent": true,
+                    "id": "book_sharepub"
+                },
+                {
+                    "label": "Share with Roles",
+                    "widget": "choicesjs",
+                    "tableView": true,
+                    "multiple": true,
+                    "dataSrc": "values",
+                    "data": {
+                        "values": [
+                            { "label": "Administrator", "value": "administrator" },
+                            { "label": "Management", "value": "management" },
+                            { "label": "Staff", "value": "staff" }
+                        ]
+                    },
+                    "template": "<span>{{ item.label }}</span>",
+                    "valueProperty": "value",
+                    "key": "shareRoles",
+                    "type": "select",
+                    "input": true,
+                    "persistent": true,
+                    "searchEnabled": true,
+                    "id": "book_shareroles"
+                },
+                {
+                    "label": "Share with Departments",
+                    "widget": "choicesjs",
+                    "tableView": true,
+                    "multiple": true,
+                    "dataSrc": "resource",
+                    "data": { "resource": "department" },
+                    "valueProperty": "_id",
+                    "dataType": "resource",
+                    "template": "<span>{{ item.data.name }}</span>",
+                    "key": "shareDepartments",
+                    "type": "select",
+                    "input": true,
+                    "persistent": true,
+                    "searchEnabled": true,
+                    "authenticate": true,
+                    "id": "book_sharedepts"
+                },
+                {
+                    "label": "Share with Committees",
+                    "widget": "choicesjs",
+                    "tableView": true,
+                    "multiple": true,
+                    "dataSrc": "resource",
+                    "data": { "resource": "committee" },
+                    "valueProperty": "_id",
+                    "dataType": "resource",
+                    "template": "<span>{{ item.data.name }}</span>",
+                    "key": "shareCommittees",
+                    "type": "select",
+                    "input": true,
+                    "persistent": true,
+                    "searchEnabled": true,
+                    "authenticate": true,
+                    "id": "book_sharecomms"
+                },
+                {
+                    "label": "Share with Users",
+                    "widget": "choicesjs",
+                    "tableView": true,
+                    "multiple": true,
+                    "dataSrc": "resource",
+                    "data": { "resource": "user" },
+                    "valueProperty": "_id",
+                    "dataType": "resource",
+                    "template": "<span>{{ item.data.email }}</span>",
+                    "key": "shareUsers",
+                    "type": "select",
+                    "input": true,
+                    "persistent": true,
+                    "searchEnabled": true,
+                    "authenticate": true,
+                    "lazyLoad": true,
+                    "id": "book_shareusers"
+                }
+            ]
         },
         {
             "type": "button",

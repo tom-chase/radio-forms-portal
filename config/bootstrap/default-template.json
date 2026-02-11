@@ -33,18 +33,6 @@
       "description": "A person who belongs to staff.",
       "admin": false,
       "default": false
-    },
-    "programmer": {
-      "title": "Programmer",
-      "description": "A person who belongs to programmers.",
-      "admin": false,
-      "default": false
-    },
-    "volunteer": {
-      "title": "Volunteer",
-      "description": "A person who belongs to volunteers.",
-      "admin": false,
-      "default": false
     }
   },
   "forms": {
@@ -116,9 +104,7 @@
           "roles": [
             "anonymous",
             "management",
-            "staff",
-            "programmer",
-            "volunteer"
+            "staff"
           ]
         }
       ],
@@ -196,9 +182,7 @@
           "roles": [
             "anonymous",
             "management",
-            "staff",
-            "programmer",
-            "volunteer"
+            "staff"
           ]
         }
       ],
@@ -280,9 +264,7 @@
           "roles": [
             "anonymous",
             "management",
-            "staff",
-            "programmer",
-            "volunteer"
+            "staff"
           ]
         }
       ],
@@ -752,162 +734,6 @@
               "allowMultipleMasks": false,
               "addons": [],
               "id": "enu1lmc",
-              "dataGridLabel": true,
-              "value": "",
-              "name": ""
-            },
-            {
-              "label": "Programmer",
-              "description": "",
-              "tooltip": "",
-              "shortcut": "",
-              "inputType": "checkbox",
-              "customClass": "",
-              "tabindex": "",
-              "hidden": false,
-              "hideLabel": false,
-              "autofocus": false,
-              "disabled": false,
-              "tableView": true,
-              "modalEdit": false,
-              "defaultValue": false,
-              "persistent": true,
-              "protected": false,
-              "dbIndex": false,
-              "encrypted": false,
-              "redrawOn": "",
-              "clearOnHide": true,
-              "customDefaultValue": "",
-              "calculateValue": "",
-              "calculateServer": false,
-              "allowCalculateOverride": false,
-              "validate": {
-                "required": false,
-                "customMessage": "",
-                "custom": "",
-                "customPrivate": false,
-                "json": "",
-                "strictDateValidation": false,
-                "multiple": false,
-                "unique": false
-              },
-              "validateWhenHidden": false,
-              "errorLabel": "",
-              "errors": "",
-              "key": "programmer",
-              "tags": [],
-              "properties": {},
-              "conditional": {
-                "show": null,
-                "when": null,
-                "eq": "",
-                "json": ""
-              },
-              "customConditional": "",
-              "logic": [],
-              "attributes": {},
-              "overlay": {
-                "style": "",
-                "page": "",
-                "left": "",
-                "top": "",
-                "width": "",
-                "height": ""
-              },
-              "type": "checkbox",
-              "input": true,
-              "placeholder": "",
-              "prefix": "",
-              "suffix": "",
-              "multiple": false,
-              "unique": false,
-              "refreshOn": "",
-              "labelPosition": "right",
-              "widget": null,
-              "validateOn": "change",
-              "showCharCount": false,
-              "showWordCount": false,
-              "allowMultipleMasks": false,
-              "addons": [],
-              "id": "egzegwc",
-              "dataGridLabel": true,
-              "value": "",
-              "name": ""
-            },
-            {
-              "label": "Volunteer",
-              "description": "",
-              "tooltip": "",
-              "shortcut": "",
-              "inputType": "checkbox",
-              "customClass": "",
-              "tabindex": "",
-              "hidden": false,
-              "hideLabel": false,
-              "autofocus": false,
-              "disabled": false,
-              "tableView": true,
-              "modalEdit": false,
-              "defaultValue": false,
-              "persistent": true,
-              "protected": false,
-              "dbIndex": false,
-              "encrypted": false,
-              "redrawOn": "",
-              "clearOnHide": true,
-              "customDefaultValue": "",
-              "calculateValue": "",
-              "calculateServer": false,
-              "allowCalculateOverride": false,
-              "validate": {
-                "required": false,
-                "customMessage": "",
-                "custom": "",
-                "customPrivate": false,
-                "json": "",
-                "strictDateValidation": false,
-                "multiple": false,
-                "unique": false
-              },
-              "validateWhenHidden": false,
-              "errorLabel": "",
-              "errors": "",
-              "key": "volunteer",
-              "tags": [],
-              "properties": {},
-              "conditional": {
-                "show": null,
-                "when": null,
-                "eq": "",
-                "json": ""
-              },
-              "customConditional": "",
-              "logic": [],
-              "attributes": {},
-              "overlay": {
-                "style": "",
-                "page": "",
-                "left": "",
-                "top": "",
-                "width": "",
-                "height": ""
-              },
-              "type": "checkbox",
-              "input": true,
-              "placeholder": "",
-              "prefix": "",
-              "suffix": "",
-              "multiple": false,
-              "unique": false,
-              "refreshOn": "",
-              "labelPosition": "right",
-              "widget": null,
-              "validateOn": "change",
-              "showCharCount": false,
-              "showWordCount": false,
-              "allowMultipleMasks": false,
-              "addons": [],
-              "id": "ew1l566",
               "dataGridLabel": true,
               "value": "",
               "name": ""
@@ -2469,8 +2295,8 @@
         {
           "type": "read_all",
           "roles": [
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -2479,7 +2305,6 @@
           "type": "update_all",
           "roles": [
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -2589,6 +2414,16 @@
           "submissionsTitle": "Contact Intake List",
           "sortOrder": 1
         },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
         "tabulatorList": {
           "enabled": true,
           "layout": "fitColumns",
@@ -2773,6 +2608,45 @@
         "before"
       ]
     },
+    "programmingShow:save": {
+      "title": "Save Submission",
+      "name": "save",
+      "form": "programmingShow",
+      "priority": 10,
+      "method": [
+        "create",
+        "update"
+      ],
+      "handler": [
+        "before"
+      ]
+    },
+    "programmingRundown:save": {
+      "title": "Save Submission",
+      "name": "save",
+      "form": "programmingRundown",
+      "priority": 10,
+      "method": [
+        "create",
+        "update"
+      ],
+      "handler": [
+        "before"
+      ]
+    },
+    "tasks:save": {
+      "title": "Save Submission",
+      "name": "save",
+      "form": "tasks",
+      "priority": 10,
+      "method": [
+        "create",
+        "update"
+      ],
+      "handler": [
+        "before"
+      ]
+    },
     "userLogin:login": {
       "title": "Login",
       "name": "login",
@@ -2871,9 +2745,7 @@
           "roleChangePurpose": "roleChangePurpose",
           "sourceForm": "sourceForm",
           "management": "management",
-          "staff": "staff",
-          "programmer": "programmer",
-          "volunteer": "volunteer"
+          "staff": "staff"
         }
       },
       "priority": 11,
@@ -3009,122 +2881,6 @@
         "association": "existing",
         "type": "remove",
         "role": "staff"
-      },
-      "priority": 1,
-      "method": [
-        "create",
-        "update"
-      ],
-      "handler": [
-        "after"
-      ]
-    },
-    "roleMgmt:addPrgrmrRole": {
-      "title": "Add Programmer Role",
-      "name": "role",
-      "form": "roleMgmt",
-      "condition": {
-        "conjunction": "all",
-        "conditions": [
-          {
-            "component": "programmer",
-            "operator": "isEqual",
-            "value": true
-          }
-        ],
-        "custom": ""
-      },
-      "settings": {
-        "association": "existing",
-        "type": "add",
-        "role": "programmer"
-      },
-      "priority": 1,
-      "method": [
-        "create",
-        "update"
-      ],
-      "handler": [
-        "after"
-      ]
-    },
-    "roleMgmt:rmPrgrmrRole": {
-      "title": "Remove Programmer Role",
-      "name": "role",
-      "form": "roleMgmt",
-      "condition": {
-        "conjunction": "all",
-        "conditions": [
-          {
-            "component": "programmer",
-            "operator": "isEqual",
-            "value": false
-          }
-        ],
-        "custom": ""
-      },
-      "settings": {
-        "association": "existing",
-        "type": "remove",
-        "role": "programmer"
-      },
-      "priority": 1,
-      "method": [
-        "create",
-        "update"
-      ],
-      "handler": [
-        "after"
-      ]
-    },
-    "roleMgmt:addVlntRole": {
-      "title": "Add Volunteer Role",
-      "name": "role",
-      "form": "roleMgmt",
-      "condition": {
-        "conjunction": "all",
-        "conditions": [
-          {
-            "component": "volunteer",
-            "operator": "isEqual",
-            "value": true
-          }
-        ],
-        "custom": ""
-      },
-      "settings": {
-        "association": "existing",
-        "type": "add",
-        "role": "volunteer"
-      },
-      "priority": 1,
-      "method": [
-        "create",
-        "update"
-      ],
-      "handler": [
-        "after"
-      ]
-    },
-    "roleMgmt:rmVlntRole": {
-      "title": "Remove Volunteer Role",
-      "name": "role",
-      "form": "roleMgmt",
-      "condition": {
-        "conjunction": "all",
-        "conditions": [
-          {
-            "component": "volunteer",
-            "operator": "isEqual",
-            "value": false
-          }
-        ],
-        "custom": ""
-      },
-      "settings": {
-        "association": "existing",
-        "type": "remove",
-        "role": "volunteer"
       },
       "priority": 1,
       "method": [
@@ -3739,78 +3495,37 @@
       ],
       "access": [
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "read_all",
           "roles": [
-            "administrator",
             "authenticated",
+            "staff",
             "management",
-            "staff"
+            "administrator"
           ]
-        },
-        {
-          "type": "update_all",
-          "roles": []
-        },
-        {
-          "type": "delete_all",
-          "roles": []
         }
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
+          "type": "read_all",
           "roles": [
-            "management",
+            "authenticated",
             "staff",
+            "management",
             "administrator"
           ]
-        },
-        {
-          "type": "read_own",
-          "roles": [
-            "administrator",
-            "management",
-            "staff"
-          ]
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
         },
         {
           "type": "create_all",
           "roles": [
+            "management",
             "administrator"
-          ]
-        },
-        {
-          "type": "read_all",
-          "roles": [
-            "authenticated"
           ]
         },
         {
           "type": "update_all",
           "roles": [
-            "administrator",
             "management",
-            "staff"
+            "administrator"
           ]
         },
         {
@@ -4670,152 +4385,6 @@
           "dataGridLabel": true,
           "value": "",
           "name": ""
-        },
-        {
-          "label": "Programmer",
-          "key": "programmer",
-          "type": "checkbox",
-          "input": true,
-          "persistent": true,
-          "id": "ep9rxn9",
-          "placeholder": "",
-          "prefix": "",
-          "customClass": "",
-          "suffix": "",
-          "multiple": false,
-          "defaultValue": null,
-          "protected": false,
-          "unique": false,
-          "hidden": false,
-          "clearOnHide": true,
-          "refreshOn": "",
-          "redrawOn": "",
-          "tableView": false,
-          "modalEdit": false,
-          "dataGridLabel": true,
-          "labelPosition": "right",
-          "description": "",
-          "errorLabel": "",
-          "tooltip": "",
-          "hideLabel": false,
-          "tabindex": "",
-          "disabled": false,
-          "autofocus": false,
-          "dbIndex": false,
-          "customDefaultValue": "",
-          "calculateValue": "",
-          "calculateServer": false,
-          "widget": null,
-          "attributes": {},
-          "validateOn": "change",
-          "validate": {
-            "required": false,
-            "custom": "",
-            "customPrivate": false,
-            "strictDateValidation": false,
-            "multiple": false,
-            "unique": false
-          },
-          "conditional": {
-            "show": null,
-            "when": null,
-            "eq": ""
-          },
-          "overlay": {
-            "style": "",
-            "left": "",
-            "top": "",
-            "width": "",
-            "height": ""
-          },
-          "allowCalculateOverride": false,
-          "encrypted": false,
-          "showCharCount": false,
-          "showWordCount": false,
-          "properties": {},
-          "allowMultipleMasks": false,
-          "addons": [],
-          "inputType": "checkbox",
-          "value": "",
-          "name": ""
-        },
-        {
-          "label": "Volunteer",
-          "description": "",
-          "tooltip": "",
-          "shortcut": "",
-          "inputType": "checkbox",
-          "customClass": "",
-          "tabindex": "",
-          "hidden": false,
-          "hideLabel": false,
-          "autofocus": false,
-          "disabled": false,
-          "tableView": true,
-          "modalEdit": false,
-          "persistent": true,
-          "protected": false,
-          "dbIndex": false,
-          "encrypted": false,
-          "redrawOn": "",
-          "clearOnHide": true,
-          "customDefaultValue": "",
-          "calculateValue": "",
-          "calculateServer": false,
-          "allowCalculateOverride": false,
-          "validate": {
-            "required": false,
-            "customMessage": "",
-            "custom": "",
-            "customPrivate": false,
-            "json": "",
-            "strictDateValidation": false,
-            "multiple": false,
-            "unique": false
-          },
-          "validateWhenHidden": false,
-          "errorLabel": "",
-          "errors": "",
-          "key": "volunteer",
-          "tags": [],
-          "properties": {},
-          "conditional": {
-            "show": "",
-            "when": "",
-            "eq": "",
-            "json": ""
-          },
-          "customConditional": "",
-          "logic": [],
-          "attributes": {},
-          "overlay": {
-            "style": "",
-            "page": "",
-            "left": "",
-            "top": "",
-            "width": "",
-            "height": ""
-          },
-          "type": "checkbox",
-          "input": true,
-          "placeholder": "",
-          "prefix": "",
-          "suffix": "",
-          "multiple": false,
-          "unique": false,
-          "refreshOn": "",
-          "labelPosition": "right",
-          "widget": null,
-          "validateOn": "change",
-          "showCharCount": false,
-          "showWordCount": false,
-          "allowMultipleMasks": false,
-          "addons": [],
-          "id": "evv5hmp",
-          "defaultValue": false,
-          "dataGridLabel": true,
-          "value": "",
-          "name": ""
         }
       ],
       "access": [
@@ -5461,14 +5030,6 @@
                   {
                     "label": "Staff",
                     "value": "staff"
-                  },
-                  {
-                    "label": "Programmer",
-                    "value": "programmer"
-                  },
-                  {
-                    "label": "Volunteer",
-                    "value": "volunteer"
                   }
                 ],
                 "url": "",
@@ -6065,9 +5626,7 @@
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -6075,53 +5634,10 @@
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
-          "roles": [
-            "authenticated",
-            "programmer",
-            "staff",
-            "underwriting"
-          ]
-        },
-        {
-          "type": "read_own",
-          "roles": [
-            "authenticated",
-            "programmer",
-            "staff",
-            "underwriting"
-          ]
-        },
-        {
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting"
-          ]
-        },
-        {
-          "type": "update_own",
-          "roles": [
-            "authenticated",
-            "programmer",
-            "staff",
-            "underwriting"
-          ]
-        },
-        {
-          "type": "delete_own",
-          "roles": [
-            "authenticated",
-            "programmer",
-            "staff",
-            "underwriting"
-          ]
-        },
-        {
-          "type": "read_all",
-          "roles": [
             "management",
             "administrator"
           ]
@@ -6129,6 +5645,26 @@
         {
           "type": "create_all",
           "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": [
+            "authenticated",
+            "staff",
             "management",
             "administrator"
           ]
@@ -6170,7 +5706,8 @@
             "access": [
               "read_all",
               "create_all"
-            ]
+            ],
+            "_groupName": "Engineering"
           },
           {
             "resource": "697366ddc6c9d7e9190e1cf9",
@@ -6179,7 +5716,8 @@
               "read_all",
               "create_all",
               "delete_all"
-            ]
+            ],
+            "_groupName": "Technology"
           }
         ],
         "tabulatorList": {
@@ -6972,87 +6510,45 @@
       ],
       "access": [
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "read_all",
           "roles": [
-            "administrator",
-            "management",
+            "authenticated",
             "staff",
-            "programmer"
+            "management",
+            "administrator"
           ]
-        },
-        {
-          "type": "update_all",
-          "roles": []
-        },
-        {
-          "type": "delete_all",
-          "roles": []
         }
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
+          "type": "read_all",
           "roles": [
+            "authenticated",
+            "staff",
             "management",
-            "staff"
-          ]
-        },
-        {
-          "type": "read_own",
-          "roles": [
-            "management",
-            "staff"
-          ]
-        },
-        {
-          "type": "update_own",
-          "roles": [
-            "management",
-            "staff"
-          ]
-        },
-        {
-          "type": "delete_own",
-          "roles": [
-            "administrator",
-            "management"
+            "administrator"
           ]
         },
         {
           "type": "create_all",
           "roles": [
-            "administrator"
-          ]
-        },
-        {
-          "type": "read_all",
-          "roles": [
-            "management",
             "staff",
-            "programmer"
+            "management",
+            "administrator"
           ]
         },
         {
           "type": "update_all",
           "roles": [
-            "management"
+            "staff",
+            "management",
+            "administrator"
           ]
         },
         {
           "type": "delete_all",
           "roles": [
+            "management",
             "administrator"
           ]
         }
@@ -7228,80 +6724,44 @@
       ],
       "access": [
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "read_all",
           "roles": [
-            "administrator",
             "authenticated",
-            "management",
-            "programmer",
             "staff",
-            "volunteer"
+            "management",
+            "administrator"
           ]
-        },
-        {
-          "type": "update_all",
-          "roles": []
-        },
-        {
-          "type": "delete_all",
-          "roles": []
         }
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
+          "type": "read_all",
           "roles": [
-            "administrator",
+            "authenticated",
+            "staff",
             "management",
-            "staff"
+            "administrator"
           ]
         },
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "create_all",
-          "roles": []
-        },
-        {
-          "type": "read_all",
           "roles": [
-            "administrator",
-            "authenticated",
             "management",
-            "programmer",
-            "staff",
-            "volunteer"
+            "administrator"
           ]
         },
         {
           "type": "update_all",
-          "roles": []
+          "roles": [
+            "management",
+            "administrator"
+          ]
         },
         {
           "type": "delete_all",
-          "roles": []
+          "roles": [
+            "administrator"
+          ]
         }
       ]
     },
@@ -7475,80 +6935,44 @@
       ],
       "access": [
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "read_all",
           "roles": [
-            "administrator",
             "authenticated",
-            "management",
             "staff",
-            "programmer",
-            "volunteer"
+            "management",
+            "administrator"
           ]
-        },
-        {
-          "type": "update_all",
-          "roles": []
-        },
-        {
-          "type": "delete_all",
-          "roles": []
         }
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
+          "type": "read_all",
           "roles": [
-            "administrator",
+            "authenticated",
+            "staff",
             "management",
-            "staff"
+            "administrator"
           ]
         },
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "create_all",
-          "roles": []
-        },
-        {
-          "type": "read_all",
           "roles": [
-            "administrator",
-            "authenticated",
             "management",
-            "programmer",
-            "staff",
-            "volunteer"
+            "administrator"
           ]
         },
         {
           "type": "update_all",
-          "roles": []
+          "roles": [
+            "management",
+            "administrator"
+          ]
         },
         {
           "type": "delete_all",
-          "roles": []
+          "roles": [
+            "administrator"
+          ]
         }
       ]
     },
@@ -7573,7 +6997,8 @@
             "access": [
               "read_all",
               "create_all"
-            ]
+            ],
+            "_groupName": "Engineering"
           },
           {
             "resource": "697366ddc6c9d7e9190e1cf9",
@@ -7582,7 +7007,8 @@
               "read_all",
               "create_all",
               "delete_all"
-            ]
+            ],
+            "_groupName": "Technology"
           }
         ],
         "tabulatorList": {
@@ -8890,89 +8316,45 @@
       ],
       "access": [
         {
-          "type": "read_own",
-          "roles": []
-        },
-        {
-          "type": "update_own",
-          "roles": []
-        },
-        {
-          "type": "delete_own",
-          "roles": []
-        },
-        {
           "type": "read_all",
           "roles": [
-            "administrator",
-            "management",
+            "authenticated",
             "staff",
-            "programmer"
+            "management",
+            "administrator"
           ]
-        },
-        {
-          "type": "update_all",
-          "roles": []
-        },
-        {
-          "type": "delete_all",
-          "roles": []
         }
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
+          "type": "read_all",
           "roles": [
-            "management",
+            "authenticated",
             "staff",
-            "programmer"
-          ]
-        },
-        {
-          "type": "read_own",
-          "roles": [
             "management",
-            "staff",
-            "programmer"
-          ]
-        },
-        {
-          "type": "update_own",
-          "roles": [
-            "management",
-            "staff",
-            "programmer"
-          ]
-        },
-        {
-          "type": "delete_own",
-          "roles": [
             "administrator"
           ]
         },
         {
           "type": "create_all",
           "roles": [
-            "administrator"
-          ]
-        },
-        {
-          "type": "read_all",
-          "roles": [
+            "staff",
             "management",
-            "programmer",
-            "staff"
+            "administrator"
           ]
         },
         {
           "type": "update_all",
           "roles": [
-            "management"
+            "staff",
+            "management",
+            "administrator"
           ]
         },
         {
           "type": "delete_all",
           "roles": [
+            "management",
             "administrator"
           ]
         }
@@ -8990,10 +8372,66 @@
       "access": [
         {
           "type": "read_all",
-          "roles": []
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
         }
       ],
-      "submissionAccess": [],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ],
       "components": [
         {
           "label": "Preface",
@@ -9178,6 +8616,124 @@
           "cancelRow": "Cancel"
         },
         {
+          "title": "Share Settings",
+          "theme": "primary",
+          "collapsible": true,
+          "collapsed": true,
+          "key": "shareSettings",
+          "type": "panel",
+          "label": "Share Settings",
+          "input": false,
+          "tableView": false,
+          "persistent": false,
+          "clearOnHide": false,
+          "components": [
+            {
+              "label": "Share with Public",
+              "key": "sharePublic",
+              "type": "checkbox",
+              "input": true,
+              "defaultValue": false,
+              "labelPosition": "right",
+              "tableView": true,
+              "persistent": true,
+              "id": "book_sharepub"
+            },
+            {
+              "label": "Share with Roles",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Administrator",
+                    "value": "administrator"
+                  },
+                  {
+                    "label": "Management",
+                    "value": "management"
+                  },
+                  {
+                    "label": "Staff",
+                    "value": "staff"
+                  }
+                ]
+              },
+              "template": "<span>{{ item.label }}</span>",
+              "valueProperty": "value",
+              "key": "shareRoles",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "id": "book_shareroles"
+            },
+            {
+              "label": "Share with Departments",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "department"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareDepartments",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "book_sharedepts"
+            },
+            {
+              "label": "Share with Committees",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "committee"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareCommittees",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "book_sharecomms"
+            },
+            {
+              "label": "Share with Users",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "user"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.email }}</span>",
+              "key": "shareUsers",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "lazyLoad": true,
+              "id": "book_shareusers"
+            }
+          ]
+        },
+        {
           "type": "button",
           "label": "Save Book",
           "key": "submit",
@@ -9267,9 +8823,7 @@
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -9279,12 +8833,34 @@
         {
           "type": "read_all",
           "roles": [
-            "authenticated"
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
           ]
         },
         {
           "type": "create_all",
           "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": [
+            "authenticated",
             "staff",
             "management",
             "administrator"
@@ -9293,7 +8869,6 @@
         {
           "type": "update_all",
           "roles": [
-            "staff",
             "management",
             "administrator"
           ]
@@ -9591,6 +9166,124 @@
           "description": "Internal notes"
         },
         {
+          "title": "Share Settings",
+          "theme": "primary",
+          "collapsible": true,
+          "collapsed": true,
+          "key": "shareSettings",
+          "type": "panel",
+          "label": "Share Settings",
+          "input": false,
+          "tableView": false,
+          "persistent": false,
+          "clearOnHide": false,
+          "components": [
+            {
+              "label": "Share with Public",
+              "key": "sharePublic",
+              "type": "checkbox",
+              "input": true,
+              "defaultValue": false,
+              "labelPosition": "right",
+              "tableView": true,
+              "persistent": true,
+              "id": "contact_sharepub"
+            },
+            {
+              "label": "Share with Roles",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Administrator",
+                    "value": "administrator"
+                  },
+                  {
+                    "label": "Management",
+                    "value": "management"
+                  },
+                  {
+                    "label": "Staff",
+                    "value": "staff"
+                  }
+                ]
+              },
+              "template": "<span>{{ item.label }}</span>",
+              "valueProperty": "value",
+              "key": "shareRoles",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "id": "contact_shareroles"
+            },
+            {
+              "label": "Share with Departments",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "department"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareDepartments",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "contact_sharedepts"
+            },
+            {
+              "label": "Share with Committees",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "committee"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareCommittees",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "contact_sharecomms"
+            },
+            {
+              "label": "Share with Users",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "user"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.email }}</span>",
+              "key": "shareUsers",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "lazyLoad": true,
+              "id": "contact_shareusers"
+            }
+          ]
+        },
+        {
           "label": "Submit",
           "key": "submit",
           "type": "button",
@@ -9667,9 +9360,7 @@
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -9680,9 +9371,7 @@
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10016,9 +9705,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10028,9 +9716,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10038,7 +9725,7 @@
         {
           "type": "create_all",
           "roles": [
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10046,7 +9733,7 @@
         {
           "type": "update_all",
           "roles": [
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10054,7 +9741,6 @@
         {
           "type": "delete_all",
           "roles": [
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10066,6 +9752,17 @@
           "submissionsTitle": "Underwriting Contracts List",
           "sortOrder": 3
         },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
         "tabulatorList": {
           "enabled": true,
           "responsiveLayout": "hide",
@@ -10543,7 +10240,8 @@
         {
           "type": "read_all",
           "roles": [
-            "underwriting",
+            "authenticated",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10553,9 +10251,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10563,7 +10260,7 @@
         {
           "type": "create_all",
           "roles": [
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10571,7 +10268,7 @@
         {
           "type": "update_all",
           "roles": [
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10579,7 +10276,6 @@
         {
           "type": "delete_all",
           "roles": [
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10591,6 +10287,17 @@
           "submissionsTitle": "Campaigns List",
           "sortOrder": 4
         },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
         "tabulatorList": {
           "enabled": true,
           "responsiveLayout": "hide",
@@ -10845,9 +10552,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10857,9 +10563,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10867,7 +10572,7 @@
         {
           "type": "create_all",
           "roles": [
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10875,7 +10580,7 @@
         {
           "type": "update_all",
           "roles": [
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -10883,7 +10588,6 @@
         {
           "type": "delete_all",
           "roles": [
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -10895,6 +10599,17 @@
           "submissionsTitle": "Spots List",
           "sortOrder": 5
         },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
         "revisionTracking": {
           "enabled": true,
           "trackedFields": [
@@ -11277,9 +10992,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -11289,9 +11003,8 @@
         {
           "type": "read_all",
           "roles": [
-            "programmer",
+            "authenticated",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -11299,8 +11012,7 @@
         {
           "type": "create_all",
           "roles": [
-            "programmer",
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -11308,8 +11020,7 @@
         {
           "type": "update_all",
           "roles": [
-            "programmer",
-            "underwriting",
+            "staff",
             "management",
             "administrator"
           ]
@@ -11317,8 +11028,6 @@
         {
           "type": "delete_all",
           "roles": [
-            "programmer",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -11330,6 +11039,17 @@
           "submissionsTitle": "Aircheck Logs",
           "sortOrder": 6
         },
+        "groupPermissions": [
+          {
+            "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Underwriting"
+          }
+        ],
         "tabulatorList": {
           "enabled": true,
           "responsiveLayout": "hide",
@@ -12428,14 +12148,6 @@
                   {
                     "label": "Staff",
                     "value": "staff"
-                  },
-                  {
-                    "label": "Programmer",
-                    "value": "programmer"
-                  },
-                  {
-                    "label": "Volunteer",
-                    "value": "volunteer"
                   }
                 ],
                 "url": "",
@@ -13032,9 +12744,7 @@
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting",
             "management",
             "administrator"
           ]
@@ -13042,53 +12752,419 @@
       ],
       "submissionAccess": [
         {
-          "type": "create_own",
-          "roles": [
-            "authenticated",
-            "programmer",
-            "staff",
-            "underwriting"
-          ]
-        },
-        {
-          "type": "read_own",
-          "roles": [
-            "authenticated",
-            "programmer",
-            "staff",
-            "underwriting"
-          ]
-        },
-        {
           "type": "read_all",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting"
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
           ]
         },
         {
           "type": "update_own",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting"
+            "management",
+            "administrator"
           ]
         },
         {
           "type": "delete_own",
           "roles": [
             "authenticated",
-            "programmer",
             "staff",
-            "underwriting"
+            "management",
+            "administrator"
           ]
         },
         {
+          "type": "update_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ]
+    },
+    "tasks": {
+      "title": "Task",
+      "name": "task",
+      "path": "task",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        ""
+      ],
+      "components": [
+        {
+          "label": "Task Title",
+          "tableView": true,
+          "key": "title",
+          "type": "textfield",
+          "input": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Details / Checklist",
+          "autoExpand": false,
+          "tableView": false,
+          "key": "details",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "description": "Use the todo-list toolbar in the editor to track subtasks."
+        },
+        {
+          "label": "Status",
+          "widget": "choicesjs",
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Open",
+                "value": "open"
+              },
+              {
+                "label": "In progress",
+                "value": "in_progress"
+              },
+              {
+                "label": "Blocked",
+                "value": "blocked"
+              },
+              {
+                "label": "Done",
+                "value": "done"
+              }
+            ]
+          },
+          "key": "status",
+          "type": "select",
+          "input": true,
+          "defaultValue": "open"
+        },
+        {
+          "label": "Priority",
+          "widget": "choicesjs",
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Low",
+                "value": "low"
+              },
+              {
+                "label": "Normal",
+                "value": "normal"
+              },
+              {
+                "label": "High",
+                "value": "high"
+              },
+              {
+                "label": "Urgent",
+                "value": "urgent"
+              }
+            ]
+          },
+          "key": "priority",
+          "type": "select",
+          "input": true,
+          "defaultValue": "normal"
+        },
+        {
+          "label": "Due Date",
+          "widget": "calendar",
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "key": "dueDate",
+          "type": "datetime",
+          "input": true
+        },
+        {
+          "label": "Category / Area",
+          "widget": "choicesjs",
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Underwriting",
+                "value": "underwriting"
+              },
+              {
+                "label": "Volunteers",
+                "value": "volunteers"
+              },
+              {
+                "label": "Programming / Shows",
+                "value": "programming"
+              },
+              {
+                "label": "Engineering / Tech",
+                "value": "engineering"
+              },
+              {
+                "label": "Fund Drive",
+                "value": "fund_drive"
+              },
+              {
+                "label": "Other",
+                "value": "other"
+              }
+            ]
+          },
+          "key": "category",
+          "type": "select",
+          "input": true
+        },
+        {
+          "label": "Internal Notes",
+          "autoExpand": false,
+          "tableView": false,
+          "key": "internalNotes",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "description": "For staff-only notes; you can later hide this from volunteers using conditional logic."
+        },
+        {
+          "title": "Share Settings",
+          "theme": "primary",
+          "collapsible": true,
+          "collapsed": true,
+          "key": "shareSettings",
+          "type": "panel",
+          "label": "Share Settings",
+          "input": false,
+          "tableView": false,
+          "persistent": false,
+          "clearOnHide": false,
+          "components": [
+            {
+              "label": "Share with Public",
+              "key": "sharePublic",
+              "type": "checkbox",
+              "input": true,
+              "defaultValue": false,
+              "labelPosition": "right",
+              "tableView": true,
+              "persistent": true,
+              "id": "task_sharepub"
+            },
+            {
+              "label": "Share with Roles",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Administrator",
+                    "value": "administrator"
+                  },
+                  {
+                    "label": "Management",
+                    "value": "management"
+                  },
+                  {
+                    "label": "Staff",
+                    "value": "staff"
+                  }
+                ]
+              },
+              "template": "<span>{{ item.label }}</span>",
+              "valueProperty": "value",
+              "key": "shareRoles",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "id": "task_shareroles"
+            },
+            {
+              "label": "Share with Departments",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "department"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareDepartments",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "task_sharedepts"
+            },
+            {
+              "label": "Share with Committees",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "committee"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareCommittees",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "task_sharecomms"
+            },
+            {
+              "label": "Share with Users",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "user"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.email }}</span>",
+              "key": "shareUsers",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "lazyLoad": true,
+              "id": "task_shareusers"
+            }
+          ]
+        },
+        {
+          "label": "Submit",
+          "showValidations": false,
+          "theme": "primary",
+          "key": "submit",
+          "type": "button",
+          "input": true,
+          "saveOnEnter": true
+        }
+      ],
+      "access": [
+        {
           "type": "read_all",
           "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ]
+    },
+    "programmingShow": {
+      "title": "Programming Shows",
+      "name": "programmingShow",
+      "path": "programmingshow",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "Programming"
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
             "management",
             "administrator"
           ]
@@ -13113,6 +13189,759 @@
             "management",
             "administrator"
           ]
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Shows",
+          "submissionsTitle": "Show Registry"
+        },
+        "groupPermissions": [
+          {
+            "resource": "PROGRAMMING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Programming"
+          }
+        ],
+        "tabulatorList": {
+          "enabled": true,
+          "layout": "fitColumns",
+          "height": "60vh",
+          "pagination": "local",
+          "paginationSize": 25,
+          "movableColumns": true,
+          "placeholder": "No shows found.",
+          "columns": [
+            {
+              "title": "Show Title",
+              "field": "data.title",
+              "headerFilter": "input",
+              "minWidth": 200
+            },
+            {
+              "title": "Genre",
+              "field": "data.genre",
+              "width": 150
+            },
+            {
+              "title": "Time Slot",
+              "field": "data.timeSlot",
+              "width": 180
+            },
+            {
+              "title": "Active",
+              "field": "data.active",
+              "width": 80,
+              "formatter": "tickCross"
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Show Title",
+          "key": "title",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Day(s) of Week",
+          "key": "daysOfWeek",
+          "type": "selectboxes",
+          "input": true,
+          "tableView": false,
+          "values": [
+            {
+              "label": "Monday",
+              "value": "monday"
+            },
+            {
+              "label": "Tuesday",
+              "value": "tuesday"
+            },
+            {
+              "label": "Wednesday",
+              "value": "wednesday"
+            },
+            {
+              "label": "Thursday",
+              "value": "thursday"
+            },
+            {
+              "label": "Friday",
+              "value": "friday"
+            },
+            {
+              "label": "Saturday",
+              "value": "saturday"
+            },
+            {
+              "label": "Sunday",
+              "value": "sunday"
+            }
+          ]
+        },
+        {
+          "label": "Time Slot",
+          "key": "timeSlot",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "placeholder": "e.g. 10:00 AM \u2013 12:00 PM",
+          "description": "The scheduled broadcast time window"
+        },
+        {
+          "label": "Producer(s)",
+          "key": "producers",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "user"
+          },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.email }}</span>",
+          "searchEnabled": true,
+          "authenticate": true,
+          "lazyLoad": true
+        },
+        {
+          "label": "Genre / Category",
+          "key": "genre",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              {
+                "label": "Public Affairs",
+                "value": "public_affairs"
+              },
+              {
+                "label": "Music",
+                "value": "music"
+              },
+              {
+                "label": "News",
+                "value": "news"
+              },
+              {
+                "label": "Other",
+                "value": "other"
+              }
+            ]
+          }
+        },
+        {
+          "label": "Active",
+          "key": "active",
+          "type": "checkbox",
+          "input": true,
+          "tableView": true,
+          "defaultValue": true
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
+        }
+      ]
+    },
+    "programmingRundown": {
+      "title": "Show Rundown",
+      "name": "programmingRundown",
+      "path": "programmingrundown",
+      "type": "resource",
+      "display": "form",
+      "tags": [
+        "Programming"
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "read_all",
+          "roles": [
+            "authenticated",
+            "staff",
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "management",
+            "administrator"
+          ]
+        }
+      ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Show Rundowns",
+          "submissionsTitle": "Show Rundowns"
+        },
+        "groupPermissions": [
+          {
+            "resource": "PROGRAMMING_DEPT_PLACEHOLDER",
+            "fieldName": "departments",
+            "access": [
+              "read_all",
+              "create_all"
+            ],
+            "_groupName": "Programming"
+          },
+          {
+            "resource": "TECHNOLOGY_COMM_PLACEHOLDER",
+            "fieldName": "committees",
+            "access": [
+              "read_all",
+              "create_all",
+              "delete_all"
+            ],
+            "_groupName": "Technology"
+          }
+        ],
+        "tabulatorList": {
+          "enabled": true,
+          "layout": "fitColumns",
+          "height": "60vh",
+          "pagination": "local",
+          "paginationSize": 25,
+          "movableColumns": true,
+          "placeholder": "No rundowns found.",
+          "columns": [
+            {
+              "title": "Show",
+              "field": "data.show.data.title",
+              "headerFilter": "input",
+              "minWidth": 180
+            },
+            {
+              "title": "Broadcast Date",
+              "field": "data.broadcastDateTime",
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MMM d, yyyy HH:mm a",
+                "invalidPlaceholder": "(invalid)",
+                "timezone": "America/New_York"
+              },
+              "minWidth": 200
+            },
+            {
+              "title": "Producer",
+              "field": "data.producerName",
+              "headerFilter": "input",
+              "minWidth": 150
+            },
+            {
+              "title": "Status",
+              "field": "data.status",
+              "width": 120
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Show Information",
+          "key": "showInfoPanel",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Show",
+              "key": "show",
+              "type": "select",
+              "widget": "choicesjs",
+              "input": true,
+              "tableView": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "programmingShow"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.title }}</span>",
+              "searchEnabled": true,
+              "authenticate": true,
+              "reference": true,
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Broadcast Date / Time",
+              "key": "broadcastDateTime",
+              "type": "datetime",
+              "input": true,
+              "tableView": true,
+              "enableTime": true,
+              "format": "yyyy-MM-dd HH:mm",
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Producer Name",
+              "key": "producerName",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "validate": {
+                "required": true
+              }
+            }
+          ]
+        },
+        {
+          "label": "Guest Information",
+          "key": "guestInfoPanel",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Guests",
+              "key": "guests",
+              "type": "editgrid",
+              "input": true,
+              "tableView": false,
+              "reorder": true,
+              "description": "List all guests with primary and backup phone numbers.",
+              "templates": {
+                "header": "<div class=\"row\">\n  <div class=\"col-sm-4\"><strong>Guest Name</strong></div>\n  <div class=\"col-sm-4\"><strong>Primary Phone</strong></div>\n  <div class=\"col-sm-4\"><strong>Backup Phone</strong></div>\n</div>",
+                "row": "<div class=\"row\">\n  <div class=\"col-sm-4\">{{ row.guestName }}</div>\n  <div class=\"col-sm-4\">{{ row.primaryPhone }}</div>\n  <div class=\"col-sm-4\">{{ row.backupPhone }}</div>\n</div>"
+              },
+              "components": [
+                {
+                  "label": "Guest Name",
+                  "key": "guestName",
+                  "type": "textfield",
+                  "input": true,
+                  "tableView": true,
+                  "validate": {
+                    "required": true
+                  }
+                },
+                {
+                  "label": "Primary Phone",
+                  "key": "primaryPhone",
+                  "type": "phoneNumber",
+                  "input": true,
+                  "tableView": true,
+                  "validate": {
+                    "required": true
+                  }
+                },
+                {
+                  "label": "Backup Phone",
+                  "key": "backupPhone",
+                  "type": "phoneNumber",
+                  "input": true,
+                  "tableView": true,
+                  "validate": {
+                    "required": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Audio / Actualities",
+          "key": "audioPanel",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Audio Files",
+              "key": "audioFiles",
+              "type": "editgrid",
+              "input": true,
+              "tableView": false,
+              "reorder": true,
+              "description": "Submit audio in MP3 format. If editing or conversion is needed, submit at least 48 hours in advance.",
+              "templates": {
+                "header": "<div class=\"row\">\n  <div class=\"col-sm-3\"><strong>Label</strong></div>\n  <div class=\"col-sm-3\"><strong>Link</strong></div>\n  <div class=\"col-sm-2\"><strong>Format</strong></div>\n  <div class=\"col-sm-2\"><strong>Needs Edit</strong></div>\n  <div class=\"col-sm-2\"><strong>Profanity</strong></div>\n</div>",
+                "row": "<div class=\"row\">\n  <div class=\"col-sm-3\">{{ row.fileLabel }}</div>\n  <div class=\"col-sm-3\"><a href=\"{{ row.fileLink }}\" target=\"_blank\">Link</a></div>\n  <div class=\"col-sm-2\">{{ row.format }}</div>\n  <div class=\"col-sm-2\">{{ row.needsEditing ? 'Yes' : 'No' }}</div>\n  <div class=\"col-sm-2\">{{ row.containsProfanity ? 'Yes' : 'No' }}</div>\n</div>"
+              },
+              "components": [
+                {
+                  "label": "File Label",
+                  "key": "fileLabel",
+                  "type": "textfield",
+                  "input": true,
+                  "tableView": true,
+                  "description": "Program name, broadcast date, segment or guest reference",
+                  "validate": {
+                    "required": true
+                  }
+                },
+                {
+                  "label": "File Link",
+                  "key": "fileLink",
+                  "type": "url",
+                  "input": true,
+                  "tableView": true,
+                  "description": "Link to the audio file"
+                },
+                {
+                  "label": "Format",
+                  "key": "format",
+                  "type": "select",
+                  "widget": "choicesjs",
+                  "input": true,
+                  "tableView": true,
+                  "dataSrc": "values",
+                  "data": {
+                    "values": [
+                      {
+                        "label": "MP3",
+                        "value": "mp3"
+                      },
+                      {
+                        "label": "Other",
+                        "value": "other"
+                      }
+                    ]
+                  },
+                  "defaultValue": "mp3"
+                },
+                {
+                  "label": "Needs Editing / Conversion",
+                  "key": "needsEditing",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true,
+                  "defaultValue": false,
+                  "description": "Check if the file requires editing or conversion to MP3"
+                },
+                {
+                  "label": "Editing Notes",
+                  "key": "editingNotes",
+                  "type": "textarea",
+                  "input": true,
+                  "tableView": false,
+                  "rows": 3,
+                  "description": "Describe the required editing or conversion work",
+                  "conditional": {
+                    "show": true,
+                    "when": "needsEditing",
+                    "eq": true
+                  }
+                },
+                {
+                  "label": "Contains Profanity Requiring Removal",
+                  "key": "containsProfanity",
+                  "type": "checkbox",
+                  "input": true,
+                  "tableView": true,
+                  "defaultValue": false
+                },
+                {
+                  "label": "Profanity Edit Notes",
+                  "key": "profanityNotes",
+                  "type": "textarea",
+                  "input": true,
+                  "tableView": false,
+                  "rows": 3,
+                  "description": "Describe where profanity occurs and what needs to be removed",
+                  "conditional": {
+                    "show": true,
+                    "when": "containsProfanity",
+                    "eq": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Submission Deadline",
+          "key": "deadlineMet",
+          "type": "radio",
+          "input": true,
+          "tableView": true,
+          "values": [
+            {
+              "label": "24+ hours in advance (standard)",
+              "value": "24h"
+            },
+            {
+              "label": "48+ hours in advance (editing/conversion needed)",
+              "value": "48h"
+            },
+            {
+              "label": "Late submission",
+              "value": "late"
+            }
+          ],
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Producer Checklist",
+          "key": "checklist",
+          "type": "selectboxes",
+          "input": true,
+          "tableView": false,
+          "description": "Confirm all items before submitting your rundown.",
+          "values": [
+            {
+              "label": "Rundown emailed to Production",
+              "value": "emailedProduction"
+            },
+            {
+              "label": "Program Director (PD) copied",
+              "value": "pdCopied"
+            },
+            {
+              "label": "Submitted at least 24 hours before airtime",
+              "value": "deadline24h"
+            },
+            {
+              "label": "Guest names included",
+              "value": "guestNames"
+            },
+            {
+              "label": "Primary and backup phone numbers included",
+              "value": "phoneNumbers"
+            },
+            {
+              "label": "All audio submitted in MP3 format",
+              "value": "mp3Format"
+            },
+            {
+              "label": "Files clearly labeled",
+              "value": "filesLabeled"
+            },
+            {
+              "label": "Editing or conversion requests clearly stated (if applicable)",
+              "value": "editingRequests"
+            },
+            {
+              "label": "Editing/conversion requests submitted 48 hours in advance",
+              "value": "editing48h"
+            },
+            {
+              "label": "All audio reviewed and free of profanity",
+              "value": "profanityFree"
+            }
+          ]
+        },
+        {
+          "label": "Internal Notes",
+          "key": "internalNotes",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "inputFormat": "html",
+          "tableView": false
+        },
+        {
+          "label": "Status",
+          "key": "status",
+          "type": "select",
+          "widget": "choicesjs",
+          "input": true,
+          "tableView": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              {
+                "label": "Draft",
+                "value": "draft"
+              },
+              {
+                "label": "Submitted",
+                "value": "submitted"
+              },
+              {
+                "label": "Reviewed",
+                "value": "reviewed"
+              },
+              {
+                "label": "Approved",
+                "value": "approved"
+              },
+              {
+                "label": "Rejected",
+                "value": "rejected"
+              }
+            ]
+          },
+          "defaultValue": "draft"
+        },
+        {
+          "title": "Share Settings",
+          "theme": "primary",
+          "collapsible": true,
+          "collapsed": true,
+          "key": "shareSettings",
+          "type": "panel",
+          "label": "Share Settings",
+          "input": false,
+          "tableView": false,
+          "persistent": false,
+          "clearOnHide": false,
+          "components": [
+            {
+              "label": "Share with Public",
+              "key": "sharePublic",
+              "type": "checkbox",
+              "input": true,
+              "defaultValue": false,
+              "labelPosition": "right",
+              "tableView": true,
+              "persistent": true,
+              "id": "rundown_sharepub"
+            },
+            {
+              "label": "Share with Roles",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "values",
+              "data": {
+                "values": [
+                  {
+                    "label": "Administrator",
+                    "value": "administrator"
+                  },
+                  {
+                    "label": "Management",
+                    "value": "management"
+                  },
+                  {
+                    "label": "Staff",
+                    "value": "staff"
+                  }
+                ]
+              },
+              "template": "<span>{{ item.label }}</span>",
+              "valueProperty": "value",
+              "key": "shareRoles",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "id": "rundown_shareroles"
+            },
+            {
+              "label": "Share with Departments",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "department"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareDepartments",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "rundown_sharedepts"
+            },
+            {
+              "label": "Share with Committees",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "committee"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.name }}</span>",
+              "key": "shareCommittees",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "id": "rundown_sharecomms"
+            },
+            {
+              "label": "Share with Users",
+              "widget": "choicesjs",
+              "tableView": true,
+              "multiple": true,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "user"
+              },
+              "valueProperty": "_id",
+              "dataType": "resource",
+              "template": "<span>{{ item.data.email }}</span>",
+              "key": "shareUsers",
+              "type": "select",
+              "input": true,
+              "persistent": true,
+              "searchEnabled": true,
+              "authenticate": true,
+              "lazyLoad": true,
+              "id": "rundown_shareusers"
+            }
+          ]
+        },
+        {
+          "label": "Submit",
+          "key": "submit",
+          "type": "button",
+          "action": "submit",
+          "theme": "primary",
+          "input": true
         }
       ]
     }

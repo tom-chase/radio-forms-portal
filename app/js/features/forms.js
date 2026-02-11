@@ -60,19 +60,34 @@ export async function loadForms() {
         } else {
         // Non-admin users: filter by access rules (read or create rights)
             visible = forms.filter((f) => {
-                // Use the shared service to check permissions (Roles + Groups)
                 const perms = getSubmissionPermissions(user, f, { isAdmin: false });
-                
-                // Also check strict "access" (Form definition access) which is usually just roles
-                // but for listing, we mainly care if they can submit or read submissions.
-                // However, traditionally `access` controls "Can I load the form definition?".
-                // If the user has Group Permission to submit, they implicitly need form read access.
-                
+
                 const canReadSubmissions = perms.canReadAll || perms.canReadOwn;
                 const canCreateSubmissions = perms.canCreateAll || perms.canCreateOwn;
-                
-                // Check basic form definition access (read_all/read_own on the form object itself)
-                // This is legacy role-based check for the form definition
+
+                // Forms with groupPermissions use a stricter visibility rule:
+                // Server-side access/submissionAccess includes "authenticated" to
+                // prevent 401 logout, but sidebar visibility should be gated by
+                // actual group membership. getSubmissionPermissions already checks
+                // group membership — so we only need to exclude the broad
+                // "authenticated" role from the role-based portion of the check.
+                const gpRaw = f.settings?.groupPermissions;
+                const hasGroupConfig = Array.isArray(gpRaw)
+                    ? gpRaw.length > 0
+                    : !!gpRaw;
+
+                if (hasGroupConfig) {
+                    // Check group membership only — strip submissionAccess so
+                    // the broad "authenticated" role doesn't grant visibility.
+                    // Staff/management/admin use admin mode for cross-dept access.
+                    const groupPerms = getSubmissionPermissions(user, {
+                        settings: f.settings
+                    }, { isAdmin: false });
+                    return groupPerms.canReadAll || groupPerms.canReadOwn
+                        || groupPerms.canCreateAll || groupPerms.canCreateOwn;
+                }
+
+                // Forms without groupPermissions: use legacy form-definition read check
                 const a = f.access || [];
                 const formDefRules = a.map((r) => ({ type: r.type, roles: new Set(r.roles || []) }));
                 const hasFormDefRead = formDefRules.some(

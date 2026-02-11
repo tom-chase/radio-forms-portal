@@ -95,6 +95,8 @@ You can also provide an array of group configurations. This is useful if you wan
 
 ## Technical Implementation
 
+### Permission Check (`rbacService.js`)
+
 The logic is handled in `app/js/services/rbacService.js` -> `getSubmissionPermissions`.
 
 It performs the following check:
@@ -104,6 +106,37 @@ It performs the following check:
     *   If yes, grant the permissions listed in `access`.
 
 This allows for a hybrid model where Admins can access everything via Roles, but regular users are restricted by Department/Committee.
+
+### Sidebar Visibility (`forms.js`)
+
+Forms with `groupPermissions` use a **stricter sidebar filter**. Because all forms include `authenticated` in `access.read_all` (to prevent 401 logout), the standard form-definition read check would make every form visible to every logged-in user. For group-gated forms, the sidebar filter checks **only group membership** — it passes a synthetic formMeta (with only `settings`, no `submissionAccess`) to `getSubmissionPermissions`, so the broad `authenticated` role doesn't grant sidebar visibility.
+
+- **Group members** see the form via group permissions.
+- **Admins** see all forms via admin mode (bypasses the filter entirely).
+- **Non-members** (even staff) do not see group-gated forms unless they are in the group or use admin mode.
+
+### Placeholder Pattern for Templates
+
+Form templates in `config/bootstrap/form_templates/` use placeholder IDs (e.g., `PROGRAMMING_DEPT_PLACEHOLDER`) and a `_groupName` hint field. The `post-bootstrap.js` script resolves these to real submission IDs at deploy time by matching `_groupName` against the `groupSubmissions` map.
+
+## Three-Layer Access Model
+
+| Layer | Mechanism | Enforced by | Controls |
+|---|---|---|---|
+| **1. Roles** | `form.access` / `form.submissionAccess` | Form.io server | Form definition loading (401 if denied) + submission CRUD |
+| **2. Groups** | `form.settings.groupPermissions` | Client (`rbacService.js` + `forms.js`) | Sidebar visibility, create/read gating by department |
+| **3. Shares** | `shareSettings` panel on form | Client (`checkSubmissionRowAccess`) | Per-submission row visibility |
+
+**Critical interaction**: Layer 1 must include `authenticated` in `access.read_all` for all forms to prevent 401 logout. Layer 2 gates sidebar visibility for dept-scoped forms. Layer 3 filters individual submissions.
+
+## Current Departments and Committees
+
+| Group | Type | Forms |
+|---|---|---|
+| Engineering | Department | `engineeringSchedule`, `incidentReport` |
+| Underwriting | Department | `uwContracts`, `uwCampaigns`, `uwSpots`, `uwLogs`, `contactIntake` |
+| Programming | Department | `programmingShow`, `programmingRundown` |
+| Technology | Committee | `engineeringSchedule`, `incidentReport`, `programmingRundown` (elevated: includes `delete_all`) |
 
 ## Architecture Decision: Embedded Arrays vs Join Resources
 
