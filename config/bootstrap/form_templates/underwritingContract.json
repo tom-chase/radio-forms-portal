@@ -120,7 +120,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "orgs"
+            "resource": "organization"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.name }}</span>",

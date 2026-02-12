@@ -283,10 +283,10 @@ export async function renderSubmissionsTable(
     // Keys we prefer to show first in the summary, in order
     const preferredKeys = [
         "title", // tasks, generic
-        "name", // orgs
-        "campaignName", // uwCampaigns
-        "contractName", // uwContracts
-        "spotName", // uwSpots
+        "name", // organization
+        "campaignName", // underwritingcampaign
+        "contractName", // underwritingcontract
+        "spotName", // underwritingspot
         "orgName",
         "onAirName",
         "status",

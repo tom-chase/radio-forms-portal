@@ -4707,7 +4707,7 @@
                 "values": [
                   {
                     "label": "Organization",
-                    "value": "orgs"
+                    "value": "organization"
                   },
                   {
                     "label": "Contact",
@@ -4715,11 +4715,11 @@
                   },
                   {
                     "label": "Contract",
-                    "value": "uwContracts"
+                    "value": "underwritingcontract"
                   },
                   {
                     "label": "Campaign",
-                    "value": "uwCampaigns"
+                    "value": "underwritingcampaign"
                   },
                   {
                     "label": "Spot",
@@ -4741,13 +4741,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "orgs"
+                "resource": "organization"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.name }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'orgs';"
+              "customConditional": "show = data.parentType === 'organization';"
             },
             {
               "label": "Contact",
@@ -4775,13 +4775,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwContracts"
+                "resource": "underwritingcontract"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.contractName }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'uwContracts';"
+              "customConditional": "show = data.parentType === 'underwritingcontract';"
             },
             {
               "label": "Campaign",
@@ -4792,13 +4792,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwCampaigns"
+                "resource": "underwritingcampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'uwCampaigns';"
+              "customConditional": "show = data.parentType === 'underwritingcampaign';"
             },
             {
               "label": "Spot",
@@ -8925,7 +8925,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "orgs"
+            "resource": "organization"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.name }}</span>",
@@ -9840,7 +9840,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "orgs"
+                "resource": "organization"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.name }}</span>",
@@ -10369,7 +10369,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "orgs"
+                "resource": "organization"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.name }}</span>",
@@ -10389,7 +10389,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwContracts"
+                "resource": "underwritingcontract"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.contractName }}</span>",
@@ -10677,7 +10677,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwCampaigns"
+                "resource": "underwritingcampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
@@ -11123,7 +11123,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwCampaigns"
+                "resource": "underwritingcampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
@@ -11846,7 +11846,7 @@
                 "values": [
                   {
                     "label": "Organization",
-                    "value": "orgs"
+                    "value": "organization"
                   },
                   {
                     "label": "Contact",
@@ -11854,11 +11854,11 @@
                   },
                   {
                     "label": "Contract",
-                    "value": "uwContracts"
+                    "value": "underwritingcontract"
                   },
                   {
                     "label": "Campaign",
-                    "value": "uwCampaigns"
+                    "value": "underwritingcampaign"
                   },
                   {
                     "label": "Spot",
@@ -11876,13 +11876,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "orgs"
+                "resource": "organization"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.name }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'orgs';"
+              "customConditional": "show = data.parentType === 'organization';"
             },
             {
               "label": "Contact",
@@ -11910,13 +11910,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwContracts"
+                "resource": "underwritingcontract"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.contractName }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'uwContracts';"
+              "customConditional": "show = data.parentType === 'underwritingcontract';"
             },
             {
               "label": "Campaign",
@@ -11927,13 +11927,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwCampaigns"
+                "resource": "underwritingcampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'uwCampaigns';"
+              "customConditional": "show = data.parentType === 'underwritingcampaign';"
             },
             {
               "label": "Spot",
