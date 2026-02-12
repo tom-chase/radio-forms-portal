@@ -4723,7 +4723,7 @@
                   },
                   {
                     "label": "Spot",
-                    "value": "uwSpots"
+                    "value": "underwritingspot"
                   },
                   {
                     "label": "Event",
@@ -4775,7 +4775,7 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcontract"
+                "resource": "underwritingContract"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.contractName }}</span>",
@@ -4792,7 +4792,7 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcampaign"
+                "resource": "underwritingCampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
@@ -4809,13 +4809,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwSpots"
+                "resource": "underwritingSpot"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.spotName }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'uwSpots';"
+              "customConditional": "show = data.parentType === 'underwritingspot';"
             },
             {
               "label": "Event",
@@ -10389,7 +10389,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcontract"
+                "resource": "underwritingContract"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.contractName }}</span>",
@@ -10677,7 +10677,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcampaign"
+                "resource": "underwritingCampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
@@ -11123,7 +11123,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcampaign"
+                "resource": "underwritingCampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
@@ -11139,7 +11139,7 @@
               "tableView": true,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwSpots"
+                "resource": "underwritingSpot"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.spotName }}</span>",
@@ -11862,7 +11862,7 @@
                   },
                   {
                     "label": "Spot",
-                    "value": "uwSpots"
+                    "value": "underwritingspot"
                   }
                 ]
               }
@@ -11910,7 +11910,7 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcontract"
+                "resource": "underwritingContract"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.contractName }}</span>",
@@ -11927,7 +11927,7 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "underwritingcampaign"
+                "resource": "underwritingCampaign"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.campaignName }}</span>",
@@ -11944,13 +11944,13 @@
               "tableView": false,
               "dataSrc": "resource",
               "data": {
-                "resource": "uwSpots"
+                "resource": "underwritingSpot"
               },
               "valueProperty": "_id",
               "template": "<span>{{ item.data.spotName }}</span>",
               "searchEnabled": true,
               "reference": true,
-              "customConditional": "show = data.parentType === 'uwSpots';"
+              "customConditional": "show = data.parentType === 'underwritingspot';"
             },
             {
               "label": "Parent ID (Calculated)",

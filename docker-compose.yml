@@ -13,7 +13,7 @@ services:
       - radio-forms
 
   formio:
-    image: formio/formio:4.6.0-rc.4
+    image: formio/formio:4.6.0
     container_name: formio
     restart: always
     depends_on:
