@@ -9,6 +9,7 @@ import { getCurrentUserWithRoles } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
 import { getUIState } from '../state/uiState.js';
+import { markSubmissionViewed, onSubmissionViewed, incrementFormTotal, decrementFormTotal } from '../services/badgeService.js';
 import { handleS3Upload } from '../services/uploadsService.js';
 import { showConfirm } from '../ui/modalUtils.js';
 import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tabulatorLists.js?v=2.19';
@@ -469,6 +470,14 @@ async function openInlineSubmissionForm(
     container.innerHTML =
         '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-secondary" role="status"><span class="visually-hidden">Loading submission...</span></div></div>';
 
+    // Mark this submission as viewed for badge tracking
+    const formId = formMeta?._id;
+    if (id && formId) {
+        markSubmissionViewed(id, formId).then(wasNew => {
+            if (wasNew) onSubmissionViewed(formId, id);
+        }).catch(() => {});
+    }
+
     try {
         const currentUser =
             user || (await getCurrentUserWithRoles());
@@ -571,6 +580,15 @@ export async function startEditSubmission(submission) {
       return;
     }
 
+    // Mark this submission as viewed for badge tracking
+    const subId = submission?._id;
+    const formId = state.currentFormMeta?._id;
+    if (subId && formId) {
+        markSubmissionViewed(subId, formId).then(wasNew => {
+            if (wasNew) onSubmissionViewed(formId, subId);
+        }).catch(() => {});
+    }
+
     const originalSubmission = cloneSubmission(state.currentFormInstance?.submission || {});
 
     state.isEditing = true;
@@ -603,6 +621,15 @@ export async function startViewSubmission(submission) {
     if (!state.currentFormInstance) {
       actions.showToast?.("Form is not ready yet. Please wait and try again.", "warning");
       return;
+    }
+
+    // Mark this submission as viewed for badge tracking
+    const subId = submission?._id;
+    const formId = state.currentFormMeta?._id;
+    if (subId && formId) {
+        markSubmissionViewed(subId, formId).then(wasNew => {
+            if (wasNew) onSubmissionViewed(formId, subId);
+        }).catch(() => {});
     }
 
     state.isEditing = false; // Not editing, just viewing
@@ -713,6 +740,9 @@ async function wireTableEventHandlers(subs, formMeta, user, permissions) {
                     try {
                         const path = String(formMeta?.path || '').replace(/^\/+/, '');
                         await formioRequest(`/${path}/submission/${id}`, { method: "DELETE" });
+
+                        // Update sidebar badge counts
+                        if (formMeta?._id) decrementFormTotal(formMeta._id, id);
 
                         actions.showToast?.("Submission deleted.", "success");
                         await loadSubmissions(formMeta, perms, user);

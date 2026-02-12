@@ -5,6 +5,7 @@ import { formioRequest } from '../services/formioService.js';
 import { startEditSubmission, startViewSubmission } from './submissions.js?v=2.19';
 import { renderViewToggle } from '../utils/viewUtils.js';
 import { showConfirm } from '../ui/modalUtils.js';
+import { decrementFormTotal } from '../services/badgeService.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -324,6 +325,8 @@ async function handleEventAction(event, action) {
         try {
             const path = String(formMeta?.path || '').replace(/^\/+/, '');
             await formioRequest(`/${path}/submission/${submission._id}`, { method: "DELETE" });
+            // Update sidebar badge counts
+            if (formMeta?._id) decrementFormTotal(formMeta._id, submission._id);
             actions.showToast?.("Submission deleted.", "success");
             
             // Reload the calendar to show updated data

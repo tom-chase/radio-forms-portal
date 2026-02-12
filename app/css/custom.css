@@ -59,6 +59,36 @@ pre {
     border-right: none;
 }
 
+/* Sidebar badge counts */
+.rfp-badge-container {
+    font-size: 0.65rem;
+    white-space: nowrap;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.rfp-badge-new {
+    font-weight: 600;
+}
+
+.rfp-badge-sep,
+.rfp-badge-total {
+    opacity: 0.7;
+}
+
+.rfp-tag-accordion-btn .rfp-badge-container {
+    font-size: 0.7rem;
+}
+
+.rfp-form-label {
+    min-width: 0;
+}
+
+/* Tabulator new-row indicator */
+.rfp-tabulator-new-row {
+    border-left: 3px solid var(--bs-danger, #dc3545) !important;
+}
+
 /* Notes Section Styling */
 .notes-section {
     background-color: #f8f9fa;

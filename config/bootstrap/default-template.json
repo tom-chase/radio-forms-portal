@@ -3161,6 +3161,19 @@
       "handler": [
         "before"
       ]
+    },
+    "viewedSubmissions:save": {
+      "title": "Save Submission",
+      "name": "save",
+      "form": "viewedSubmissions",
+      "priority": 10,
+      "method": [
+        "create",
+        "update"
+      ],
+      "handler": [
+        "before"
+      ]
     }
   },
   "resources": {
@@ -3177,7 +3190,8 @@
       "settings": {
         "ui": {
           "alternateTitle": "Users",
-          "submissionsTitle": ""
+          "submissionsTitle": "Users List",
+          "hideBadges": true
         },
         "tabulatorList": {
           "enabled": true,
@@ -13942,6 +13956,97 @@
           "action": "submit",
           "theme": "primary",
           "input": true
+        }
+      ]
+    },
+    "viewedSubmissions": {
+      "title": "Viewed Submissions",
+      "type": "resource",
+      "name": "viewedSubmissions",
+      "path": "viewedsubmissions",
+      "pdfComponents": [],
+      "display": "form",
+      "tags": [
+        ""
+      ],
+      "settings": {
+        "ui": {
+          "formsList": {
+            "hidden": true
+          }
+        }
+      },
+      "components": [
+        {
+          "label": "Submission ID",
+          "key": "submissionId",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "vs_subid"
+        },
+        {
+          "label": "Form ID",
+          "key": "form",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "vs_formid"
+        }
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "administrator",
+            "authenticated"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "create_own",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "type": "read_own",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "type": "delete_own",
+          "roles": []
+        },
+        {
+          "type": "create_all",
+          "roles": []
+        },
+        {
+          "type": "read_all",
+          "roles": [
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": []
+        },
+        {
+          "type": "delete_all",
+          "roles": []
         }
       ]
     }

@@ -4,6 +4,7 @@ import { getAppBridge } from '../services/appBridge.js';
 import { formioRequest } from '../services/formioService.js';
 import { openRoleMgmtModal } from './roleMgmt.js';
 import { log } from '../utils/logger.js';
+import { isSubmissionViewed, markSubmissionViewed, onSubmissionViewed, decrementFormTotal } from '../services/badgeService.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -707,6 +708,17 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         actions.showJsonModal?.(rawSub.data || {});
                     } else if (action === "edit" || action === "view") {
                         const { startEditSubmission, startViewSubmission } = await import('./submissions.js?v=2.19');
+                        // Mark as viewed and remove new-row indicator
+                        if (rawSub._id && formMeta?._id) {
+                            markSubmissionViewed(rawSub._id, formMeta._id).then(wasNew => {
+                                if (wasNew) {
+                                    onSubmissionViewed(formMeta._id, rawSub._id);
+                                    // Remove new-row indicator from this row
+                                    const rowEl = cell.getRow().getElement();
+                                    if (rowEl) rowEl.classList.remove('rfp-tabulator-new-row');
+                                }
+                            }).catch(() => {});
+                        }
                         if (action === "edit") {
                             startEditSubmission(rawSub);
                         } else {
@@ -724,6 +736,8 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         try {
                             const path = String(formMeta?.path || '').replace(/^\/+/, '');
                             await formioRequest(`/${path}/submission/${id}`, { method: "DELETE" });
+                            // Update sidebar badge counts
+                            if (formMeta?._id) decrementFormTotal(formMeta._id, id);
                             actions.showToast?.("Submission deleted.", "success");
                             await loadSubmissions(formMeta, permissions, user);
                         } catch (err) {
@@ -780,11 +794,33 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
             finalConfig.rowDblClick = async (e, row) => {
                 const data = row.getData();
                 if (data?._raw) {
+                    // Mark as viewed and remove new-row indicator
+                    const subId = data._raw._id;
+                    if (subId && formMeta?._id) {
+                        markSubmissionViewed(subId, formMeta._id).then(wasNew => {
+                            if (wasNew) {
+                                onSubmissionViewed(formMeta._id, subId);
+                                const rowEl = row.getElement();
+                                if (rowEl) rowEl.classList.remove('rfp-tabulator-new-row');
+                            }
+                        }).catch(() => {});
+                    }
                     const { startEditSubmission } = await import('./submissions.js?v=2.19');
                     startEditSubmission(data._raw);
                 }
             };
         }
+
+        // Add rowFormatter for new-row indicators
+        const origRowFormatter = finalConfig.rowFormatter;
+        finalConfig.rowFormatter = (row) => {
+            if (origRowFormatter) origRowFormatter(row);
+            const data = row.getData();
+            const subId = data?._raw?._id || data?._id;
+            if (subId && !isSubmissionViewed(subId)) {
+                row.getElement().classList.add('rfp-tabulator-new-row');
+            }
+        };
 
         (finalConfig.columns || []).forEach((c) => {
             if (!c || typeof c !== 'object') return;

@@ -6,7 +6,7 @@
 # during development without needing to wipe the database.
 #
 # Usage: ./scripts/sync-dev.sh [form_name]
-#   - form_name: (Optional) The name of the form/resource to sync. Defaults to 'book'.
+#   - form_name: (Optional) The name of the form/resource to sync. Defaults to 'none'.
 
 set -e
 
@@ -16,7 +16,7 @@ if [ -f .env ]; then
 fi
 
 # --- Configuration ---
-FORM_NAME=${1:-book}
+FORM_NAME=${1:-none}
 TEMPLATE_FILE="./config/bootstrap/default-template.json"
 API_URL_BASE=${FORMIO_DOMAIN:-http://localhost:3001}
 DST_ADMIN_KEY=${API_KEYS}

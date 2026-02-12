@@ -15,6 +15,7 @@ import {
     buildRevisionEntry
     } from '../services/revisionService.js';
 import { getAppBridge } from '../services/appBridge.js';
+import { initBadgeCounts, incrementFormTotal } from '../services/badgeService.js';
 import { loadSubmissions } from './submissions.js?v=2.19';
 
 function $(id) { return document.getElementById(id); }
@@ -204,7 +205,11 @@ export function renderFormsList(forms) {
         btn.setAttribute("data-bs-target", `#${collapseId}`);
         btn.setAttribute("aria-expanded", isGeneral ? "true" : "false");
         btn.setAttribute("aria-controls", collapseId);
-        btn.textContent = tag;
+        btn.setAttribute("data-tag", tag);
+        const tagLabel = document.createElement("span");
+        tagLabel.className = "rfp-tag-label";
+        tagLabel.textContent = tag;
+        btn.appendChild(tagLabel);
 
         header.appendChild(btn);
         item.appendChild(header);
@@ -224,10 +229,14 @@ export function renderFormsList(forms) {
             const formBtn = document.createElement("button");
             formBtn.type = "button";
             formBtn.className =
-                "list-group-item list-group-item-action";
+                "list-group-item list-group-item-action d-flex align-items-center";
+            formBtn.setAttribute("data-form-id", form._id);
 
             // Use alternate title if configured
-            formBtn.textContent = getFormDisplayTitle(form);
+            const titleSpan = document.createElement("span");
+            titleSpan.className = "rfp-form-label text-truncate";
+            titleSpan.textContent = getFormDisplayTitle(form);
+            formBtn.appendChild(titleSpan);
 
             formBtn.addEventListener("click", () => {
                 // Highlight the selected form across all tag sections
@@ -246,6 +255,11 @@ export function renderFormsList(forms) {
         item.appendChild(collapseDiv);
         formsList.appendChild(item);
     });
+
+    // Kick off badge count loading in the background
+    getCurrentUserWithRoles().then(user => {
+        if (user) initBadgeCounts(forms, user);
+    }).catch(() => {});
 }
 
 // Render a form and prepare new-submission panel  submissions list
@@ -409,8 +423,9 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
         handleS3Upload(formio, formMeta);
     });
 
-    formio.on("submitDone", async () => {
-        const action = state.isEditing ? "updated" : "submitted";
+    formio.on("submitDone", async (result) => {
+        const wasEditing = state.isEditing;
+        const action = wasEditing ? "updated" : "submitted";
         state.isEditing = false;
         state.editingSubmissionId = null;
         const editBanner = $("editBanner");
@@ -420,6 +435,12 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
             `Submission ${action} successfully.`,
             "success"
         );
+
+        // Update sidebar badge counts
+        if (!wasEditing && formMeta?._id) {
+            const newSubId = result?._id || result?.submission?._id;
+            incrementFormTotal(formMeta._id, newSubId);
+        }
         
         // Collapse forms panel and clear form data
         actions.setFormsCollapsed?.(true);
