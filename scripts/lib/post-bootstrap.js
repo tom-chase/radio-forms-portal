@@ -411,7 +411,7 @@ async function main() {
     // All forms that use groupPermissions
     const formsToUpdate = [
         'incidentReport', 'engineeringSchedule',
-        'contactIntake', 'uwContracts', 'uwCampaigns', 'uwSpots', 'uwLogs',
+        'contactIntake', 'underwritingContract', 'underwritingCampaign', 'underwritingSpot', 'underwritingLog',
         'programmingShow', 'programmingRundown'
     ];
 
