@@ -4,7 +4,7 @@
 // Uses Content-Range header from Form.io CE to get totals without fetching full payloads.
 
 import { buildUrl, getToken, formioRequest } from './formioService.js';
-import { getSubmissionPermissions } from './rbacService.js';
+import { getSubmissionPermissions, hasShareSettings, checkSubmissionRowAccess } from './rbacService.js';
 import { getAppBridge } from './appBridge.js';
 import { log } from '../utils/logger.js';
 
@@ -156,6 +156,9 @@ async function getFormTotalCount(formPath, extraQuery = {}) {
 
 /**
  * Fetch counts for a single form. Returns { total, newCount, subIds }.
+ * For share-settings forms, fetches submissions with share fields and applies
+ * client-side filtering via checkSubmissionRowAccess to match what the user
+ * actually sees in the submission list.
  */
 async function fetchFormCounts(form, user, isAdmin) {
   const path = String(form.path || '').replace(/^\/+/, '');
@@ -168,16 +171,41 @@ async function fetchFormCounts(form, user, isAdmin) {
 
   const ownerQuery = (!perms.canReadAll && perms.canReadOwn) ? { owner: user._id || 'me' } : {};
 
-  // Use server-side count for all forms. Share-settings forms may show a slightly
-  // higher count than what the user sees in the actual list (which applies client-side
-  // share filtering), but this avoids N extra full-form-def fetches on startup.
-  // The trade-off is acceptable: badge counts are directional, not exact for share forms.
-  const total = await getFormTotalCount(path, ownerQuery);
-  let subIds = null;
+  // Sidebar forms lack components, so fetch full form def to check for share settings
+  let fullForm = form;
+  if (!form.components) {
+    try {
+      fullForm = await formioRequest(`/${path}`, { method: 'GET' });
+    } catch (e) {
+      log.warn(`[badgeService] Could not fetch form def for ${path}`, e);
+    }
+  }
+
+  let total, subIds;
+
+  if (hasShareSettings(fullForm)) {
+    // Share-settings forms: fetch submissions with share fields, filter client-side
+    const shareSelect = '_id,owner,data.sharePublic,data.shareRoles,data.shareDepartments,data.shareCommittees,data.shareUsers';
+    const subs = await formioRequest(`/${path}/submission`, {
+      method: 'GET',
+      query: { limit: 5000, select: shareSelect, ...ownerQuery }
+    });
+    const filtered = (subs || []).filter(s => checkSubmissionRowAccess(user, s, fullForm, { isAdmin }));
+    total = filtered.length;
+    subIds = filtered.map(s => s._id);
+  } else {
+    // Standard forms: use efficient Content-Range count
+    total = await getFormTotalCount(path, ownerQuery);
+    subIds = null;
+  }
+
   let newCount = 0;
 
-  // Fetch submission IDs to compare against viewed set for "new" count
-  if (total > 0) {
+  if (subIds) {
+    // We already have exact IDs from share filtering
+    newCount = subIds.filter(id => !_viewedSet.has(id)).length;
+  } else if (total > 0) {
+    // Fetch just IDs to compare against viewed set
     try {
       const { body } = await fetchWithRange(`/${path}/submission`, {
         limit: 5000,
