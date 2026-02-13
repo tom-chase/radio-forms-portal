@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Token Expiration Test</title>
+</head>
+<body>
+    <h1>Token Expiration Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        // Mock the TokenService for testing
+        class TokenService {
+            static isTokenExpired(token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const now = Date.now() / 1000;
+                    // Add 30-second buffer to handle clock skew and network latency
+                    return payload.exp < (now - 30);
+                } catch (error) {
+                    // If we can't parse token, assume it's invalid
+                    return true;
+                }
+            }
+            
+            static getValidToken() {
+                const token = localStorage.getItem('formioToken');
+                
+                if (!token) {
+                    return null;
+                }
+                
+                // Check expiration with a small buffer to handle clock skew
+                if (this.isTokenExpired(token)) {
+                    console.warn('Token validation failed; clearing expired token');
+                    this.clearToken();
+                    return null;
+                }
+                
+                return token;
+            }
+            
+            static clearToken() {
+                localStorage.removeItem('formioToken');
+            }
+        }
+        
+        // Test cases
+        function runTests() {
+            const results = document.getElementById('results');
+            
+            // Test 1: No token
+            localStorage.removeItem('formioToken');
+            const noToken = TokenService.getValidToken();
+            results.innerHTML += `<p>Test 1 - No token: ${noToken === null ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 2: Invalid token
+            localStorage.setItem('formioToken', 'invalid.token.here');
+            const invalidToken = TokenService.getValidToken();
+            results.innerHTML += `<p>Test 2 - Invalid token: ${invalidToken === null ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 3: Expired token (create an expired JWT)
+            const expiredPayload = {
+                exp: Math.floor(Date.now() / 1000) - 3600 // 1 hour ago
+            };
+            const expiredToken = `header.${btoa(JSON.stringify(expiredPayload))}.signature`;
+            localStorage.setItem('formioToken', expiredToken);
+            const expiredResult = TokenService.getValidToken();
+            results.innerHTML += `<p>Test 3 - Expired token: ${expiredResult === null ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 4: Valid token
+            const validPayload = {
+                exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
+            };
+            const validToken = `header.${btoa(JSON.stringify(validPayload))}.signature`;
+            localStorage.setItem('formioToken', validToken);
+            const validResult = TokenService.getValidToken();
+            results.innerHTML += `<p>Test 4 - Valid token: ${validResult === validToken ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Clean up
+            localStorage.removeItem('formioToken');
+        }
+        
+        runTests();
+    </script>
+</body>
+</html>

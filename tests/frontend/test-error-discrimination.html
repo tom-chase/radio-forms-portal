@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error Discrimination Test</title>
+    <style>
+        .pass { color: green; }
+        .fail { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Error Discrimination Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        // Mock the error detection logic from forms.js
+        function detectErrorType(status, message) {
+            // Distinguish between token expiration and permission denied
+            const isTokenExpired = status === 401 && (
+                /token.*expir|jwt.*expir|session.*expir|expired.*token/i.test(message) ||
+                /invalid.*token|malformed.*token/i.test(message)
+            );
+            
+            // Permission denied (403 or 401 without expiration language) should show normal error
+            const isPermissionDenied = status === 403 || (
+                status === 401 && /unauthorized|access.*denied|permission.*denied/i.test(message) && !isTokenExpired
+            );
+            
+            return { isTokenExpired, isPermissionDenied };
+        }
+        
+        // Test cases
+        function runTests() {
+            const results = document.getElementById('results');
+            
+            // Test 1: Token expiration error
+            const test1 = detectErrorType(401, 'Token has expired');
+            results.innerHTML += `<p class="${test1.isTokenExpired ? 'pass' : 'fail'}">Test 1 - Token expiration: ${test1.isTokenExpired ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 2: JWT expiration error
+            const test2 = detectErrorType(401, 'JWT expired');
+            results.innerHTML += `<p class="${test2.isTokenExpired ? 'pass' : 'fail'}">Test 2 - JWT expiration: ${test2.isTokenExpired ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 3: Invalid token error
+            const test3 = detectErrorType(401, 'Invalid token format');
+            results.innerHTML += `<p class="${test3.isTokenExpired ? 'pass' : 'fail'}">Test 3 - Invalid token: ${test3.isTokenExpired ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 4: Permission denied (403)
+            const test4 = detectErrorType(403, 'Access denied');
+            results.innerHTML += `<p class="${test4.isPermissionDenied ? 'pass' : 'fail'}">Test 4 - 403 Access denied: ${test4.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 5: Permission denied (401 with unauthorized message)
+            const test5 = detectErrorType(401, 'Unauthorized access');
+            results.innerHTML += `<p class="${test5.isPermissionDenied ? 'pass' : 'fail'}">Test 5 - 401 Unauthorized: ${test5.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 6: Generic 401 without specific language (should be permission denied)
+            const test6 = detectErrorType(401, 'Authentication required');
+            results.innerHTML += `<p class="${test6.isPermissionDenied ? 'pass' : 'fail'}">Test 6 - Generic 401: ${test6.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 7: 404 error (should be neither)
+            const test7 = detectErrorType(404, 'Not found');
+            results.innerHTML += `<p class="${!test7.isTokenExpired && !test7.isPermissionDenied ? 'pass' : 'fail'}">Test 7 - 404 Not found: ${!test7.isTokenExpired && !test7.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 8: 500 error (should be neither)
+            const test8 = detectErrorType(500, 'Internal server error');
+            results.innerHTML += `<p class="${!test8.isTokenExpired && !test8.isPermissionDenied ? 'pass' : 'fail'}">Test 8 - 500 Server error: ${!test8.isTokenExpired && !test8.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 9: Complex message with both unauthorized and expired (should prioritize expiration)
+            const test9 = detectErrorType(401, 'Unauthorized: token has expired');
+            results.innerHTML += `<p class="${test9.isTokenExpired && !test9.isPermissionDenied ? 'pass' : 'fail'}">Test 9 - Mixed message: ${test9.isTokenExpired && !test9.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+            
+            // Test 10: Role-based access denied
+            const test10 = detectErrorType(401, 'User does not have required role: administrator');
+            results.innerHTML += `<p class="${test10.isPermissionDenied ? 'pass' : 'fail'}">Test 10 - Role-based denial: ${test10.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
+        }
+        
+        runTests();
+        
+        // Add explanation
+        document.getElementById('results').innerHTML += `
+            <h2>Explanation</h2>
+            <ul>
+                <li><strong>Token Expiration (triggers login):</strong> Messages containing "token expir", "jwt expir", "session expir", "expired token", "invalid token", "malformed token"</li>
+                <li><strong>Permission Denied (shows error message):</strong> 403 status, or 401 with "unauthorized", "access denied", "permission denied" (but not token expiration language)</li>
+                <li><strong>Other Errors:</strong> All other status codes and messages fall through to normal error handling</li>
+            </ul>
+            <p class="warning"><strong>Important:</strong> This prevents legitimate permission denials (like role-based access control) from triggering unwanted logouts.</p>
+        `;
+    </script>
+</body>
+</html>
