@@ -38,6 +38,7 @@ TAR_FILE="$TEMP_DIR/deploy.tar.gz"
 tar -czf "$TAR_FILE" \
     --exclude='.git' \
     --exclude='.github' \
+    --exclude='.windsurf' \
     --exclude='node_modules' \
     --exclude='.env' \
     --exclude='Caddyfile' \
@@ -48,6 +49,8 @@ tar -czf "$TAR_FILE" \
     --exclude='backups' \
     --exclude='.DS_Store' \
     --exclude='*.tar.gz' \
+    --exclude='docs' \
+    --exclude='infrastructure' \
     .
 
 echo "📤 Uploading package to server..."
