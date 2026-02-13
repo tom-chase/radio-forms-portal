@@ -39,10 +39,12 @@ build/
 *.sqlite
 *.db
 
+
 # Backup files
 backups/
 *.backup
 *.bak
+*.archive.gz
 
 # Tools (sensitive data)
 tools/

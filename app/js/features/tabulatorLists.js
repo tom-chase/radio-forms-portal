@@ -811,16 +811,18 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
             };
         }
 
-        // Add rowFormatter for new-row indicators
-        const origRowFormatter = finalConfig.rowFormatter;
-        finalConfig.rowFormatter = (row) => {
-            if (origRowFormatter) origRowFormatter(row);
-            const data = row.getData();
-            const subId = data?._raw?._id || data?._id;
-            if (subId && !isSubmissionViewed(subId)) {
-                row.getElement().classList.add('rfp-tabulator-new-row');
-            }
-        };
+        // Add rowFormatter for new-row indicators (skip if badges disabled for this form)
+        if (!formMeta?.settings?.ui?.hideBadges) {
+            const origRowFormatter = finalConfig.rowFormatter;
+            finalConfig.rowFormatter = (row) => {
+                if (origRowFormatter) origRowFormatter(row);
+                const data = row.getData();
+                const subId = data?._raw?._id || data?._id;
+                if (subId && !isSubmissionViewed(subId)) {
+                    row.getElement().classList.add('rfp-tabulator-new-row');
+                }
+            };
+        }
 
         (finalConfig.columns || []).forEach((c) => {
             if (!c || typeof c !== 'object') return;
