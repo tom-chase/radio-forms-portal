@@ -4,6 +4,7 @@
 // This avoids features reaching into main.js for auth/session state.
 
 import { getCurrentUser, formioRequest } from './formioService.js';
+import { TokenService } from './tokenService.js';
 import { log } from '../utils/logger.js';
 
 let _cachedUserWithRoles = null;
@@ -20,10 +21,18 @@ export function clearUserSessionCache() {
 export async function getCurrentUserWithRoles({ force = false } = {}) {
   if (!force && _cachedUserWithRoles) return _cachedUserWithRoles;
 
+  // Proactively validate token before making API calls
+  const validToken = TokenService.getToken();
+  if (!validToken) {
+    console.warn('No valid token available in getCurrentUserWithRoles');
+    _cachedUserWithRoles = null;
+    return null;
+  }
+
   const baseUser = await getCurrentUser({ force: true });
   if (!baseUser) {
     _cachedUserWithRoles = null;
-        return null;
+    return null;
   }
 
   // If roles are already present and non-empty, just use them.

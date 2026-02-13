@@ -331,13 +331,27 @@ export async function formioRequest(pathOrUrl, options = {}) {
         details: (parsed && typeof parsed === 'object') ? parsed : null,
       });
 
-      // Call optional auth failure handler (401/403) for session-level failures.
-      // Some deployments return 401/403 for privileged endpoints (e.g. /role) even when
-      // the session token is otherwise valid; callers can handle those as "access denied".
+      // Call optional auth failure handler for token expiration specifically.
+      // Form.io CE returns: 440 "Token Expired", 400 "Bad Token".
+      // Permission denied (403 or 401) should be handled by callers.
       const path = String(pathOrUrl || '').toLowerCase();
       const isPrivilegedEndpoint = path.includes('/role');
-      if (!isPrivilegedEndpoint && (err.status === 401 || err.status === 403)) {
+      const errorMessage = String(err?.message || '');
+      
+      // Detect token expiration / bad token from Form.io CE server responses
+      const isTokenExpired = (
+        err.status === 440 ||
+        (err.status === 400 && /bad token/i.test(errorMessage)) ||
+        /token.*expir|expired.*token/i.test(errorMessage)
+      );
+      
+      // Only trigger auth failure for actual token expiration on non-privileged endpoints
+      if (!isPrivilegedEndpoint && isTokenExpired) {
         try {
+          console.warn('Token expiration detected, clearing token and triggering login UI');
+          // Clear the expired/invalid token
+          clearToken();
+          // Call the registered auth failure handler
           if (typeof _onAuthFailure === 'function') _onAuthFailure(err);
         } catch (hookErr) {
           log.warn('onAuthFailure hook threw', hookErr);
@@ -379,7 +393,8 @@ export async function getCurrentUser({ force = false } = {}) {
     // Clear it so login forms can load without sending a bad Authorization header.
     const status = err?.status || err?.response?.status || 0;
     const msg = String(err?.message || err?.error || '');
-    const isAuthError = status === 401 || status === 403 || /unauthorized/i.test(msg);
+    const isAuthError = status === 401 || status === 403 || status === 440
+      || /unauthorized|token.*expir|bad token/i.test(msg);
     if (isAuthError) {
       try {
         log.warn('Current user lookup unauthorized; clearing token');

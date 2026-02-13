@@ -3,88 +3,98 @@
 <head>
     <title>Error Discrimination Test</title>
     <style>
-        .pass { color: green; }
-        .fail { color: red; }
-        .warning { color: orange; }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .info { color: #666; font-style: italic; }
+        table { border-collapse: collapse; margin: 1em 0; }
+        th, td { border: 1px solid #ccc; padding: 6px 12px; text-align: left; }
+        th { background: #f5f5f5; }
     </style>
 </head>
 <body>
     <h1>Error Discrimination Test</h1>
-    <div id="results"></div>
-    
+    <p class="info">
+        Tests the <code>isTokenExpired</code> detection logic used in
+        <code>forms.js</code> and <code>formioService.js</code>.<br>
+        Based on actual Form.io CE v4.6.0 <code>tokenHandler.js</code> responses.
+    </p>
+
+    <table>
+        <thead><tr><th>Ref</th><th>Server Response</th><th>Expected</th><th>Result</th></tr></thead>
+        <tbody id="results"></tbody>
+    </table>
+
+    <div id="explanation"></div>
+
     <script>
-        // Mock the error detection logic from forms.js
-        function detectErrorType(status, message) {
-            // Distinguish between token expiration and permission denied
-            const isTokenExpired = status === 401 && (
-                /token.*expir|jwt.*expir|session.*expir|expired.*token/i.test(message) ||
-                /invalid.*token|malformed.*token/i.test(message)
+        /**
+         * Mirror of the detection logic in forms.js / formioService.js.
+         * Form.io CE returns:
+         *   440  "Token Expired"   — expired JWT
+         *   400  "Bad Token"       — malformed / tampered JWT
+         * All other 4xx codes (401, 403) are permission / access errors
+         * and must NOT trigger a forced logout.
+         */
+        function isTokenExpired(status, message) {
+            return (
+                status === 440 ||
+                (status === 400 && /bad token/i.test(message)) ||
+                /token.*expir|expired.*token/i.test(message)
             );
-            
-            // Permission denied (403 or 401 without expiration language) should show normal error
-            const isPermissionDenied = status === 403 || (
-                status === 401 && /unauthorized|access.*denied|permission.*denied/i.test(message) && !isTokenExpired
-            );
-            
-            return { isTokenExpired, isPermissionDenied };
         }
-        
-        // Test cases
-        function runTests() {
-            const results = document.getElementById('results');
-            
-            // Test 1: Token expiration error
-            const test1 = detectErrorType(401, 'Token has expired');
-            results.innerHTML += `<p class="${test1.isTokenExpired ? 'pass' : 'fail'}">Test 1 - Token expiration: ${test1.isTokenExpired ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 2: JWT expiration error
-            const test2 = detectErrorType(401, 'JWT expired');
-            results.innerHTML += `<p class="${test2.isTokenExpired ? 'pass' : 'fail'}">Test 2 - JWT expiration: ${test2.isTokenExpired ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 3: Invalid token error
-            const test3 = detectErrorType(401, 'Invalid token format');
-            results.innerHTML += `<p class="${test3.isTokenExpired ? 'pass' : 'fail'}">Test 3 - Invalid token: ${test3.isTokenExpired ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 4: Permission denied (403)
-            const test4 = detectErrorType(403, 'Access denied');
-            results.innerHTML += `<p class="${test4.isPermissionDenied ? 'pass' : 'fail'}">Test 4 - 403 Access denied: ${test4.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 5: Permission denied (401 with unauthorized message)
-            const test5 = detectErrorType(401, 'Unauthorized access');
-            results.innerHTML += `<p class="${test5.isPermissionDenied ? 'pass' : 'fail'}">Test 5 - 401 Unauthorized: ${test5.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 6: Generic 401 without specific language (should be permission denied)
-            const test6 = detectErrorType(401, 'Authentication required');
-            results.innerHTML += `<p class="${test6.isPermissionDenied ? 'pass' : 'fail'}">Test 6 - Generic 401: ${test6.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 7: 404 error (should be neither)
-            const test7 = detectErrorType(404, 'Not found');
-            results.innerHTML += `<p class="${!test7.isTokenExpired && !test7.isPermissionDenied ? 'pass' : 'fail'}">Test 7 - 404 Not found: ${!test7.isTokenExpired && !test7.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 8: 500 error (should be neither)
-            const test8 = detectErrorType(500, 'Internal server error');
-            results.innerHTML += `<p class="${!test8.isTokenExpired && !test8.isPermissionDenied ? 'pass' : 'fail'}">Test 8 - 500 Server error: ${!test8.isTokenExpired && !test8.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 9: Complex message with both unauthorized and expired (should prioritize expiration)
-            const test9 = detectErrorType(401, 'Unauthorized: token has expired');
-            results.innerHTML += `<p class="${test9.isTokenExpired && !test9.isPermissionDenied ? 'pass' : 'fail'}">Test 9 - Mixed message: ${test9.isTokenExpired && !test9.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-            
-            // Test 10: Role-based access denied
-            const test10 = detectErrorType(401, 'User does not have required role: administrator');
-            results.innerHTML += `<p class="${test10.isPermissionDenied ? 'pass' : 'fail'}">Test 10 - Role-based denial: ${test10.isPermissionDenied ? 'PASS' : 'FAIL'}</p>`;
-        }
-        
-        runTests();
-        
-        // Add explanation
-        document.getElementById('results').innerHTML += `
-            <h2>Explanation</h2>
-            <ul>
-                <li><strong>Token Expiration (triggers login):</strong> Messages containing "token expir", "jwt expir", "session expir", "expired token", "invalid token", "malformed token"</li>
-                <li><strong>Permission Denied (shows error message):</strong> 403 status, or 401 with "unauthorized", "access denied", "permission denied" (but not token expiration language)</li>
-                <li><strong>Other Errors:</strong> All other status codes and messages fall through to normal error handling</li>
-            </ul>
-            <p class="warning"><strong>Important:</strong> This prevents legitimate permission denials (like role-based access control) from triggering unwanted logouts.</p>
+
+        // ---- Test cases ----
+        const tests = [
+            // Form.io CE actual responses
+            { status: 440, msg: 'Token Expired',       expect: true,  label: 'CE 440 Token Expired' },
+            { status: 400, msg: 'Bad Token',            expect: true,  label: 'CE 400 Bad Token' },
+
+            // Permission / access errors — must NOT trigger logout
+            { status: 401, msg: 'Unauthorized',         expect: false, label: '401 Unauthorized (permission)' },
+            { status: 403, msg: 'Access denied',        expect: false, label: '403 Access denied' },
+            { status: 401, msg: 'User does not have required role', expect: false, label: '401 Role-based denial' },
+
+            // Other errors — must NOT trigger logout
+            { status: 404, msg: 'Not found',            expect: false, label: '404 Not found' },
+            { status: 500, msg: 'Internal server error',expect: false, label: '500 Server error' },
+            { status: 400, msg: 'Validation failed',    expect: false, label: '400 Validation (not token)' },
+
+            // Edge: message-only fallback (no status match)
+            { status: 0,   msg: 'Token Expired',        expect: true,  label: 'Message-only "Token Expired"' },
+            { status: 0,   msg: 'Something else',       expect: false, label: 'Message-only unrelated' },
+        ];
+
+        const tbody = document.getElementById('results');
+        let passed = 0;
+
+        tests.forEach((t, i) => {
+            const actual = isTokenExpired(t.status, t.msg);
+            const ok = actual === t.expect;
+            if (ok) passed++;
+            const expectLabel = t.expect ? 'Token expired → login' : 'Normal error';
+            tbody.innerHTML += `<tr>
+                <td>${i + 1}</td>
+                <td><code>${t.status}</code> "${t.msg}" — ${t.label}</td>
+                <td>${expectLabel}</td>
+                <td class="${ok ? 'pass' : 'fail'}">${ok ? 'PASS' : 'FAIL'}</td>
+            </tr>`;
+        });
+
+        tbody.innerHTML += `<tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td class="${passed === tests.length ? 'pass' : 'fail'}">${passed}/${tests.length}</td>
+        </tr>`;
+
+        document.getElementById('explanation').innerHTML = `
+            <h2>Form.io CE Token Handler Reference</h2>
+            <table>
+                <tr><th>Scenario</th><th>HTTP Status</th><th>Body</th><th>Our Action</th></tr>
+                <tr><td>Expired JWT</td><td><code>440</code></td><td>"Token Expired"</td><td>Clear token → show login</td></tr>
+                <tr><td>Malformed JWT</td><td><code>400</code></td><td>"Bad Token"</td><td>Clear token → show login</td></tr>
+                <tr><td>No token</td><td>—</td><td>Falls through to anonymous</td><td>initSession shows login</td></tr>
+                <tr><td>Permission denied</td><td><code>401</code> / <code>403</code></td><td>Varies</td><td>Show error, keep session</td></tr>
+            </table>
+            <p class="info">Source: <code>formio/formio/src/middleware/tokenHandler.js</code></p>
         `;
     </script>
 </body>

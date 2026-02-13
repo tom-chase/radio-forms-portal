@@ -119,8 +119,33 @@ export async function loadForms() {
         return state.allVisibleForms;
     } catch (e) {
         console.error("loadForms error", e);
-        formsList.innerHTML =
-            '<div class="text-danger small p-2">Error loading forms.</div>';
+        
+        // Check if this is a token expiration / bad token error.
+        // Form.io CE returns: 440 "Token Expired", 400 "Bad Token".
+        const status = e?.status || e?.original?.status || 0;
+        const message = String(e?.message || e?.original?.message || '');
+        
+        const isTokenExpired = (
+            status === 440 ||
+            (status === 400 && /bad token/i.test(message)) ||
+            /token.*expir|expired.*token/i.test(message)
+        );
+        
+        if (isTokenExpired) {
+            console.warn('Token expired during forms loading; triggering re-authentication');
+            const { clearToken } = await import('../services/formioService.js');
+            clearToken();
+            
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.click();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            formsList.innerHTML =
+                '<div class="text-danger small p-2">Error loading forms.</div>';
+        }
         return [];
     }
 }
@@ -372,9 +397,34 @@ export async function renderForm(formMeta) {
         );
     } catch (e) {
         console.error("renderForm error", e);
-        formRender.innerHTML =
-            '<div class="text-danger small">Unable to render form.</div>';
-        subsList.innerHTML = "";
+        
+        // Check if this is a token expiration / bad token error.
+        // Form.io CE returns: 440 "Token Expired", 400 "Bad Token".
+        const status = e?.status || e?.original?.status || 0;
+        const message = String(e?.message || e?.original?.message || '');
+        
+        const isTokenExpired = (
+            status === 440 ||
+            (status === 400 && /bad token/i.test(message)) ||
+            /token.*expir|expired.*token/i.test(message)
+        );
+        
+        if (isTokenExpired) {
+            console.warn('Token expired during form rendering; triggering re-authentication');
+            const { clearToken } = await import('../services/formioService.js');
+            clearToken();
+            
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.click();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            formRender.innerHTML =
+                '<div class="text-danger small">Unable to render form.</div>';
+            subsList.innerHTML = "";
+        }
     }
 }
 
