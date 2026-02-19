@@ -4,29 +4,50 @@
   "path": "programmingshow",
   "type": "resource",
   "display": "form",
-  "tags": ["Programming"],
+  "tags": [
+    "Programming"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -38,7 +59,10 @@
       {
         "resource": "PROGRAMMING_DEPT_PLACEHOLDER",
         "fieldName": "departments",
-        "access": ["read_all", "create_all"],
+        "access": [
+          "read_all",
+          "create_all"
+        ],
         "_groupName": "Programming"
       }
     ],
@@ -94,13 +118,34 @@
       "input": true,
       "tableView": false,
       "values": [
-        { "label": "Monday", "value": "monday" },
-        { "label": "Tuesday", "value": "tuesday" },
-        { "label": "Wednesday", "value": "wednesday" },
-        { "label": "Thursday", "value": "thursday" },
-        { "label": "Friday", "value": "friday" },
-        { "label": "Saturday", "value": "saturday" },
-        { "label": "Sunday", "value": "sunday" }
+        {
+          "label": "Monday",
+          "value": "monday"
+        },
+        {
+          "label": "Tuesday",
+          "value": "tuesday"
+        },
+        {
+          "label": "Wednesday",
+          "value": "wednesday"
+        },
+        {
+          "label": "Thursday",
+          "value": "thursday"
+        },
+        {
+          "label": "Friday",
+          "value": "friday"
+        },
+        {
+          "label": "Saturday",
+          "value": "saturday"
+        },
+        {
+          "label": "Sunday",
+          "value": "sunday"
+        }
       ]
     },
     {
@@ -109,7 +154,7 @@
       "type": "textfield",
       "input": true,
       "tableView": true,
-      "placeholder": "e.g. 10:00 AM – 12:00 PM",
+      "placeholder": "e.g. 10:00 AM \u2013 12:00 PM",
       "description": "The scheduled broadcast time window"
     },
     {
@@ -141,10 +186,22 @@
       "dataSrc": "values",
       "data": {
         "values": [
-          { "label": "Public Affairs", "value": "public_affairs" },
-          { "label": "Music", "value": "music" },
-          { "label": "News", "value": "news" },
-          { "label": "Other", "value": "other" }
+          {
+            "label": "Public Affairs",
+            "value": "public_affairs"
+          },
+          {
+            "label": "Music",
+            "value": "music"
+          },
+          {
+            "label": "News",
+            "value": "news"
+          },
+          {
+            "label": "Other",
+            "value": "other"
+          }
         ]
       }
     },

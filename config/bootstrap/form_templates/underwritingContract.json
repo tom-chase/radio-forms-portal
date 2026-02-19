@@ -4,29 +4,52 @@
   "path": "underwritingcontract",
   "type": "resource",
   "display": "form",
-  "tags": ["Underwriting"],
+  "tags": [
+    "Underwriting"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -39,7 +62,10 @@
       {
         "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
         "fieldName": "departments",
-        "access": ["read_all", "create_all"],
+        "access": [
+          "read_all",
+          "create_all"
+        ],
         "_groupName": "Underwriting"
       }
     ],
@@ -212,10 +238,22 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "One-time", "value": "one_time" },
-              { "label": "Monthly", "value": "monthly" },
-              { "label": "Quarterly", "value": "quarterly" },
-              { "label": "Custom", "value": "custom" }
+              {
+                "label": "One-time",
+                "value": "one_time"
+              },
+              {
+                "label": "Monthly",
+                "value": "monthly"
+              },
+              {
+                "label": "Quarterly",
+                "value": "quarterly"
+              },
+              {
+                "label": "Custom",
+                "value": "custom"
+              }
             ]
           }
         },
@@ -297,11 +335,26 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Draft", "value": "draft" },
-              { "label": "Pending Approval", "value": "pending" },
-              { "label": "Active", "value": "active" },
-              { "label": "Expired", "value": "expired" },
-              { "label": "Cancelled", "value": "cancelled" }
+              {
+                "label": "Draft",
+                "value": "draft"
+              },
+              {
+                "label": "Pending Approval",
+                "value": "pending"
+              },
+              {
+                "label": "Active",
+                "value": "active"
+              },
+              {
+                "label": "Expired",
+                "value": "expired"
+              },
+              {
+                "label": "Cancelled",
+                "value": "cancelled"
+              }
             ]
           },
           "defaultValue": "draft"

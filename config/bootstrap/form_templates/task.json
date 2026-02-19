@@ -4,7 +4,59 @@
   "path": "task",
   "type": "resource",
   "display": "form",
-  "tags": [""],
+  "tags": [
+    ""
+  ],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Tasks",
+      "submissionsTitle": "Task List",
+      "formsList": {
+        "hidden": false
+      }
+    },
+    "tabulatorList": {
+      "enabled": true,
+      "layout": "fitColumns",
+      "height": "60vh",
+      "pagination": "local",
+      "paginationSize": 25,
+      "movableColumns": true,
+      "placeholder": "No submissions found.",
+      "columns": [
+        {
+          "title": "Title",
+          "field": "data.title",
+          "headerFilter": "input",
+          "minWidth": 220
+        },
+        {
+          "title": "Details",
+          "field": "data.details",
+          "formatter": "html",
+          "minWidth": 220
+        },
+        {
+          "title": "Author",
+          "field": "data.author",
+          "headerFilter": "input",
+          "minWidth": 160
+        },
+        {
+          "title": "Updated",
+          "field": "modified",
+          "formatter": "datetime",
+          "formatterParams": {
+            "inputFormat": "iso",
+            "outputFormat": "MMM d, yyyy HH:mm a",
+            "invalidPlaceholder": "(invalid)",
+            "timezone": "America/New_York"
+          },
+          "minWidth": 220
+        }
+      ]
+    }
+  },
   "components": [
     {
       "label": "Task Title",
@@ -12,7 +64,9 @@
       "key": "title",
       "type": "textfield",
       "input": true,
-      "validate": { "required": true }
+      "validate": {
+        "required": true
+      }
     },
     {
       "label": "Details / Checklist",
@@ -30,10 +84,22 @@
       "tableView": true,
       "data": {
         "values": [
-          { "label": "Open", "value": "open" },
-          { "label": "In progress", "value": "in_progress" },
-          { "label": "Blocked", "value": "blocked" },
-          { "label": "Done", "value": "done" }
+          {
+            "label": "Open",
+            "value": "open"
+          },
+          {
+            "label": "In progress",
+            "value": "in_progress"
+          },
+          {
+            "label": "Blocked",
+            "value": "blocked"
+          },
+          {
+            "label": "Done",
+            "value": "done"
+          }
         ]
       },
       "key": "status",
@@ -47,10 +113,22 @@
       "tableView": true,
       "data": {
         "values": [
-          { "label": "Low", "value": "low" },
-          { "label": "Normal", "value": "normal" },
-          { "label": "High", "value": "high" },
-          { "label": "Urgent", "value": "urgent" }
+          {
+            "label": "Low",
+            "value": "low"
+          },
+          {
+            "label": "Normal",
+            "value": "normal"
+          },
+          {
+            "label": "High",
+            "value": "high"
+          },
+          {
+            "label": "Urgent",
+            "value": "urgent"
+          }
         ]
       },
       "key": "priority",
@@ -74,12 +152,30 @@
       "tableView": true,
       "data": {
         "values": [
-          { "label": "Underwriting", "value": "underwriting" },
-          { "label": "Volunteers", "value": "volunteers" },
-          { "label": "Programming / Shows", "value": "programming" },
-          { "label": "Engineering / Tech", "value": "engineering" },
-          { "label": "Fund Drive", "value": "fund_drive" },
-          { "label": "Other", "value": "other" }
+          {
+            "label": "Underwriting",
+            "value": "underwriting"
+          },
+          {
+            "label": "Volunteers",
+            "value": "volunteers"
+          },
+          {
+            "label": "Programming / Shows",
+            "value": "programming"
+          },
+          {
+            "label": "Engineering / Tech",
+            "value": "engineering"
+          },
+          {
+            "label": "Fund Drive",
+            "value": "fund_drive"
+          },
+          {
+            "label": "Other",
+            "value": "other"
+          }
         ]
       },
       "key": "category",
@@ -128,9 +224,18 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Administrator", "value": "administrator" },
-              { "label": "Management", "value": "management" },
-              { "label": "Staff", "value": "staff" }
+              {
+                "label": "Administrator",
+                "value": "administrator"
+              },
+              {
+                "label": "Management",
+                "value": "management"
+              },
+              {
+                "label": "Staff",
+                "value": "staff"
+              }
             ]
           },
           "template": "<span>{{ item.label }}</span>",
@@ -148,7 +253,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "department" },
+          "data": {
+            "resource": "department"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.name }}</span>",
@@ -166,7 +273,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "committee" },
+          "data": {
+            "resource": "committee"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.name }}</span>",
@@ -184,7 +293,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "user" },
+          "data": {
+            "resource": "user"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.email }}</span>",
@@ -212,33 +323,64 @@
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_own",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_own",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ]
 }

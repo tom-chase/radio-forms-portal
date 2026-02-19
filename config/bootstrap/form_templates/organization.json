@@ -4,29 +4,52 @@
   "path": "organization",
   "type": "resource",
   "display": "form",
-  "tags": ["Underwriting"],
+  "tags": [
+    "Underwriting"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -101,10 +124,22 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Underwriter/Sponsor", "value": "underwriter" },
-              { "label": "Community Partner", "value": "partner" },
-              { "label": "Vendor/Supplier", "value": "vendor" },
-              { "label": "Other", "value": "other" }
+              {
+                "label": "Underwriter/Sponsor",
+                "value": "underwriter"
+              },
+              {
+                "label": "Community Partner",
+                "value": "partner"
+              },
+              {
+                "label": "Vendor/Supplier",
+                "value": "vendor"
+              },
+              {
+                "label": "Other",
+                "value": "other"
+              }
             ]
           },
           "defaultValue": "underwriter",
@@ -122,8 +157,14 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "For-Profit", "value": "forprofit" },
-              { "label": "Non-Profit", "value": "nonprofit" }
+              {
+                "label": "For-Profit",
+                "value": "forprofit"
+              },
+              {
+                "label": "Non-Profit",
+                "value": "nonprofit"
+              }
             ]
           }
         },
@@ -137,10 +178,22 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "501(c)(3) — Charitable", "value": "501c3" },
-              { "label": "501(c)(4) — Social Welfare", "value": "501c4" },
-              { "label": "501(c)(6) — Business League", "value": "501c6" },
-              { "label": "Other", "value": "other" }
+              {
+                "label": "501(c)(3) \u2014 Charitable",
+                "value": "501c3"
+              },
+              {
+                "label": "501(c)(4) \u2014 Social Welfare",
+                "value": "501c4"
+              },
+              {
+                "label": "501(c)(6) \u2014 Business League",
+                "value": "501c6"
+              },
+              {
+                "label": "Other",
+                "value": "other"
+              }
             ]
           },
           "customConditional": "show = data.taxStatus === 'nonprofit';"
@@ -185,10 +238,22 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Prospect", "value": "prospect" },
-              { "label": "Active", "value": "active" },
-              { "label": "Inactive", "value": "inactive" },
-              { "label": "Do Not Contact", "value": "do_not_contact" }
+              {
+                "label": "Prospect",
+                "value": "prospect"
+              },
+              {
+                "label": "Active",
+                "value": "active"
+              },
+              {
+                "label": "Inactive",
+                "value": "inactive"
+              },
+              {
+                "label": "Do Not Contact",
+                "value": "do_not_contact"
+              }
             ]
           },
           "defaultValue": "prospect"

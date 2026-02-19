@@ -1,400 +1,449 @@
 {
-    "title": "Book",
-    "name": "book",
-    "path": "book",
-    "type": "resource",
-    "display": "form",
-    "tags": ["General"],
-    "access": [
-        {
-            "type": "read_all",
-            "roles": ["authenticated", "staff", "management", "administrator"]
-        }
-    ],
-    "submissionAccess": [
-        {
-            "type": "read_all",
-            "roles": ["authenticated", "staff", "management", "administrator"]
-        },
-        {
-            "type": "create_all",
-            "roles": ["authenticated", "staff", "management", "administrator"]
-        },
-        {
-            "type": "update_own",
-            "roles": ["authenticated", "staff", "management", "administrator"]
-        },
-        {
-            "type": "delete_own",
-            "roles": ["authenticated", "staff", "management", "administrator"]
-        },
-        {
-            "type": "update_all",
-            "roles": ["management", "administrator"]
-        },
-        {
-            "type": "delete_all",
-            "roles": ["management", "administrator"]
-        }
-    ],
-    "components": [
-        {
-            "label": "Preface",
-            "key": "preface",
-            "type": "editgrid",
-            "input": true,
-            "tree": true,
-            "saveRow": "Save Preface",
-            "removeRow": "Cancel",
-            "persistent": true,
-            "reorder": true,
-            "openWhenEmpty": true,
-            "disableAddingRemovingRows": true,
-            "templates": {
-                "header": "",
-                "tableHeader": "",
-                "row": "<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'title') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h1 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h1>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n\n                {% var accordionId = 'accordionMore-' + instance.id + '-' + rowIndex; %}\n                {% var collapseId = 'collapseContent-' + instance.id + '-' + rowIndex; %}\n\n                <div class=\"col-12 mb-2\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'summary') { %}\n                    {{ getView(contentComponent, row[contentComponent.key]) }}\n                    {% } %}\n                {% }) %}\n                </div>\n\n                <div class=\"accordion\" id=\"{{ accordionId }}\">\n                    <div class=\"accordion-item\">\n                        <h2 class=\"accordion-header\" id=\"heading-{{ collapseId }}\">\n                            <button class=\"accordion-button collapsed\" type=\"button\"\n                                data-bs-toggle=\"collapse\"\n                                data-bs-target=\"#{{ collapseId }}\"\n                                aria-expanded=\"false\"\n                                aria-controls=\"{{ collapseId }}\">\n                                more\n                            </button>\n                        </h2>\n\n                        <div id=\"{{ collapseId }}\" class=\"accordion-collapse collapse\" data-bs-parent=\"#{{ accordionId }}\">\n                            <div class=\"accordion-body\">\n                                {% util.eachComponent(components, function(contentComponent) { %}\n                                    {% if (contentComponent.key !== 'title' && contentComponent.key !== 'summary') { %}\n                                        <div class=\"col-12 mb-2\">\n                                        <div class=\"d-flex align-items-left\">\n                                            <div class=\"ms-2 text-muted\">\n                                            {{ contentComponent.label }}:&nbsp;&nbsp;\n                                            </div>\n                                            <div>\n                                            {{ getView(contentComponent, row[contentComponent.key]) }}\n                                            </div>\n                                        </div>\n                                        </div>\n                                    {% } %}\n                                {% }) %}\n                            </div>\n                        </div>\n                    </div>\n                </div>         \n              </div>\n            </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>",                "footer": ""
-            },
-            "components": [
-                {
-                    "label": "Title",
-                    "applyMaskOn": "change",
-                    "tableView": true,
-                    "validateWhenHidden": false,
-                    "key": "title",
-                    "type": "textfield",
-                    "input": true
-                },
-                {
-                    "label": "Summary",
-                    "autoExpand": false,
-                    "tableView": true,
-                    "key": "summary",
-                    "type": "textarea",
-                    "input": true
-                },
-                {
-                    "label": "Author",
-                    "labelPosition": "top",
-                    "widget": "choicesjs",
-                    "dataSrc": "resource",
-                    "data": {
-                        "resource": "user"
-                    },
-                    "dataType": "object",
-                    "template": "<span>{{ item.data.email }}</span>",
-                    "key": "author",
-                    "type": "select",
-                    "searchField": "data.email",
-                    "input": true
-                },
-                {
-                    "label": "Metadata",
-                    "title": "Metadata",
-                    "theme": "default",
-                    "collapsible": true,
-                    "key": "metadata",
-                    "type": "panel",
-                    "input": false,
-                    "persistent": false,
-                    "components": [
-                        {
-                            "label": "Status",
-                            "key": "status",
-                            "type": "select",
-                            "input": true,
-                            "widget": "choicesjs",
-                            "data": {
-                                "values": [
-                                    {
-                                        "label": "Draft",
-                                        "value": "draft"
-                                    },
-                                    {
-                                        "label": "Review",
-                                        "value": "review"
-                                    },
-                                    {
-                                        "label": "Published",
-                                        "value": "published"
-                                    },
-                                    {
-                                        "label": "Archived",
-                                        "value": "archived"
-                                    }
-                                ]
-                            },
-                            "defaultValue": "draft",
-                            "validate": {
-                                "required": true
-                            },
-                            "tableView": true
-                        },
-                        {
-                            "label": "Version",
-                            "key": "version",
-                            "type": "textfield",
-                            "input": true,
-                            "defaultValue": "1.0.0",
-                            "description": "Semantic versioning (e.g. 1.0.0)",
-                            "tableView": true
-                        },
-                        {
-                            "label": "Chapter Count",
-                            "key": "chapterCount",
-                            "type": "number",
-                            "input": true,
-                            "hidden": true,
-                            "calculateValue": "value = (data.chapters || []).length;",
-                            "calculateServer": true,
-                            "tableView": true
-                        }
-                    ],
-                    "collapsed": true
-                }
-            ]
-        },
-        {
-            "label": "Chapters",
-            "key": "chapters",
-            "type": "editgrid",
-            "input": true,
-            "tree": true,
-            "reorder": true,
-            "components": [
-                {
-                    "label": "Chapter Title",
-                    "key": "chapterTitle",
-                    "type": "textfield",
-                    "input": true,
-                    "validate": {
-                        "required": true
-                    }
-                },
-                {
-                    "label": "Sections",
-                    "key": "sections",
-                    "type": "editgrid",
-                    "input": true,
-                    "tree": true,
-                    "reorder": true,
-                    "components": [
-                        {
-                            "label": "Section Title",
-                            "key": "sectionTitle",
-                            "type": "textfield",
-                            "input": true,
-                            "validate": {
-                                "required": true
-                            }
-                        },
-                        {
-                            "label": "Content",
-                            "key": "sectionContent",
-                            "type": "textarea",
-                            "editor": "ckeditor",
-                            "input": true,
-                            "validate": {
-                                "required": true
-                            }
-                        }
-                    ],
-                    "templates": {
-                        "header": "",
-                        "row": "\n<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'sectionTitle') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h2 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    {% var chapterIndex = null; %}\n                    {% if (instance && instance.path) { %}\n                      {% var m = String(instance.path).match(/chapters\\[(\\d+)\\]/); %}\n                      {% if (m && m[1] !== undefined) { %}{% chapterIndex = parseInt(m[1], 10); %}{% } %}\n                    {% } %}\n                    {% if (chapterIndex !== null && !isNaN(chapterIndex)) { %}\n                      <span class=\"fw-bold me-2\">{{ chapterIndex + 1 }}.{{ rowIndex + 1 }}.</span>\n                    {% } else { %}\n                      <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.</span>\n                    {% } %}\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h2>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                  {% if (contentComponent.key === 'sectionContent') { %}\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">{{ contentComponent.label }}</label>\n                        {{ row[contentComponent.key] }}\n                    </div>\n                  {% } %}\n                {% }) %}\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n"
-                    },
-                    "addAnother": "Add Section",
-                    "saveRow": "Save Section",
-                    "removeRow": "Delete Section",
-                    "cancelRow": "Cancel"
-                }
-            ],
-            "templates": {
-                "header": "",
-                "row": "\n<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'chapterTitle') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h3 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1 collapsed\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"false\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.</span>\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h3>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n                <div class=\"accordion-body\">\n                    {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'sections') { %}\n                        {% var sections = row.sections || []; %}\n                        {% if (sections.length) { %}\n                        <div class=\"small text-muted mb-2\">{{ sections.length }} section{% if (sections.length !== 1) { %}s{% } %}</div>\n                        <!-- Nested accordions for sections with full functionality -->\n                        <div class=\"accordion editgrid-accordion editgrid-accordion-nested\" id=\"sections-accordion-{{ instance.id }}-{{ rowIndex }}\">\n                            {% _.each(sections, function(sec, i) { %}\n                            <div class=\"accordion-item\">\n                                <h4 class=\"accordion-header\" id=\"sections-heading-{{ instance.id }}-{{ rowIndex }}-{{ i }}\">\n                                <div class=\"d-flex align-items-center justify-content-between w-100\">\n                                    <button class=\"accordion-button collapsed\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" aria-expanded=\"false\" aria-controls=\"sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\">\n                                    <div class=\"editgrid-value\">\n                                        <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.{{ i + 1 }}.</span>\n                                        {{ sec.sectionTitle || ('Section ' + (i + 1)) }}\n                                    </div>\n                                    </button>\n                                    {% if (!instance.options.readOnly && !instance.disabled) { %}\n                                    <div class=\"btn-group ms-2 me-3\">\n                                        <button class=\"btn btn-default btn-light btn-xs editSectionRow\" data-section-index=\"{{ i }}\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                                        <button class=\"btn btn-danger btn-xs removeSectionRow\" data-section-index=\"{{ i }}\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                                    </div>\n                                    {% } %}\n                                </div>\n                                </h4>\n                                <div id=\"sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" class=\"accordion-collapse collapse\" aria-labelledby=\"sections-heading-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" data-bs-parent=\"#sections-accordion-{{ instance.id }}-{{ rowIndex }}\">\n                                <div class=\"accordion-body\">\n                                    <!-- Render section content with proper label-value pairs -->\n                                    <div class=\"col-12 mb-2\">\n                                    <div>\n                                        {{ sec.sectionContent || 'No content' }}\n                                    </div>\n                                    </div>\n                                </div>\n                                </div>\n                            </div>\n                            {% }) %}\n                        </div>\n                        {% } else { %}\n                        <div class=\"text-muted\">No sections yet. Click Edit to add sections.</div>\n                        {% } %}\n                    {% } %}\n                    {% }) %}\n                </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n",                
-                "footer": ""
-            },
-            "addAnother": "Add Chapter",
-            "saveRow": "Save Chapter",
-            "removeRow": "Delete Chapter",
-            "cancelRow": "Cancel"
-        },
-        {
-            "title": "Share Settings",
-            "theme": "primary",
-            "collapsible": true,
-            "collapsed": true,
-            "key": "shareSettings",
-            "type": "panel",
-            "label": "Share Settings",
-            "input": false,
-            "tableView": false,
-            "persistent": false,
-            "clearOnHide": false,
-            "components": [
-                {
-                    "label": "Share with Public",
-                    "key": "sharePublic",
-                    "type": "checkbox",
-                    "input": true,
-                    "defaultValue": false,
-                    "labelPosition": "right",
-                    "tableView": true,
-                    "persistent": true,
-                    "id": "book_sharepub"
-                },
-                {
-                    "label": "Share with Roles",
-                    "widget": "choicesjs",
-                    "tableView": true,
-                    "multiple": true,
-                    "dataSrc": "values",
-                    "data": {
-                        "values": [
-                            { "label": "Administrator", "value": "administrator" },
-                            { "label": "Management", "value": "management" },
-                            { "label": "Staff", "value": "staff" }
-                        ]
-                    },
-                    "template": "<span>{{ item.label }}</span>",
-                    "valueProperty": "value",
-                    "key": "shareRoles",
-                    "type": "select",
-                    "input": true,
-                    "persistent": true,
-                    "searchEnabled": true,
-                    "id": "book_shareroles"
-                },
-                {
-                    "label": "Share with Departments",
-                    "widget": "choicesjs",
-                    "tableView": true,
-                    "multiple": true,
-                    "dataSrc": "resource",
-                    "data": { "resource": "department" },
-                    "valueProperty": "_id",
-                    "dataType": "resource",
-                    "template": "<span>{{ item.data.name }}</span>",
-                    "key": "shareDepartments",
-                    "type": "select",
-                    "input": true,
-                    "persistent": true,
-                    "searchEnabled": true,
-                    "authenticate": true,
-                    "id": "book_sharedepts"
-                },
-                {
-                    "label": "Share with Committees",
-                    "widget": "choicesjs",
-                    "tableView": true,
-                    "multiple": true,
-                    "dataSrc": "resource",
-                    "data": { "resource": "committee" },
-                    "valueProperty": "_id",
-                    "dataType": "resource",
-                    "template": "<span>{{ item.data.name }}</span>",
-                    "key": "shareCommittees",
-                    "type": "select",
-                    "input": true,
-                    "persistent": true,
-                    "searchEnabled": true,
-                    "authenticate": true,
-                    "id": "book_sharecomms"
-                },
-                {
-                    "label": "Share with Users",
-                    "widget": "choicesjs",
-                    "tableView": true,
-                    "multiple": true,
-                    "dataSrc": "resource",
-                    "data": { "resource": "user" },
-                    "valueProperty": "_id",
-                    "dataType": "resource",
-                    "template": "<span>{{ item.data.email }}</span>",
-                    "key": "shareUsers",
-                    "type": "select",
-                    "input": true,
-                    "persistent": true,
-                    "searchEnabled": true,
-                    "authenticate": true,
-                    "lazyLoad": true,
-                    "id": "book_shareusers"
-                }
-            ]
-        },
-        {
-            "type": "button",
-            "label": "Save Book",
-            "key": "submit",
-            "disableOnInvalid": true,
-            "input": true,
-            "tableView": false
-        }
-    ],
-    "pdfComponents": [],
-    "settings": {
-        "ui": {
-            "alternateTitle": "Books",
-            "submissionsTitle": "Books"
-        },
-        "tabulatorList": {
-            "enabled": true,
-            "layout": "fitColumns",
-            "height": "60vh",
-            "pagination": "local",
-            "paginationSize": 25,
-            "movableColumns": true,
-            "placeholder": "No books found.",
-            "dataTransform": "bookDataTransform",
-            "columns": [
-                {
-                    "title": "Title",
-                    "field": "title",
-                    "headerFilter": "input",
-                    "minWidth": 250
-                },
-                {
-                    "title": "Status",
-                    "field": "status",
-                    "headerFilter": "select",
-                    "headerFilterParams": {
-                        "values": {
-                            "draft": "Draft",
-                            "review": "Review",
-                            "published": "Published",
-                            "archived": "Archived"
-                        }
-                    },
-                    "width": 120,
-                    "formatter": "lookup",
-                    "formatterParams": {
-                        "draft": "Draft",
-                        "review": "Review",
-                        "published": "Published",
-                        "archived": "Archived"
-                    }
-                },
-                {
-                    "title": "Author",
-                    "field": "author",
-                    "headerFilter": "input",
-                    "minWidth": 200
-                },
-                {
-                    "title": "Ver",
-                    "field": "version",
-                    "width": 80,
-                    "headerFilter": "input"
-                },
-                {
-                    "title": "Ch",
-                    "field": "chapterCount",
-                    "width": 70,
-                    "hozAlign": "center"
-                }
-            ]
-        },
-        "saveDraft": true,
-        "saveDraftThrottle": 3000
+  "title": "Book",
+  "name": "book",
+  "path": "book",
+  "type": "resource",
+  "display": "form",
+  "tags": [
+    "General"
+  ],
+  "access": [
+    {
+      "type": "read_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
+  ],
+  "submissionAccess": [
+    {
+      "type": "read_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
+    },
+    {
+      "type": "create_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
+    },
+    {
+      "type": "update_own",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
+    },
+    {
+      "type": "delete_own",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
+    },
+    {
+      "type": "update_all",
+      "roles": [
+        "management",
+        "administrator"
+      ]
+    },
+    {
+      "type": "delete_all",
+      "roles": [
+        "management",
+        "administrator"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "label": "Preface",
+      "key": "preface",
+      "type": "editgrid",
+      "input": true,
+      "tree": true,
+      "saveRow": "Save Preface",
+      "removeRow": "Cancel",
+      "persistent": true,
+      "reorder": true,
+      "openWhenEmpty": true,
+      "disableAddingRemovingRows": true,
+      "templates": {
+        "header": "",
+        "tableHeader": "",
+        "row": "<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'title') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h1 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h1>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n\n                {% var accordionId = 'accordionMore-' + instance.id + '-' + rowIndex; %}\n                {% var collapseId = 'collapseContent-' + instance.id + '-' + rowIndex; %}\n\n                <div class=\"col-12 mb-2\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'summary') { %}\n                    {{ getView(contentComponent, row[contentComponent.key]) }}\n                    {% } %}\n                {% }) %}\n                </div>\n\n                <div class=\"accordion\" id=\"{{ accordionId }}\">\n                    <div class=\"accordion-item\">\n                        <h2 class=\"accordion-header\" id=\"heading-{{ collapseId }}\">\n                            <button class=\"accordion-button collapsed\" type=\"button\"\n                                data-bs-toggle=\"collapse\"\n                                data-bs-target=\"#{{ collapseId }}\"\n                                aria-expanded=\"false\"\n                                aria-controls=\"{{ collapseId }}\">\n                                more\n                            </button>\n                        </h2>\n\n                        <div id=\"{{ collapseId }}\" class=\"accordion-collapse collapse\" data-bs-parent=\"#{{ accordionId }}\">\n                            <div class=\"accordion-body\">\n                                {% util.eachComponent(components, function(contentComponent) { %}\n                                    {% if (contentComponent.key !== 'title' && contentComponent.key !== 'summary') { %}\n                                        <div class=\"col-12 mb-2\">\n                                        <div class=\"d-flex align-items-left\">\n                                            <div class=\"ms-2 text-muted\">\n                                            {{ contentComponent.label }}:&nbsp;&nbsp;\n                                            </div>\n                                            <div>\n                                            {{ getView(contentComponent, row[contentComponent.key]) }}\n                                            </div>\n                                        </div>\n                                        </div>\n                                    {% } %}\n                                {% }) %}\n                            </div>\n                        </div>\n                    </div>\n                </div>         \n              </div>\n            </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>",
+        "footer": ""
+      },
+      "components": [
+        {
+          "label": "Title",
+          "applyMaskOn": "change",
+          "tableView": true,
+          "validateWhenHidden": false,
+          "key": "title",
+          "type": "textfield",
+          "input": true
+        },
+        {
+          "label": "Summary",
+          "autoExpand": false,
+          "tableView": true,
+          "key": "summary",
+          "type": "textarea",
+          "input": true
+        },
+        {
+          "label": "Author",
+          "labelPosition": "top",
+          "widget": "choicesjs",
+          "dataSrc": "resource",
+          "data": {
+            "resource": "user"
+          },
+          "dataType": "object",
+          "template": "<span>{{ item.data.email }}</span>",
+          "key": "author",
+          "type": "select",
+          "searchField": "data.email",
+          "input": true
+        },
+        {
+          "label": "Metadata",
+          "title": "Metadata",
+          "theme": "default",
+          "collapsible": true,
+          "key": "metadata",
+          "type": "panel",
+          "input": false,
+          "persistent": false,
+          "components": [
+            {
+              "label": "Status",
+              "key": "status",
+              "type": "select",
+              "input": true,
+              "widget": "choicesjs",
+              "data": {
+                "values": [
+                  {
+                    "label": "Draft",
+                    "value": "draft"
+                  },
+                  {
+                    "label": "Review",
+                    "value": "review"
+                  },
+                  {
+                    "label": "Published",
+                    "value": "published"
+                  },
+                  {
+                    "label": "Archived",
+                    "value": "archived"
+                  }
+                ]
+              },
+              "defaultValue": "draft",
+              "validate": {
+                "required": true
+              },
+              "tableView": true
+            },
+            {
+              "label": "Version",
+              "key": "version",
+              "type": "textfield",
+              "input": true,
+              "defaultValue": "1.0.0",
+              "description": "Semantic versioning (e.g. 1.0.0)",
+              "tableView": true
+            },
+            {
+              "label": "Chapter Count",
+              "key": "chapterCount",
+              "type": "number",
+              "input": true,
+              "hidden": true,
+              "calculateValue": "value = (data.chapters || []).length;",
+              "calculateServer": true,
+              "tableView": true
+            }
+          ],
+          "collapsed": true
+        }
+      ]
+    },
+    {
+      "label": "Chapters",
+      "key": "chapters",
+      "type": "editgrid",
+      "input": true,
+      "tree": true,
+      "reorder": true,
+      "components": [
+        {
+          "label": "Chapter Title",
+          "key": "chapterTitle",
+          "type": "textfield",
+          "input": true,
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "label": "Sections",
+          "key": "sections",
+          "type": "editgrid",
+          "input": true,
+          "tree": true,
+          "reorder": true,
+          "components": [
+            {
+              "label": "Section Title",
+              "key": "sectionTitle",
+              "type": "textfield",
+              "input": true,
+              "validate": {
+                "required": true
+              }
+            },
+            {
+              "label": "Content",
+              "key": "sectionContent",
+              "type": "textarea",
+              "editor": "ckeditor",
+              "input": true,
+              "validate": {
+                "required": true
+              }
+            }
+          ],
+          "templates": {
+            "header": "",
+            "row": "\n<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'sectionTitle') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h2 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"true\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    {% var chapterIndex = null; %}\n                    {% if (instance && instance.path) { %}\n                      {% var m = String(instance.path).match(/chapters\\[(\\d+)\\]/); %}\n                      {% if (m && m[1] !== undefined) { %}{% chapterIndex = parseInt(m[1], 10); %}{% } %}\n                    {% } %}\n                    {% if (chapterIndex !== null && !isNaN(chapterIndex)) { %}\n                      <span class=\"fw-bold me-2\">{{ chapterIndex + 1 }}.{{ rowIndex + 1 }}.</span>\n                    {% } else { %}\n                      <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.</span>\n                    {% } %}\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h2>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse show\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"accordion-body\">\n                {% util.eachComponent(components, function(contentComponent) { %}\n                  {% if (contentComponent.key === 'sectionContent') { %}\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">{{ contentComponent.label }}</label>\n                        {{ row[contentComponent.key] }}\n                    </div>\n                  {% } %}\n                {% }) %}\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n"
+          },
+          "addAnother": "Add Section",
+          "saveRow": "Save Section",
+          "removeRow": "Delete Section",
+          "cancelRow": "Cancel"
+        }
+      ],
+      "templates": {
+        "header": "",
+        "row": "\n<div class=\"row\">\n  {% util.eachComponent(components, function(component) { %}\n    {% if (component.key === 'chapterTitle') { %}\n      <div class=\"col-12 mb-2\">\n        <div class=\"accordion editgrid-accordion\" id=\"accordion-{{ instance.id }}-{{ rowIndex }}\">\n          <div class=\"accordion-item\">\n            <h3 class=\"accordion-header\" id=\"heading-{{ instance.id }}-{{ rowIndex }}\">\n              <div class=\"d-flex align-items-center justify-content-between w-100\">\n                <button class=\"accordion-button flex-grow-1 collapsed\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse-{{ instance.id }}-{{ rowIndex }}\" aria-expanded=\"false\" aria-controls=\"collapse-{{ instance.id }}-{{ rowIndex }}\">\n                  <div class=\"editgrid-value\">\n                    <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.</span>\n                    {{ row[component.key] }}\n                  </div>\n                </button>\n                {% if (!instance.options.readOnly && !instance.disabled) { %}\n                  <div class=\"btn-group ms-2 me-3\">\n                    <button class=\"btn btn-default btn-light btn-xs editRow\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                    {% if (!instance.hasRemoveButtons || instance.hasRemoveButtons()) { %}\n                      <button class=\"btn btn-danger btn-xs removeRow\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                    {% } %}\n                  </div>\n                {% } %}\n              </div>\n            </h3>\n            <div id=\"collapse-{{ instance.id }}-{{ rowIndex }}\" class=\"accordion-collapse collapse\" aria-labelledby=\"heading-{{ instance.id }}-{{ rowIndex }}\" data-bs-parent=\"#accordion-{{ instance.id }}-{{ rowIndex }}\">\n                <div class=\"accordion-body\">\n                    {% util.eachComponent(components, function(contentComponent) { %}\n                    {% if (contentComponent.key === 'sections') { %}\n                        {% var sections = row.sections || []; %}\n                        {% if (sections.length) { %}\n                        <div class=\"small text-muted mb-2\">{{ sections.length }} section{% if (sections.length !== 1) { %}s{% } %}</div>\n                        <!-- Nested accordions for sections with full functionality -->\n                        <div class=\"accordion editgrid-accordion editgrid-accordion-nested\" id=\"sections-accordion-{{ instance.id }}-{{ rowIndex }}\">\n                            {% _.each(sections, function(sec, i) { %}\n                            <div class=\"accordion-item\">\n                                <h4 class=\"accordion-header\" id=\"sections-heading-{{ instance.id }}-{{ rowIndex }}-{{ i }}\">\n                                <div class=\"d-flex align-items-center justify-content-between w-100\">\n                                    <button class=\"accordion-button collapsed\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" aria-expanded=\"false\" aria-controls=\"sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\">\n                                    <div class=\"editgrid-value\">\n                                        <span class=\"fw-bold me-2\">{{ rowIndex + 1 }}.{{ i + 1 }}.</span>\n                                        {{ sec.sectionTitle || ('Section ' + (i + 1)) }}\n                                    </div>\n                                    </button>\n                                    {% if (!instance.options.readOnly && !instance.disabled) { %}\n                                    <div class=\"btn-group ms-2 me-3\">\n                                        <button class=\"btn btn-default btn-light btn-xs editSectionRow\" data-section-index=\"{{ i }}\" title=\"Edit\"><i class=\"{{ iconClass('edit') }}\"></i></button>\n                                        <button class=\"btn btn-danger btn-xs removeSectionRow\" data-section-index=\"{{ i }}\" title=\"Delete\"><i class=\"{{ iconClass('trash') }}\"></i></button>\n                                    </div>\n                                    {% } %}\n                                </div>\n                                </h4>\n                                <div id=\"sections-collapse-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" class=\"accordion-collapse collapse\" aria-labelledby=\"sections-heading-{{ instance.id }}-{{ rowIndex }}-{{ i }}\" data-bs-parent=\"#sections-accordion-{{ instance.id }}-{{ rowIndex }}\">\n                                <div class=\"accordion-body\">\n                                    <!-- Render section content with proper label-value pairs -->\n                                    <div class=\"col-12 mb-2\">\n                                    <div>\n                                        {{ sec.sectionContent || 'No content' }}\n                                    </div>\n                                    </div>\n                                </div>\n                                </div>\n                            </div>\n                            {% }) %}\n                        </div>\n                        {% } else { %}\n                        <div class=\"text-muted\">No sections yet. Click Edit to add sections.</div>\n                        {% } %}\n                    {% } %}\n                    {% }) %}\n                </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    {% } %}\n  {% }) %}\n</div>\n",
+        "footer": ""
+      },
+      "addAnother": "Add Chapter",
+      "saveRow": "Save Chapter",
+      "removeRow": "Delete Chapter",
+      "cancelRow": "Cancel"
+    },
+    {
+      "title": "Share Settings",
+      "theme": "primary",
+      "collapsible": true,
+      "collapsed": true,
+      "key": "shareSettings",
+      "type": "panel",
+      "label": "Share Settings",
+      "input": false,
+      "tableView": false,
+      "persistent": false,
+      "clearOnHide": false,
+      "components": [
+        {
+          "label": "Share with Public",
+          "key": "sharePublic",
+          "type": "checkbox",
+          "input": true,
+          "defaultValue": false,
+          "labelPosition": "right",
+          "tableView": true,
+          "persistent": true,
+          "id": "book_sharepub"
+        },
+        {
+          "label": "Share with Roles",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "values",
+          "data": {
+            "values": [
+              {
+                "label": "Administrator",
+                "value": "administrator"
+              },
+              {
+                "label": "Management",
+                "value": "management"
+              },
+              {
+                "label": "Staff",
+                "value": "staff"
+              }
+            ]
+          },
+          "template": "<span>{{ item.label }}</span>",
+          "valueProperty": "value",
+          "key": "shareRoles",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "id": "book_shareroles"
+        },
+        {
+          "label": "Share with Departments",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "department"
+          },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.name }}</span>",
+          "key": "shareDepartments",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "authenticate": true,
+          "id": "book_sharedepts"
+        },
+        {
+          "label": "Share with Committees",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "committee"
+          },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.name }}</span>",
+          "key": "shareCommittees",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "authenticate": true,
+          "id": "book_sharecomms"
+        },
+        {
+          "label": "Share with Users",
+          "widget": "choicesjs",
+          "tableView": true,
+          "multiple": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "user"
+          },
+          "valueProperty": "_id",
+          "dataType": "resource",
+          "template": "<span>{{ item.data.email }}</span>",
+          "key": "shareUsers",
+          "type": "select",
+          "input": true,
+          "persistent": true,
+          "searchEnabled": true,
+          "authenticate": true,
+          "lazyLoad": true,
+          "id": "book_shareusers"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "label": "Save Book",
+      "key": "submit",
+      "disableOnInvalid": true,
+      "input": true,
+      "tableView": false
+    }
+  ],
+  "pdfComponents": [],
+  "settings": {
+    "ui": {
+      "alternateTitle": "Books",
+      "submissionsTitle": "Books"
+    },
+    "tabulatorList": {
+      "enabled": true,
+      "layout": "fitColumns",
+      "height": "60vh",
+      "pagination": "local",
+      "paginationSize": 25,
+      "movableColumns": true,
+      "placeholder": "No books found.",
+      "dataTransform": "bookDataTransform",
+      "columns": [
+        {
+          "title": "Title",
+          "field": "title",
+          "headerFilter": "input",
+          "minWidth": 250
+        },
+        {
+          "title": "Status",
+          "field": "status",
+          "headerFilter": "select",
+          "headerFilterParams": {
+            "values": {
+              "draft": "Draft",
+              "review": "Review",
+              "published": "Published",
+              "archived": "Archived"
+            }
+          },
+          "width": 120,
+          "formatter": "lookup",
+          "formatterParams": {
+            "draft": "Draft",
+            "review": "Review",
+            "published": "Published",
+            "archived": "Archived"
+          }
+        },
+        {
+          "title": "Author",
+          "field": "author",
+          "headerFilter": "input",
+          "minWidth": 200
+        },
+        {
+          "title": "Ver",
+          "field": "version",
+          "width": 80,
+          "headerFilter": "input"
+        },
+        {
+          "title": "Ch",
+          "field": "chapterCount",
+          "width": 70,
+          "hozAlign": "center"
+        }
+      ]
+    },
+    "saveDraft": true,
+    "saveDraftThrottle": 3000
+  }
 }

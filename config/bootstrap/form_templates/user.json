@@ -1,95 +1,98 @@
 {
-    "title": "User",
-    "type": "resource",
-    "name": "user",
-    "path": "user",
-    "pdfComponents": [],
-    "display": "form",
-    "tags": ["General"],
-    "settings": {
+  "title": "User",
+  "type": "resource",
+  "name": "user",
+  "path": "user",
+  "pdfComponents": [],
+  "display": "form",
+  "tags": [
+    "General"
+  ],
+  "settings": {
     "ui": {
-        "alternateTitle": "Users",
-        "submissionsTitle": ""
+      "alternateTitle": "Users",
+      "submissionsTitle": "Users List",
+      "hideBadges": true
     },
     "tabulatorList": {
-        "enabled": true,
-        "layout": "fitColumns",
-        "height": "60vh",
-        "pagination": "local",
-        "paginationSize": 25,
-        "movableColumns": true,
-        "placeholder": "No users found.",
-        "columns": [
+      "enabled": true,
+      "layout": "fitColumns",
+      "height": "60vh",
+      "pagination": "local",
+      "paginationSize": 25,
+      "movableColumns": true,
+      "placeholder": "No users found.",
+      "columns": [
         {
-            "title": "Email",
-            "field": "email",
-            "headerFilter": "input",
-            "minWidth": 220
+          "title": "Email",
+          "field": "email",
+          "headerFilter": "input",
+          "minWidth": 220
         },
         {
-            "title": "Roles",
-            "field": "roles",
-            "headerFilter": "input",
-            "minWidth": 220
+          "title": "Roles",
+          "field": "roles",
+          "headerFilter": "input",
+          "minWidth": 220
         },
         {
-            "title": "Departments",
-            "field": "departments",
-            "headerSort": false,
-            "minWidth": 150
+          "title": "Departments",
+          "field": "departments",
+          "headerSort": false,
+          "minWidth": 150
         },
         {
-            "title": "Committees",
-            "field": "committees",
-            "headerSort": false,
-            "visible": false,
-            "minWidth": 150
+          "title": "Committees",
+          "field": "committees",
+          "headerSort": false,
+          "visible": false,
+          "minWidth": 150
         }
-        ],
-        "dataTransform": "userRolesTransform"
+      ],
+      "dataTransform": "userRolesTransform"
     }
-    },
-    "components": [
+  },
+  "components": [
     {
-        "label": "Email",
-        "tableView": true,
-        "key": "email",
-        "type": "email",
-        "input": true,
-        "persistent": true,
-        "id": "er0oyem",
-        "placeholder": "",
-        "prefix": "",
-        "customClass": "",
-        "suffix": "",
-        "multiple": false,
-        "defaultValue": null,
-        "protected": false,
-        "unique": false,
-        "hidden": false,
-        "clearOnHide": true,
-        "refreshOn": "",
-        "redrawOn": "",
-        "modalEdit": false,
-        "dataGridLabel": false,
-        "labelPosition": "top",
-        "description": "",
-        "errorLabel": "",
-        "tooltip": "",
-        "hideLabel": false,
-        "tabindex": "",
-        "disabled": false,
-        "autofocus": false,
-        "dbIndex": false,
-        "customDefaultValue": "",
-        "calculateValue": "",
-        "calculateServer": false,
-        "widget": {
+      "label": "Email",
+      "tableView": true,
+      "key": "email",
+      "type": "email",
+      "input": true,
+      "persistent": true,
+      "id": "er0oyem",
+      "placeholder": "",
+      "prefix": "",
+      "customClass": "",
+      "suffix": "",
+      "multiple": false,
+      "defaultValue": null,
+      "protected": false,
+      "unique": false,
+      "hidden": false,
+      "clearOnHide": true,
+      "refreshOn": "",
+      "redrawOn": "",
+      "modalEdit": false,
+      "dataGridLabel": false,
+      "labelPosition": "top",
+      "description": "",
+      "errorLabel": "",
+      "tooltip": "",
+      "hideLabel": false,
+      "tabindex": "",
+      "disabled": false,
+      "autofocus": false,
+      "dbIndex": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "calculateServer": false,
+      "widget": {
         "type": "input"
-        },
-        "attributes": {},
-        "validateOn": "change",
-        "validate": {
+      },
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
         "required": false,
         "custom": "",
         "customPrivate": false,
@@ -99,77 +102,77 @@
         "minLength": "",
         "maxLength": "",
         "pattern": ""
-        },
-        "conditional": {
+      },
+      "conditional": {
         "show": null,
         "when": null,
         "eq": ""
-        },
-        "overlay": {
+      },
+      "overlay": {
         "style": "",
         "left": "",
         "top": "",
         "width": "",
         "height": ""
-        },
-        "allowCalculateOverride": false,
-        "encrypted": false,
-        "showCharCount": false,
-        "showWordCount": false,
-        "properties": {},
-        "allowMultipleMasks": false,
-        "addons": [],
-        "mask": false,
-        "inputType": "email",
-        "inputFormat": "plain",
-        "inputMask": "",
-        "displayMask": "",
-        "spellcheck": true,
-        "truncateMultipleSpaces": false,
-        "kickbox": {
+      },
+      "allowCalculateOverride": false,
+      "encrypted": false,
+      "showCharCount": false,
+      "showWordCount": false,
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "mask": false,
+      "inputType": "email",
+      "inputFormat": "plain",
+      "inputMask": "",
+      "displayMask": "",
+      "spellcheck": true,
+      "truncateMultipleSpaces": false,
+      "kickbox": {
         "enabled": false
-        }
+      }
     },
     {
-        "label": "Password",
-        "tableView": false,
-        "key": "password",
-        "type": "password",
-        "input": true,
-        "protected": true,
-        "persistent": true,
-        "id": "eoih229",
-        "placeholder": "",
-        "prefix": "",
-        "customClass": "",
-        "suffix": "",
-        "multiple": false,
-        "defaultValue": null,
-        "unique": false,
-        "hidden": false,
-        "clearOnHide": true,
-        "refreshOn": "",
-        "redrawOn": "",
-        "modalEdit": false,
-        "dataGridLabel": false,
-        "labelPosition": "top",
-        "description": "",
-        "errorLabel": "",
-        "tooltip": "",
-        "hideLabel": false,
-        "tabindex": "",
-        "disabled": false,
-        "autofocus": false,
-        "dbIndex": false,
-        "customDefaultValue": "",
-        "calculateValue": "",
-        "calculateServer": false,
-        "widget": {
+      "label": "Password",
+      "tableView": false,
+      "key": "password",
+      "type": "password",
+      "input": true,
+      "protected": true,
+      "persistent": true,
+      "id": "eoih229",
+      "placeholder": "",
+      "prefix": "",
+      "customClass": "",
+      "suffix": "",
+      "multiple": false,
+      "defaultValue": null,
+      "unique": false,
+      "hidden": false,
+      "clearOnHide": true,
+      "refreshOn": "",
+      "redrawOn": "",
+      "modalEdit": false,
+      "dataGridLabel": false,
+      "labelPosition": "top",
+      "description": "",
+      "errorLabel": "",
+      "tooltip": "",
+      "hideLabel": false,
+      "tabindex": "",
+      "disabled": false,
+      "autofocus": false,
+      "dbIndex": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "calculateServer": false,
+      "widget": {
         "type": "input"
-        },
-        "attributes": {},
-        "validateOn": "change",
-        "validate": {
+      },
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
         "required": false,
         "custom": "",
         "customPrivate": false,
@@ -179,174 +182,192 @@
         "minLength": "",
         "maxLength": "",
         "pattern": ""
-        },
-        "conditional": {
+      },
+      "conditional": {
         "show": null,
         "when": null,
         "eq": ""
-        },
-        "overlay": {
+      },
+      "overlay": {
         "style": "",
         "left": "",
         "top": "",
         "width": "",
         "height": ""
-        },
-        "allowCalculateOverride": false,
-        "encrypted": false,
-        "showCharCount": false,
-        "showWordCount": false,
-        "properties": {},
-        "allowMultipleMasks": false,
-        "addons": [],
-        "mask": false,
-        "inputType": "text",
-        "inputFormat": "plain",
-        "inputMask": "",
-        "displayMask": "",
-        "spellcheck": true,
-        "truncateMultipleSpaces": false
+      },
+      "allowCalculateOverride": false,
+      "encrypted": false,
+      "showCharCount": false,
+      "showWordCount": false,
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "mask": false,
+      "inputType": "text",
+      "inputFormat": "plain",
+      "inputMask": "",
+      "displayMask": "",
+      "spellcheck": true,
+      "truncateMultipleSpaces": false
     },
     {
-        "label": "Departments",
-        "key": "departments",
-        "type": "select",
-        "input": true,
-        "multiple": true,
-        "dataSrc": "resource",
-        "data": {
+      "label": "Departments",
+      "key": "departments",
+      "type": "select",
+      "input": true,
+      "multiple": true,
+      "dataSrc": "resource",
+      "data": {
         "resource": "department"
-        },
-        "template": "<span>{{ item.data.name }}</span>",
-        "valueProperty": "_id",
-        "selectFields": "",
-        "validate": {
+      },
+      "template": "<span>{{ item.data.name }}</span>",
+      "valueProperty": "_id",
+      "selectFields": "",
+      "validate": {
         "required": false
-        },
-        "id": "edepartments",
-        "placeholder": "Select departments...",
-        "persistent": true,
-        "tableView": true
+      },
+      "id": "edepartments",
+      "placeholder": "Select departments...",
+      "persistent": true,
+      "tableView": true
     },
     {
-        "label": "Committees",
-        "key": "committees",
-        "type": "select",
-        "input": true,
-        "multiple": true,
-        "dataSrc": "resource",
-        "data": {
+      "label": "Committees",
+      "key": "committees",
+      "type": "select",
+      "input": true,
+      "multiple": true,
+      "dataSrc": "resource",
+      "data": {
         "resource": "committee"
-        },
-        "template": "<span>{{ item.data.name }}</span>",
-        "valueProperty": "_id",
-        "selectFields": "",
-        "validate": {
+      },
+      "template": "<span>{{ item.data.name }}</span>",
+      "valueProperty": "_id",
+      "selectFields": "",
+      "validate": {
         "required": false
-        },
-        "id": "ecommittees",
-        "placeholder": "Select committees...",
-        "persistent": true,
-        "tableView": true
+      },
+      "id": "ecommittees",
+      "placeholder": "Select committees...",
+      "persistent": true,
+      "tableView": true
     },
     {
-        "label": "Submit",
-        "showValidations": false,
-        "tableView": false,
-        "key": "submit",
-        "type": "button",
-        "input": true,
-        "id": "eujrzuo",
-        "placeholder": "",
-        "prefix": "",
-        "customClass": "",
-        "suffix": "",
-        "multiple": false,
-        "defaultValue": null,
-        "protected": false,
-        "unique": false,
-        "persistent": false,
-        "hidden": false,
-        "clearOnHide": true,
-        "refreshOn": "",
-        "redrawOn": "",
-        "modalEdit": false,
-        "dataGridLabel": true,
-        "labelPosition": "top",
-        "description": "",
-        "errorLabel": "",
-        "tooltip": "",
-        "hideLabel": false,
-        "tabindex": "",
-        "disabled": false,
-        "autofocus": false,
-        "dbIndex": false,
-        "customDefaultValue": "",
-        "calculateValue": "",
-        "calculateServer": false,
-        "widget": {
+      "label": "Submit",
+      "showValidations": false,
+      "tableView": false,
+      "key": "submit",
+      "type": "button",
+      "input": true,
+      "id": "eujrzuo",
+      "placeholder": "",
+      "prefix": "",
+      "customClass": "",
+      "suffix": "",
+      "multiple": false,
+      "defaultValue": null,
+      "protected": false,
+      "unique": false,
+      "persistent": false,
+      "hidden": false,
+      "clearOnHide": true,
+      "refreshOn": "",
+      "redrawOn": "",
+      "modalEdit": false,
+      "dataGridLabel": true,
+      "labelPosition": "top",
+      "description": "",
+      "errorLabel": "",
+      "tooltip": "",
+      "hideLabel": false,
+      "tabindex": "",
+      "disabled": false,
+      "autofocus": false,
+      "dbIndex": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "calculateServer": false,
+      "widget": {
         "type": "input"
-        },
-        "attributes": {},
-        "validateOn": "change",
-        "validate": {
+      },
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
         "required": false,
         "custom": "",
         "customPrivate": false,
         "strictDateValidation": false,
         "multiple": false,
         "unique": false
-        },
-        "conditional": {
+      },
+      "conditional": {
         "show": null,
         "when": null,
         "eq": ""
-        },
-        "overlay": {
+      },
+      "overlay": {
         "style": "",
         "left": "",
         "top": "",
         "width": "",
         "height": ""
-        },
-        "allowCalculateOverride": false,
-        "encrypted": false,
-        "showCharCount": false,
-        "showWordCount": false,
-        "properties": {},
-        "allowMultipleMasks": false,
-        "addons": [],
-        "size": "md",
-        "leftIcon": "",
-        "rightIcon": "",
-        "block": false,
-        "action": "submit",
-        "disableOnInvalid": false,
-        "theme": "primary"
+      },
+      "allowCalculateOverride": false,
+      "encrypted": false,
+      "showCharCount": false,
+      "showWordCount": false,
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "size": "md",
+      "leftIcon": "",
+      "rightIcon": "",
+      "block": false,
+      "action": "submit",
+      "disableOnInvalid": false,
+      "theme": "primary"
     }
-    ],
-    "access": [
+  ],
+  "access": [
     {
-        "type": "read_all",
-        "roles": ["authenticated", "staff", "management", "administrator"]
+      "type": "read_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
-    ],
-    "submissionAccess": [
+  ],
+  "submissionAccess": [
     {
-        "type": "read_all",
-        "roles": ["authenticated", "staff", "management", "administrator"]
+      "type": "read_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
-        "type": "create_all",
-        "roles": ["management", "administrator"]
+      "type": "create_all",
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
-        "type": "update_all",
-        "roles": ["management", "administrator"]
+      "type": "update_all",
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
-        "type": "delete_all",
-        "roles": ["administrator"]
+      "type": "delete_all",
+      "roles": [
+        "administrator"
+      ]
     }
-    ]
+  ]
 }

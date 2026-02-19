@@ -1,25 +1,25 @@
 {
-    "title": "Committee",
-    "type": "resource",
-    "name": "committee",
-    "path": "committee",
-    "pdfComponents": [],
-    "display": "form",
-    "tags": [],
-    "settings": {
+  "title": "Committee",
+  "type": "resource",
+  "name": "committee",
+  "path": "committee",
+  "pdfComponents": [],
+  "display": "form",
+  "tags": [],
+  "settings": {
     "ui": {
-        "formsList": {
+      "formsList": {
         "hidden": true
-        }
+      }
     }
-    },
-    "components": [
+  },
+  "components": [
     {
-        "label": "Name",
-        "key": "name",
-        "type": "textfield",
-        "input": true,
-        "validate": {
+      "label": "Name",
+      "key": "name",
+      "type": "textfield",
+      "input": true,
+      "validate": {
         "required": true,
         "custom": "",
         "customPrivate": false,
@@ -29,165 +29,183 @@
         "minLength": "",
         "maxLength": "",
         "pattern": ""
-        },
-        "id": "ex5ckgn",
-        "placeholder": "",
-        "prefix": "",
-        "customClass": "",
-        "suffix": "",
-        "multiple": false,
-        "defaultValue": null,
-        "protected": false,
-        "unique": false,
-        "persistent": true,
-        "hidden": false,
-        "clearOnHide": true,
-        "refreshOn": "",
-        "redrawOn": "",
-        "tableView": true,
-        "modalEdit": false,
-        "dataGridLabel": false,
-        "labelPosition": "top",
-        "description": "",
-        "errorLabel": "",
-        "tooltip": "",
-        "hideLabel": false,
-        "tabindex": "",
-        "disabled": false,
-        "autofocus": false,
-        "dbIndex": false,
-        "customDefaultValue": "",
-        "calculateValue": "",
-        "calculateServer": false,
-        "widget": {
+      },
+      "id": "ex5ckgn",
+      "placeholder": "",
+      "prefix": "",
+      "customClass": "",
+      "suffix": "",
+      "multiple": false,
+      "defaultValue": null,
+      "protected": false,
+      "unique": false,
+      "persistent": true,
+      "hidden": false,
+      "clearOnHide": true,
+      "refreshOn": "",
+      "redrawOn": "",
+      "tableView": true,
+      "modalEdit": false,
+      "dataGridLabel": false,
+      "labelPosition": "top",
+      "description": "",
+      "errorLabel": "",
+      "tooltip": "",
+      "hideLabel": false,
+      "tabindex": "",
+      "disabled": false,
+      "autofocus": false,
+      "dbIndex": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "calculateServer": false,
+      "widget": {
         "type": "input"
-        },
-        "attributes": {},
-        "validateOn": "change",
-        "conditional": {
+      },
+      "attributes": {},
+      "validateOn": "change",
+      "conditional": {
         "show": null,
         "when": null,
         "eq": ""
-        },
-        "overlay": {
+      },
+      "overlay": {
         "style": "",
         "left": "",
         "top": "",
         "width": "",
         "height": ""
-        },
-        "allowCalculateOverride": false,
-        "encrypted": false,
-        "showCharCount": false,
-        "showWordCount": false,
-        "properties": {},
-        "allowMultipleMasks": false,
-        "addons": [],
-        "mask": false,
-        "inputType": "text",
-        "inputFormat": "plain",
-        "inputMask": "",
-        "displayMask": "",
-        "spellcheck": true,
-        "truncateMultipleSpaces": false
+      },
+      "allowCalculateOverride": false,
+      "encrypted": false,
+      "showCharCount": false,
+      "showWordCount": false,
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "mask": false,
+      "inputType": "text",
+      "inputFormat": "plain",
+      "inputMask": "",
+      "displayMask": "",
+      "spellcheck": true,
+      "truncateMultipleSpaces": false
     },
     {
-        "type": "button",
-        "label": "Submit",
-        "key": "submit",
-        "action": "submit",
-        "input": true,
-        "theme": "primary",
-        "id": "e9klw75",
-        "placeholder": "",
-        "prefix": "",
-        "customClass": "",
-        "suffix": "",
-        "multiple": false,
-        "defaultValue": null,
-        "protected": false,
-        "unique": false,
-        "persistent": false,
-        "hidden": false,
-        "clearOnHide": true,
-        "refreshOn": "",
-        "redrawOn": "",
-        "tableView": false,
-        "modalEdit": false,
-        "dataGridLabel": true,
-        "labelPosition": "top",
-        "description": "",
-        "errorLabel": "",
-        "tooltip": "",
-        "hideLabel": false,
-        "tabindex": "",
-        "disabled": false,
-        "autofocus": false,
-        "dbIndex": false,
-        "customDefaultValue": "",
-        "calculateValue": "",
-        "calculateServer": false,
-        "widget": {
+      "type": "button",
+      "label": "Submit",
+      "key": "submit",
+      "action": "submit",
+      "input": true,
+      "theme": "primary",
+      "id": "e9klw75",
+      "placeholder": "",
+      "prefix": "",
+      "customClass": "",
+      "suffix": "",
+      "multiple": false,
+      "defaultValue": null,
+      "protected": false,
+      "unique": false,
+      "persistent": false,
+      "hidden": false,
+      "clearOnHide": true,
+      "refreshOn": "",
+      "redrawOn": "",
+      "tableView": false,
+      "modalEdit": false,
+      "dataGridLabel": true,
+      "labelPosition": "top",
+      "description": "",
+      "errorLabel": "",
+      "tooltip": "",
+      "hideLabel": false,
+      "tabindex": "",
+      "disabled": false,
+      "autofocus": false,
+      "dbIndex": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "calculateServer": false,
+      "widget": {
         "type": "input"
-        },
-        "attributes": {},
-        "validateOn": "change",
-        "validate": {
+      },
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
         "required": false,
         "custom": "",
         "customPrivate": false,
         "strictDateValidation": false,
         "multiple": false,
         "unique": false
-        },
-        "conditional": {
+      },
+      "conditional": {
         "show": null,
         "when": null,
         "eq": ""
-        },
-        "overlay": {
+      },
+      "overlay": {
         "style": "",
         "left": "",
         "top": "",
         "width": "",
         "height": ""
-        },
-        "allowCalculateOverride": false,
-        "encrypted": false,
-        "showCharCount": false,
-        "showWordCount": false,
-        "properties": {},
-        "allowMultipleMasks": false,
-        "addons": [],
-        "size": "md",
-        "leftIcon": "",
-        "rightIcon": "",
-        "block": false,
-        "disableOnInvalid": false
+      },
+      "allowCalculateOverride": false,
+      "encrypted": false,
+      "showCharCount": false,
+      "showWordCount": false,
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "size": "md",
+      "leftIcon": "",
+      "rightIcon": "",
+      "block": false,
+      "disableOnInvalid": false
     }
-    ],
-    "access": [
+  ],
+  "access": [
     {
-        "type": "read_all",
-        "roles": ["authenticated", "staff", "management", "administrator"]
+      "type": "read_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
-    ],
-    "submissionAccess": [
+  ],
+  "submissionAccess": [
     {
-        "type": "read_all",
-        "roles": ["authenticated", "staff", "management", "administrator"]
+      "type": "read_all",
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
-        "type": "create_all",
-        "roles": ["management", "administrator"]
+      "type": "create_all",
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
-        "type": "update_all",
-        "roles": ["management", "administrator"]
+      "type": "update_all",
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
-        "type": "delete_all",
-        "roles": ["administrator"]
+      "type": "delete_all",
+      "roles": [
+        "administrator"
+      ]
     }
-    ]
+  ]
 }

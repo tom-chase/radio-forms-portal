@@ -4,29 +4,50 @@
   "path": "programmingrundown",
   "type": "resource",
   "display": "form",
-  "tags": ["Programming"],
+  "tags": [
+    "Programming"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -38,13 +59,20 @@
       {
         "resource": "PROGRAMMING_DEPT_PLACEHOLDER",
         "fieldName": "departments",
-        "access": ["read_all", "create_all"],
+        "access": [
+          "read_all",
+          "create_all"
+        ],
         "_groupName": "Programming"
       },
       {
         "resource": "TECHNOLOGY_COMM_PLACEHOLDER",
         "fieldName": "committees",
-        "access": ["read_all", "create_all", "delete_all"],
+        "access": [
+          "read_all",
+          "create_all",
+          "delete_all"
+        ],
         "_groupName": "Technology"
       }
     ],
@@ -245,8 +273,14 @@
               "dataSrc": "values",
               "data": {
                 "values": [
-                  { "label": "MP3", "value": "mp3" },
-                  { "label": "Other", "value": "other" }
+                  {
+                    "label": "MP3",
+                    "value": "mp3"
+                  },
+                  {
+                    "label": "Other",
+                    "value": "other"
+                  }
                 ]
               },
               "defaultValue": "mp3"
@@ -307,9 +341,18 @@
       "input": true,
       "tableView": true,
       "values": [
-        { "label": "24+ hours in advance (standard)", "value": "24h" },
-        { "label": "48+ hours in advance (editing/conversion needed)", "value": "48h" },
-        { "label": "Late submission", "value": "late" }
+        {
+          "label": "24+ hours in advance (standard)",
+          "value": "24h"
+        },
+        {
+          "label": "48+ hours in advance (editing/conversion needed)",
+          "value": "48h"
+        },
+        {
+          "label": "Late submission",
+          "value": "late"
+        }
       ],
       "validate": {
         "required": true
@@ -323,16 +366,46 @@
       "tableView": false,
       "description": "Confirm all items before submitting your rundown.",
       "values": [
-        { "label": "Rundown emailed to Production", "value": "emailedProduction" },
-        { "label": "Program Director (PD) copied", "value": "pdCopied" },
-        { "label": "Submitted at least 24 hours before airtime", "value": "deadline24h" },
-        { "label": "Guest names included", "value": "guestNames" },
-        { "label": "Primary and backup phone numbers included", "value": "phoneNumbers" },
-        { "label": "All audio submitted in MP3 format", "value": "mp3Format" },
-        { "label": "Files clearly labeled", "value": "filesLabeled" },
-        { "label": "Editing or conversion requests clearly stated (if applicable)", "value": "editingRequests" },
-        { "label": "Editing/conversion requests submitted 48 hours in advance", "value": "editing48h" },
-        { "label": "All audio reviewed and free of profanity", "value": "profanityFree" }
+        {
+          "label": "Rundown emailed to Production",
+          "value": "emailedProduction"
+        },
+        {
+          "label": "Program Director (PD) copied",
+          "value": "pdCopied"
+        },
+        {
+          "label": "Submitted at least 24 hours before airtime",
+          "value": "deadline24h"
+        },
+        {
+          "label": "Guest names included",
+          "value": "guestNames"
+        },
+        {
+          "label": "Primary and backup phone numbers included",
+          "value": "phoneNumbers"
+        },
+        {
+          "label": "All audio submitted in MP3 format",
+          "value": "mp3Format"
+        },
+        {
+          "label": "Files clearly labeled",
+          "value": "filesLabeled"
+        },
+        {
+          "label": "Editing or conversion requests clearly stated (if applicable)",
+          "value": "editingRequests"
+        },
+        {
+          "label": "Editing/conversion requests submitted 48 hours in advance",
+          "value": "editing48h"
+        },
+        {
+          "label": "All audio reviewed and free of profanity",
+          "value": "profanityFree"
+        }
       ]
     },
     {
@@ -354,11 +427,26 @@
       "dataSrc": "values",
       "data": {
         "values": [
-          { "label": "Draft", "value": "draft" },
-          { "label": "Submitted", "value": "submitted" },
-          { "label": "Reviewed", "value": "reviewed" },
-          { "label": "Approved", "value": "approved" },
-          { "label": "Rejected", "value": "rejected" }
+          {
+            "label": "Draft",
+            "value": "draft"
+          },
+          {
+            "label": "Submitted",
+            "value": "submitted"
+          },
+          {
+            "label": "Reviewed",
+            "value": "reviewed"
+          },
+          {
+            "label": "Approved",
+            "value": "approved"
+          },
+          {
+            "label": "Rejected",
+            "value": "rejected"
+          }
         ]
       },
       "defaultValue": "draft"
@@ -395,9 +483,18 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Administrator", "value": "administrator" },
-              { "label": "Management", "value": "management" },
-              { "label": "Staff", "value": "staff" }
+              {
+                "label": "Administrator",
+                "value": "administrator"
+              },
+              {
+                "label": "Management",
+                "value": "management"
+              },
+              {
+                "label": "Staff",
+                "value": "staff"
+              }
             ]
           },
           "template": "<span>{{ item.label }}</span>",
@@ -415,7 +512,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "department" },
+          "data": {
+            "resource": "department"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.name }}</span>",
@@ -433,7 +532,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "committee" },
+          "data": {
+            "resource": "committee"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.name }}</span>",
@@ -451,7 +552,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "user" },
+          "data": {
+            "resource": "user"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.email }}</span>",

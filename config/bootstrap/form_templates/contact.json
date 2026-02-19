@@ -4,37 +4,70 @@
   "path": "contact",
   "type": "resource",
   "display": "form",
-  "tags": ["General"],
+  "tags": [
+    "General"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_own",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_own",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "components": [
@@ -81,7 +114,7 @@
       "tableView": true,
       "dataSrc": "resource",
       "data": {
-        "resource": "orgs"
+        "resource": "organization"
       },
       "valueProperty": "_id",
       "template": "<span>{{ item.data.name }}</span>",
@@ -104,12 +137,30 @@
       "input": true,
       "tableView": false,
       "values": [
-        { "label": "Sponsor Contact", "value": "sponsor" },
-        { "label": "Member/Donor", "value": "member" },
-        { "label": "Community Partner", "value": "partner" },
-        { "label": "Vendor", "value": "vendor" },
-        { "label": "Volunteer Prospect", "value": "volunteer" },
-        { "label": "Other", "value": "other" }
+        {
+          "label": "Sponsor Contact",
+          "value": "sponsor"
+        },
+        {
+          "label": "Member/Donor",
+          "value": "member"
+        },
+        {
+          "label": "Community Partner",
+          "value": "partner"
+        },
+        {
+          "label": "Vendor",
+          "value": "vendor"
+        },
+        {
+          "label": "Volunteer Prospect",
+          "value": "volunteer"
+        },
+        {
+          "label": "Other",
+          "value": "other"
+        }
       ],
       "defaultValue": {
         "sponsor": true
@@ -125,9 +176,18 @@
       "dataSrc": "values",
       "data": {
         "values": [
-          { "label": "Active", "value": "active" },
-          { "label": "Pending Review", "value": "pending_review" },
-          { "label": "Inactive", "value": "inactive" }
+          {
+            "label": "Active",
+            "value": "active"
+          },
+          {
+            "label": "Pending Review",
+            "value": "pending_review"
+          },
+          {
+            "label": "Inactive",
+            "value": "inactive"
+          }
         ]
       },
       "defaultValue": "active"
@@ -142,11 +202,26 @@
       "dataSrc": "values",
       "data": {
         "values": [
-          { "label": "Website", "value": "website" },
-          { "label": "Referral", "value": "referral" },
-          { "label": "Event", "value": "event" },
-          { "label": "Cold Call", "value": "cold_call" },
-          { "label": "Other", "value": "other" }
+          {
+            "label": "Website",
+            "value": "website"
+          },
+          {
+            "label": "Referral",
+            "value": "referral"
+          },
+          {
+            "label": "Event",
+            "value": "event"
+          },
+          {
+            "label": "Cold Call",
+            "value": "cold_call"
+          },
+          {
+            "label": "Other",
+            "value": "other"
+          }
         ]
       }
     },
@@ -225,11 +300,26 @@
               "dataSrc": "values",
               "data": {
                 "values": [
-                  { "label": "Cash", "value": "cash" },
-                  { "label": "Check", "value": "check" },
-                  { "label": "Credit Card", "value": "credit_card" },
-                  { "label": "Online", "value": "online" },
-                  { "label": "Other", "value": "other" }
+                  {
+                    "label": "Cash",
+                    "value": "cash"
+                  },
+                  {
+                    "label": "Check",
+                    "value": "check"
+                  },
+                  {
+                    "label": "Credit Card",
+                    "value": "credit_card"
+                  },
+                  {
+                    "label": "Online",
+                    "value": "online"
+                  },
+                  {
+                    "label": "Other",
+                    "value": "other"
+                  }
                 ]
               }
             },
@@ -296,9 +386,18 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Administrator", "value": "administrator" },
-              { "label": "Management", "value": "management" },
-              { "label": "Staff", "value": "staff" }
+              {
+                "label": "Administrator",
+                "value": "administrator"
+              },
+              {
+                "label": "Management",
+                "value": "management"
+              },
+              {
+                "label": "Staff",
+                "value": "staff"
+              }
             ]
           },
           "template": "<span>{{ item.label }}</span>",
@@ -316,7 +415,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "department" },
+          "data": {
+            "resource": "department"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.name }}</span>",
@@ -334,7 +435,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "committee" },
+          "data": {
+            "resource": "committee"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.name }}</span>",
@@ -352,7 +455,9 @@
           "tableView": true,
           "multiple": true,
           "dataSrc": "resource",
-          "data": { "resource": "user" },
+          "data": {
+            "resource": "user"
+          },
           "valueProperty": "_id",
           "dataType": "resource",
           "template": "<span>{{ item.data.email }}</span>",

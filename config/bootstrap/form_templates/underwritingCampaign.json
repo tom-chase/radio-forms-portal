@@ -4,29 +4,52 @@
   "path": "underwritingcampaign",
   "type": "resource",
   "display": "form",
-  "tags": ["Underwriting"],
+  "tags": [
+    "Underwriting"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -39,7 +62,10 @@
       {
         "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
         "fieldName": "departments",
-        "access": ["read_all", "create_all"],
+        "access": [
+          "read_all",
+          "create_all"
+        ],
         "_groupName": "Underwriting"
       }
     ],
@@ -114,7 +140,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "orgs"
+            "resource": "organization"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.name }}</span>",
@@ -134,7 +160,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "uwContracts"
+            "resource": "underwritingContract"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.contractName }}</span>",
@@ -250,11 +276,26 @@
       "dataSrc": "values",
       "data": {
         "values": [
-          { "label": "Planned", "value": "planned" },
-          { "label": "Active", "value": "active" },
-          { "label": "Paused", "value": "paused" },
-          { "label": "Completed", "value": "completed" },
-          { "label": "Cancelled", "value": "cancelled" }
+          {
+            "label": "Planned",
+            "value": "planned"
+          },
+          {
+            "label": "Active",
+            "value": "active"
+          },
+          {
+            "label": "Paused",
+            "value": "paused"
+          },
+          {
+            "label": "Completed",
+            "value": "completed"
+          },
+          {
+            "label": "Cancelled",
+            "value": "cancelled"
+          }
         ]
       },
       "defaultValue": "planned"

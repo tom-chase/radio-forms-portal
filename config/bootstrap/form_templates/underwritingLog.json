@@ -4,29 +4,52 @@
   "path": "underwritinglog",
   "type": "resource",
   "display": "form",
-  "tags": ["Underwriting"],
+  "tags": [
+    "Underwriting"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -39,7 +62,10 @@
       {
         "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
         "fieldName": "departments",
-        "access": ["read_all", "create_all"],
+        "access": [
+          "read_all",
+          "create_all"
+        ],
         "_groupName": "Underwriting"
       }
     ],
@@ -116,7 +142,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "uwCampaigns"
+            "resource": "underwritingCampaign"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.campaignName }}</span>",
@@ -132,7 +158,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "uwSpots"
+            "resource": "underwritingSpot"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.spotName }}</span>",
@@ -177,9 +203,18 @@
       "dataSrc": "values",
       "data": {
         "values": [
-          { "label": "Manual Entry", "value": "manual" },
-          { "label": "Automation Import", "value": "automation" },
-          { "label": "Digital Upload", "value": "digital_upload" }
+          {
+            "label": "Manual Entry",
+            "value": "manual"
+          },
+          {
+            "label": "Automation Import",
+            "value": "automation"
+          },
+          {
+            "label": "Digital Upload",
+            "value": "digital_upload"
+          }
         ]
       },
       "defaultValue": "manual",

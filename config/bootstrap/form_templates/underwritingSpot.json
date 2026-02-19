@@ -4,29 +4,52 @@
   "path": "underwritingspot",
   "type": "resource",
   "display": "form",
-  "tags": ["Underwriting"],
+  "tags": [
+    "Underwriting"
+  ],
   "access": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     }
   ],
   "submissionAccess": [
     {
       "type": "read_all",
-      "roles": ["authenticated", "staff", "management", "administrator"]
+      "roles": [
+        "authenticated",
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "create_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "update_all",
-      "roles": ["staff", "management", "administrator"]
+      "roles": [
+        "staff",
+        "management",
+        "administrator"
+      ]
     },
     {
       "type": "delete_all",
-      "roles": ["management", "administrator"]
+      "roles": [
+        "management",
+        "administrator"
+      ]
     }
   ],
   "settings": {
@@ -39,13 +62,18 @@
       {
         "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
         "fieldName": "departments",
-        "access": ["read_all", "create_all"],
+        "access": [
+          "read_all",
+          "create_all"
+        ],
         "_groupName": "Underwriting"
       }
     ],
     "revisionTracking": {
       "enabled": true,
-      "trackedFields": ["copy"],
+      "trackedFields": [
+        "copy"
+      ],
       "trackApprovals": true
     },
     "tabulatorList": {
@@ -108,7 +136,7 @@
           "tableView": true,
           "dataSrc": "resource",
           "data": {
-            "resource": "uwCampaigns"
+            "resource": "underwritingCampaign"
           },
           "valueProperty": "_id",
           "template": "<span>{{ item.data.campaignName }}</span>",
@@ -214,10 +242,22 @@
           "dataSrc": "values",
           "data": {
             "values": [
-              { "label": "Draft", "value": "draft" },
-              { "label": "Pending Approval", "value": "pending" },
-              { "label": "Approved", "value": "approved" },
-              { "label": "Deprecated", "value": "deprecated" }
+              {
+                "label": "Draft",
+                "value": "draft"
+              },
+              {
+                "label": "Pending Approval",
+                "value": "pending"
+              },
+              {
+                "label": "Approved",
+                "value": "approved"
+              },
+              {
+                "label": "Deprecated",
+                "value": "deprecated"
+              }
             ]
           },
           "defaultValue": "draft"

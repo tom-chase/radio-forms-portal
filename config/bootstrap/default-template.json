@@ -12827,6 +12827,56 @@
       "tags": [
         ""
       ],
+      "settings": {
+        "ui": {
+          "alternateTitle": "Tasks",
+          "submissionsTitle": "Task List",
+          "formsList": {
+            "hidden": false
+          }
+        },
+        "tabulatorList": {
+          "enabled": true,
+          "layout": "fitColumns",
+          "height": "60vh",
+          "pagination": "local",
+          "paginationSize": 25,
+          "movableColumns": true,
+          "placeholder": "No submissions found.",
+          "columns": [
+            {
+              "title": "Title",
+              "field": "data.title",
+              "headerFilter": "input",
+              "minWidth": 220
+            },
+            {
+              "title": "Details",
+              "field": "data.details",
+              "formatter": "html",
+              "minWidth": 220
+            },
+            {
+              "title": "Author",
+              "field": "data.author",
+              "headerFilter": "input",
+              "minWidth": 160
+            },
+            {
+              "title": "Updated",
+              "field": "modified",
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MMM d, yyyy HH:mm a",
+                "invalidPlaceholder": "(invalid)",
+                "timezone": "America/New_York"
+              },
+              "minWidth": 220
+            }
+          ]
+        }
+      },
       "components": [
         {
           "label": "Task Title",
