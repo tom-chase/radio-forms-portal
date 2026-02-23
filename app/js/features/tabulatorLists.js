@@ -140,6 +140,38 @@ function resolveColumnAccessors(columns) {
     visit(columns);
 }
 
+function normalizeDownloadFormatters(columns) {
+    if (!Array.isArray(columns)) return;
+
+    const formatDateValue = (value, outputFormat) => {
+        if (!value) return '';
+        try {
+            if (typeof luxon !== 'undefined' && luxon.DateTime) {
+                const dt = luxon.DateTime.fromISO(String(value));
+                if (dt.isValid) return dt.toFormat(outputFormat);
+            }
+            return new Date(value).toLocaleString();
+        } catch {
+            return String(value);
+        }
+    };
+
+    const visit = (cols) => {
+        (cols || []).forEach((col) => {
+            if (!col || typeof col !== 'object') return;
+
+            if (col.formatter === 'datetime' && !col.accessorDownload) {
+                const outputFormat = col.formatterParams?.outputFormat || 'MMM d, yyyy HH:mm a';
+                col.accessorDownload = (value) => formatDateValue(value, outputFormat);
+            }
+
+            if (Array.isArray(col.columns)) visit(col.columns);
+        });
+    };
+
+    visit(columns);
+}
+
 function normalizeLookupFormatterParams(columns) {
     if (!Array.isArray(columns)) return;
 
@@ -782,6 +814,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
         transformedData = derived.rows;
         sanitizeHeaderFilters(cols);
         normalizeLookupFormatterParams(cols);
+        normalizeDownloadFormatters(cols);
         finalConfig.columns = cols;
 
         // Debug hooks for DevTools (this is the actual data/config sent to Tabulator)
