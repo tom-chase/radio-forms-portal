@@ -515,7 +515,11 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
         const { getAppBridge } = await import('../services/appBridge.js');
         const { state } = getAppBridge();
         
-        const viewToggleHtml = await renderViewToggle(formMeta, state.currentSubmissionView || 'tabulator');
+        const hideDownloads = formMeta?.settings?.ui?.hideDownloads === true;
+        const isAdminOrManagement = state.adminMode || permissions?.canUpdateAll;
+        const showDownloads = !hideDownloads && !!isAdminOrManagement;
+
+        const viewToggleHtml = await renderViewToggle(formMeta, state.currentSubmissionView || 'tabulator', { showDownloads });
         subsList.innerHTML = viewToggleHtml + '<div id="rfpSubsTabulator"></div>';
         const host = document.getElementById("rfpSubsTabulator");
         if (!host) return false;
@@ -617,6 +621,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                 headerSort: false,
                 width: 50,
                 resizable: false,
+                download: false,
                 cssClass: 'rfp-actions-cell',
                 formatter: (cell, formatterParams, onRendered) => {
                     const rowData = cell.getRow().getData();
@@ -841,6 +846,18 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
         });
 
         window.__rfpSubsTabulator = state.currentSubsTabulator;
+
+        // Wire download buttons
+        if (showDownloads) {
+            const safeTitle = (formMeta?.title || formMeta?.name || 'export')
+                .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            subsList.querySelectorAll('.rfp-download-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const fmt = btn.dataset.format;
+                    state.currentSubsTabulator?.download(fmt, `${safeTitle}.${fmt}`);
+                });
+            });
+        }
 
         // Close any open kebab menus when clicking outside
         if (!window.__rfpKebabCloseHandler) {
