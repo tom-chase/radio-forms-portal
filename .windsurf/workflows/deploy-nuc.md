@@ -47,7 +47,7 @@ Unlike EC2 (which uses an IAM role), the NUC requires explicit AWS credentials i
 BACKUPS_AWS_ACCESS_KEY_ID=your-key-id
 BACKUPS_AWS_SECRET_ACCESS_KEY=your-secret-key
 ```
-Alternatively, use the local USB backup script (`deployment/nuc-local-backup.sh`) instead of or in addition to S3.
+Alternatively, use the local USB backup script (`scripts/nuc-local-backup.sh`) instead of or in addition to S3.
 
 ## Deployment Steps
 

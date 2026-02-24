@@ -6,10 +6,10 @@
 set -e
 
 # Configuration
-PROD_SERVER="${PROD_SERVER:-3.227.80.82}"
-PROD_USER="${PROD_USER:-admin}"
-APP_DIR="${PROD_APP_DIR:-/home/admin/radio-forms-portal}"
-BACKUP_DIR="${PROD_BACKUP_DIR:-/home/admin/backups}"
+PROD_SERVER="${PROD_SERVER:-192.168.1.50}"
+PROD_USER="${PROD_USER:-tom}"
+APP_DIR="${PROD_APP_DIR:-/home/tom/radio-forms-portal}"
+BACKUP_DIR="${PROD_BACKUP_DIR:-/home/tom/backups}"
 
 # SSH Key handling
 SSH_KEY=${1:-}
@@ -126,22 +126,22 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     
     # Restart services
     echo "🔄 Restarting services..."
-    docker-compose down
+    docker compose down
     
     # Prune old images to free space and ensure fresh build
     docker image prune -f
     
     # Start services with explicit environment variables
-    EMAIL="\$EMAIL" SPA_DOMAIN="\$SPA_DOMAIN" API_DOMAIN="\$API_DOMAIN" docker-compose up -d --build
+    EMAIL="\$EMAIL" SPA_DOMAIN="\$SPA_DOMAIN" API_DOMAIN="\$API_DOMAIN" docker compose up -d --build
     
     # Wait for services
     echo "⏳ Waiting for services to start..."
     sleep 15
     
     # Check health
-    if docker-compose ps | grep -q "Up"; then
+    if docker compose ps | grep -q "Up"; then
         echo "✅ Services are running:"
-        docker-compose ps
+        docker compose ps
 
         # Run post-bootstrap configuration
         echo "🔧 Running post-bootstrap configuration..."
@@ -154,7 +154,7 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
         fi
     else
         echo "❌ Service startup failed. Checking logs..."
-        docker-compose logs --tail=50
+        docker compose logs --tail=50
         exit 1
     fi
     

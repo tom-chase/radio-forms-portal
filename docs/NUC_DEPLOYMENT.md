@@ -805,26 +805,29 @@ Note this IP — you'll need it for DNS configuration.
 
 ## Phase 4: Application Deployment
 
-### 4.1 Clone Repository
+### 4.1 Prepare App Directory on NUC
 
-At this point WireGuard should be running. Connect from your Mac:
+The application is deployed via tarball push from your Mac — no git on the production server.
+
+Connect to the NUC (WireGuard must be up):
 ```bash
 sudo wg-quick up ~/.config/wireguard/wg0.conf
 ssh admin@10.8.0.1
 ```
 
-On the NUC:
+On the NUC, create the directory structure:
 ```bash
-cd /home/admin
-git clone https://github.com/your-org/radio-forms-portal.git
-cd radio-forms-portal
+mkdir -p /home/admin/radio-forms-portal /home/admin/backups
 ```
+
+That's all that's needed on the NUC side before the first deploy. The tarball push (Step 4.4) will populate the directory.
 
 ### 4.2 Create Production `.env`
 
+The `.env` must be created manually on the NUC — it is never deployed by the tarball push (to protect secrets). Create it directly:
+
 ```bash
-cp .env.example .env
-nano .env
+nano /home/admin/radio-forms-portal/.env
 ```
 
 Required values to set:
@@ -935,16 +938,30 @@ If migrating existing production data from EC2 to the NUC:
 
 ### 5.1 Export from EC2
 
+SSH into EC2 and run `mongodump` directly via the mongo container:
+
 ```bash
 # On EC2 (via SSH):
+cd /home/admin/radio-forms-portal
 source .env
+
 docker exec mongo mongodump \
-    --uri="mongodb://admin:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin" \
+    --uri="mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin" \
     --archive=/tmp/migration-$(date +%Y%m%d).archive.gz \
     --gzip
 
-# Copy to your Mac:
-scp -i ~/.ssh/your-key.pem admin@<EC2-IP>:/tmp/migration-*.archive.gz ~/Desktop/
+echo "Archive created:"
+docker exec mongo ls -lh /tmp/migration-*.archive.gz
+```
+
+Copy the archive from the mongo container to the EC2 host, then to your Mac:
+
+```bash
+# Copy out of container to EC2 host:
+docker cp mongo:/tmp/migration-$(date +%Y%m%d).archive.gz /tmp/
+
+# From your Mac — copy from EC2 to Mac:
+scp -i ~/.ssh/your-ec2-key.pem admin@<EC2-PUBLIC-IP>:/tmp/migration-*.archive.gz ~/Desktop/
 ```
 
 ### 5.2 Transfer to NUC
@@ -960,18 +977,18 @@ scp ~/Desktop/migration-*.archive.gz admin@10.8.0.1:/tmp/
 ```bash
 # On NUC — stop Form.io first to prevent writes during import:
 cd /home/admin/radio-forms-portal
-docker-compose stop formio
+docker compose stop formio
 
 # Copy archive into mongo container and restore:
 docker cp /tmp/migration-*.archive.gz mongo:/tmp/migration.archive.gz
 docker exec mongo mongorestore \
-    --uri="mongodb://admin:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin" \
+    --uri="mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@localhost:27017/?authSource=admin" \
     --archive=/tmp/migration.archive.gz \
     --gzip \
     --drop
 
 # Restart Form.io:
-docker-compose start formio
+docker compose start formio
 
 # Run post-bootstrap to re-resolve dynamic IDs for the new environment:
 docker exec formio node /app/post-bootstrap.js
