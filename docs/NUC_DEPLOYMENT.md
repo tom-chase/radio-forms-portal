@@ -273,10 +273,38 @@ The script handles: system update, Docker install, UFW firewall, WireGuard insta
 
 ```bash
 sudo apt update && sudo apt upgrade -y
+```
 
+**Install Docker from the official Docker repo** (the Debian apt version is too old and lacks `docker compose`):
+
+```bash
+sudo apt install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl enable --now docker
+sudo usermod -aG docker admin
+newgrp docker
+```
+
+Verify:
+
+```bash
+docker --version
+docker compose version
+```
+
+**Install remaining packages:**
+
+```bash
 sudo apt install -y \
-    docker.io \
-    docker-compose \
     git \
     curl \
     wget \
@@ -294,10 +322,6 @@ sudo apt install -y \
     logrotate \
     unattended-upgrades \
     smartmontools
-
-sudo systemctl enable docker
-sudo usermod -aG docker admin
-# Log out and back in for docker group to take effect
 ```
 
 ### 2.2 Static IP Configuration
@@ -525,10 +549,10 @@ ls ~/.ssh/id_ed25519.pub
 ssh-keygen -t ed25519 -C "tom@mac" -f ~/.ssh/id_ed25519
 
 # Copy public key to NUC:
-ssh-copy-id -i ~/.ssh/id_ed25519.pub tom@192.168.1.50
+ssh-copy-id -i ~/.ssh/id_ed25519.pub admin@192.168.1.50
 
 # Test key auth before disabling passwords:
-ssh -i ~/.ssh/id_ed25519 tom@192.168.1.50
+ssh admin@192.168.1.50
 ```
 
 Confirm you can log in without a password prompt before proceeding.
@@ -555,7 +579,7 @@ sudo systemctl restart sshd
 **From a new terminal on your Mac**, verify passwordless login still works:
 
 ```bash
-ssh tom@192.168.1.50
+ssh admin@192.168.1.50
 # Should connect without a password prompt
 ```
 

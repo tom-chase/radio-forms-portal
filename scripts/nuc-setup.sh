@@ -7,7 +7,7 @@
 #   sudo bash /path/to/nuc-setup.sh
 #
 # What it does:
-#   - Installs Docker, docker-compose, and required packages
+#   - Installs Docker, docker-compose-plugin (v2), and required packages
 #   - Configures Docker daemon for production
 #   - Configures UFW firewall (SSH via WireGuard VPN only, HTTP/HTTPS/51820 open)
 #   - Installs WireGuard
@@ -58,11 +58,22 @@ update_system() {
 
 # ── Package Installation ──────────────────────────────────────────────────────
 
+install_docker() {
+    log "Installing Docker from official Docker repo..."
+    apt-get install -y -qq ca-certificates curl gnupg
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    apt-get update -qq
+    apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    log "Docker installed"
+}
+
 install_packages() {
     log "Installing required packages..."
     apt-get install -y -qq \
-        docker.io \
-        docker-compose \
         git \
         curl \
         wget \
@@ -78,7 +89,6 @@ install_packages() {
         openssl \
         ca-certificates \
         gnupg \
-        lsb-release \
         rfkill \
         usbutils \
         smartmontools \
@@ -326,6 +336,7 @@ main() {
     check_root
     check_debian12
     update_system
+    install_docker
     install_packages
     configure_docker
     disable_wifi
