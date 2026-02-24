@@ -31,7 +31,7 @@ Key docs:
 
 ```bash
 ./scripts/setup-environment.sh dev
-docker-compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml up -d --build
 ```
 
 3) Open:
@@ -52,7 +52,31 @@ Production uses a "tarball push" workflow (no `git pull` on the server). The dep
 - Regenerates `app/config.js` and `config/env/production.json` on the server from the server's `.env`
 - Restarts Docker Compose and runs post-bootstrap configuration
 
-See `docs/DEPLOYMENT.md` for full details.
+Two production server targets are supported — both use the same `deploy-production.sh` script, with the target overridden via environment variables:
+
+| Target | Access | Guide |
+|--------|--------|-------|
+| **AWS EC2** | Direct SSH (key-based) | `docs/DEPLOYMENT.md` |
+| **ASUS NUC 14** (on-prem) | SSH via WireGuard VPN | `docs/NUC_DEPLOYMENT.md` |
+
+### EC2 Deploy
+
+```bash
+./scripts/deploy-production.sh ~/.ssh/your-ec2-key.pem
+```
+
+### NUC Deploy
+
+```bash
+sudo wg-quick up wg0
+export PROD_SERVER="10.8.0.1"
+export PROD_USER="admin"
+export PROD_APP_DIR="/home/admin/radio-forms-portal"
+export PROD_BACKUP_DIR="/home/admin/backups"
+./scripts/deploy-production.sh ~/.ssh/mac-to-nuc
+```
+
+See `.windsurf/workflows/deploy-nuc.md` for the full NUC workflow.
 
 ### Configuration Notes
 

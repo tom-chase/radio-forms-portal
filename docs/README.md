@@ -8,10 +8,11 @@ This directory contains comprehensive documentation for the Radio Forms Portal p
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
-| **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)** | AWS setup, networking, scaling | DevOps, System Admins |
+| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Deployment procedures, dual-target (EC2 + NUC), ARM64 setup | Developers, DevOps |
+| **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)** | AWS EC2 CloudFormation setup, networking, scaling | DevOps, System Admins |
+| **[NUC_DEPLOYMENT.md](NUC_DEPLOYMENT.md)** | On-prem ASUS NUC 14 setup, WireGuard VPN, UPS, data migration | DevOps, System Admins |
 | **[SECURITY.md](SECURITY.md)** | Security configuration, hardening | DevOps, Security Team |
 | **[STAGING.md](STAGING.md)** | Staging environment setup and workflow | Developers, QA Team |
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Deployment procedures, workflows, ARM64 setup | Developers, DevOps |
 | **[../README.md](../README.md)** | Project overview, getting started, ARM64 compatibility | All Contributors |
 | **[../scripts/README.md](../scripts/README.md)** | Script documentation | Developers, DevOps |
 | **[../AGENT.md](../AGENT.md)** | AI agent orientation, quick reference | AI Agents, Developers |
@@ -21,8 +22,10 @@ This directory contains comprehensive documentation for the Radio Forms Portal p
 
 ## 🏗️ Infrastructure Documentation
 
-### **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)**
-Complete AWS production infrastructure documentation including:
+This project supports two production server targets. Both use the same `deploy-production.sh` tarball-push workflow.
+
+### **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)** — AWS EC2
+AWS CloudFormation production infrastructure documentation including:
 
 - **Current Setup**: Instance types, networking, storage
 - **Security Groups**: Inbound/outbound rules, IAM roles
@@ -37,6 +40,18 @@ Complete AWS production infrastructure documentation including:
 - Security group configuration with least privilege
 - Cost management and optimization strategies
 - Backup and disaster recovery procedures
+
+### **[NUC_DEPLOYMENT.md](NUC_DEPLOYMENT.md)** — On-Prem ASUS NUC 14
+Full setup and operational guide for the on-premises NUC production server:
+
+- **Hardware & OS**: ASUS NUC 14 N150, Debian 12 Bookworm, Realtek RTL8125 NIC
+- **Network**: Static LAN IP, WireGuard VPN for remote SSH access
+- **Security**: UFW firewall, SSH key hardening, fail2ban
+- **UPS**: CyberPower GX1500U + PowerPanel integration
+- **Application Deployment**: Tarball push via WireGuard
+- **Data Migration**: `mongodump`/`mongorestore` from EC2
+- **Backup**: S3 backup (explicit AWS credentials) + local USB backup
+- **DNS Cutover**: DDNS setup and Route 53 A-record update
 
 ---
 
@@ -126,11 +141,12 @@ docs/INFRASTRUCTURE.md          # Production environment
 #### **🔧 DevOps Engineers**
 ```bash
 # Infrastructure:
-docs/INFRASTRUCTURE.md          # Complete AWS setup
+docs/INFRASTRUCTURE.md          # AWS EC2 CloudFormation setup
+docs/NUC_DEPLOYMENT.md          # On-prem NUC setup and operations
 docs/SECURITY.md                # Security configuration
 
 # Deployment:
-docs/DEPLOYMENT.md              # Deployment automation
+docs/DEPLOYMENT.md              # Deployment automation (EC2 + NUC)
 docs/STAGING.md                 # Staging setup and workflow
 ../scripts/README.md             # Script documentation
 ```
@@ -154,10 +170,12 @@ docs/DEPLOYMENT.md              # Security in deployment
 #### **👨‍💼 System Administrators**
 ```bash
 # Operations:
-docs/INFRASTRUCTURE.md          # Production setup
+docs/INFRASTRUCTURE.md          # AWS EC2 production setup
+docs/NUC_DEPLOYMENT.md          # On-prem NUC production setup
 docs/SECURITY.md                # Security procedures
 docs/STAGING.md                 # Staging environment
 ../scripts/backup.sh              # Backup procedures
+../scripts/nuc-local-backup.sh    # NUC local USB backup
 ../scripts/health-check.sh        # Monitoring
 ```
 
@@ -168,9 +186,9 @@ docs/STAGING.md                 # Staging environment
 ### **Keeping Documentation Current**
 
 #### **When to Update**
-- **Infrastructure Changes**: New AWS resources, scaling events
-- **Security Updates**: New threats, policy changes, incidents
-- **Deployment Changes**: New scripts, workflow updates
+- **Infrastructure Changes**: New AWS resources, scaling events, NUC hardware changes
+- **Security Updates**: New threats, policy changes, incidents, key rotation
+- **Deployment Changes**: New scripts, workflow updates, new production targets
 - **Quarterly Reviews**: Comprehensive accuracy check
 
 #### **Update Process**
@@ -212,5 +230,5 @@ See **[CASCADE_INTEGRATION.md](CASCADE_INTEGRATION.md)** for details on how to m
 
 ---
 
-**Documentation Hub Last Updated**: 2026-02-07
+**Documentation Hub Last Updated**: 2026-02-24
 **Maintainer**: tomchase@duck.com

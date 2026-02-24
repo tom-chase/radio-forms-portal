@@ -49,13 +49,31 @@ Production deployment now consists of two independent channels:
 2.  **Form.io Project Deployment**: Pushes the Form.io project structure (forms, resources, roles, actions) from dev to production using direct API calls.
 
  
+Two production targets are supported — both use the same script:
+
+| Target | Guide |
+|--------|-------|
+| **AWS EC2** | Below | 
+| **ASUS NUC 14** (on-prem, via WireGuard) | `docs/NUC_DEPLOYMENT.md` · `.windsurf/workflows/deploy-nuc.md` |
+
 ### 1) On your laptop
  
 - Ensure your local checkout is exactly what you want deployed.
-- Run:
- 
+- **EC2 deploy**:
+
 ```bash
-./scripts/deploy-production.sh /path/to/your-ssh-key.pem
+./scripts/deploy-production.sh ~/.ssh/your-ec2-key.pem
+```
+
+- **NUC deploy** (override target via env vars):
+
+```bash
+sudo wg-quick up wg0
+export PROD_SERVER="10.8.0.1"
+export PROD_USER="admin"
+export PROD_APP_DIR="/home/admin/radio-forms-portal"
+export PROD_BACKUP_DIR="/home/admin/backups"
+./scripts/deploy-production.sh ~/.ssh/mac-to-nuc
 ```
  
 What it does (high level):
@@ -74,12 +92,12 @@ Note:
  
 The script handles the remote steps for you.
 
-Useful validation commands:
+Useful validation commands (on the server):
  
 ```bash
-docker-compose ps
-docker-compose logs --tail=200 caddy
-docker-compose logs --tail=200 formio
+docker compose ps
+docker compose logs --tail=200 caddy
+docker compose logs --tail=200 formio
 ```
 
 If you need to run migrations manually:
@@ -273,7 +291,7 @@ FORMIO_DOMAIN="$PROD_FORMIO_DOMAIN" API_KEYS="$PROD_API_KEYS" \
  
  ### Caddy won’t start
  
- - Check `docker-compose logs caddy`
+ - Check `docker compose logs caddy`
  - Validate the `Caddyfile` syntax
  - Confirm ports 80/443 are reachable and not already bound
  
@@ -290,7 +308,7 @@ FORMIO_DOMAIN="$PROD_FORMIO_DOMAIN" API_KEYS="$PROD_API_KEYS" \
  
  ### Form.io container crash loop
  
- - Check `docker-compose logs formio`
+ - Check `docker compose logs formio`
  - Validate the generated config JSON in `config/env/production.json`
  - Confirm MongoDB credentials match the server `.env`
  
@@ -298,7 +316,8 @@ FORMIO_DOMAIN="$PROD_FORMIO_DOMAIN" API_KEYS="$PROD_API_KEYS" \
  
  ## 📚 Related Docs
  
- - `INFRASTRUCTURE.md`
+ - `INFRASTRUCTURE.md` — AWS EC2 setup
+ - `NUC_DEPLOYMENT.md` — On-prem NUC setup and operations
  - `SECURITY.md`
  - `STAGING.md`
  - `COMMON_ISSUES.md`
