@@ -246,7 +246,28 @@ Once Ethernet is confirmed working:
 
 ## Phase 2: System Configuration
 
-Run these commands on the NUC (connect via monitor+keyboard initially, then SSH once network is stable).
+### Overview
+
+Most of Phase 2 is automated by `scripts/nuc-setup.sh`. Run it after completing Section 2.2 (static IP) — once you can SSH in from your Mac.
+
+**Step 1**: Set static IP manually (Section 2.2 below — must be done on the NUC directly)
+
+**Step 2**: From your Mac, copy and run the setup script:
+
+```bash
+# Copy script to NUC:
+scp ~/radio-forms-portal/scripts/nuc-setup.sh admin@192.168.1.50:/tmp/
+
+# SSH in and run it:
+ssh admin@192.168.1.50
+sudo bash /tmp/nuc-setup.sh
+```
+
+The script handles: system update, Docker install, UFW firewall, WireGuard install, WiFi disable, sleep prevention, fail2ban, auto-updates, and swap. It prints a next-steps summary when done.
+
+**Step 3**: Complete the manual steps the script cannot automate (WireGuard key exchange, UPS setup) — Sections 2.5 and 2.8.
+
+---
 
 ### 2.1 System Update and Package Installation
 
@@ -281,20 +302,13 @@ sudo usermod -aG docker admin
 
 ### 2.2 Static IP Configuration
 
-Debian 12 (server install) uses `/etc/network/interfaces`. Find your Ethernet interface name first:
-
-```bash
-ip link show
-# Look for enp4s0, eno1, eth0, or similar (not lo or wlo1)
-```
-
-Edit the network config (replace `enp4s0` with your actual interface name):
+Debian 12 (server install) uses `/etc/network/interfaces`. The Ethernet interface on this NUC is `enp1s0`.
 
 ```bash
 sudo nano /etc/network/interfaces
 ```
 
-Replace the entire contents with:
+The file may already contain a `wlo1` (WiFi) block from the install. **Add** the `enp1s0` static block — do not remove the `wlo1` block yet (keep it as a fallback until Ethernet is confirmed stable):
 
 ```
 # Loopback
@@ -302,20 +316,33 @@ auto lo
 iface lo inet loopback
 
 # Ethernet — static IP
-auto enp4s0
-iface enp4s0 inet static
+auto enp1s0
+iface enp1s0 inet static
     address 192.168.1.50
     netmask 255.255.255.0
     gateway 192.168.1.1
     dns-nameservers 8.8.8.8 8.8.4.4
+
+# WiFi — keep as fallback until Ethernet is confirmed stable
+allow-hotplug wlo1
+iface wlo1 inet dhcp
+    wpa-ssid "YourSSID"
+    wpa-psk "YourPassword"
 ```
 
 Apply and verify:
 
 ```bash
 sudo systemctl restart networking
-ip addr show enp4s0
+ip addr show enp1s0
+# Should show inet 192.168.1.50/24
 ping -c 3 8.8.8.8
+```
+
+Once `192.168.1.50` is confirmed reachable from your Mac (`ping 192.168.1.50`), you can SSH in via the static IP from now on:
+
+```bash
+ssh admin@192.168.1.50
 ```
 
 ### 2.3 Disable Wi-Fi Permanently
@@ -390,8 +417,8 @@ ListenPort = 51820
 PrivateKey = <contents of /etc/wireguard/nuc_private.key>
 
 # Save and restore iptables rules for routing
-PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o enp4s0 -j MASQUERADE
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o enp4s0 -j MASQUERADE
+PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o enp1s0 -j MASQUERADE
 
 [Peer]
 # Mac
@@ -399,7 +426,7 @@ PublicKey = <contents of mac_public.key>
 AllowedIPs = 10.8.0.2/32
 ```
 
-> Replace `enp4s0` with your actual Ethernet interface name (`ip link show`).
+> The NUC's Ethernet interface is `enp1s0`. If yours differs, update the `PostUp`/`PostDown` lines accordingly.
 
 ```bash
 sudo chmod 600 /etc/wireguard/wg0.conf
@@ -416,13 +443,17 @@ nano ~/.config/wireguard/wg0.conf
 ```ini
 [Interface]
 Address = 10.8.0.2/32
-PrivateKey = <contents of ~/.config/wireguard/mac_private.key>
+# PrivateKey = <contents of ~/.config/wireguard/mac_private.key>
+PrivateKey = REDACTED_MAC_WG_PRIVATE_KEY=
 DNS = 8.8.8.8
 
 [Peer]
 # NUC
-PublicKey = <contents of /etc/wireguard/nuc_public.key>
-Endpoint = <YOUR-PUBLIC-IP-OR-DOMAIN>:51820
+# PublicKey = <contents of /etc/wireguard/nuc_public.key>
+PublicKey = REDACTED_NUC_WG_PUBLIC_KEY=
+# Endpoint when on local LAN: Endpoint = 192.168.1.50:51820
+# Endpoint when remote (outside home network): Endpoint = YOUR_PUBLIC_IP:51820
+Endpoint = YOUR_PUBLIC_IP:51820
 AllowedIPs = 10.8.0.0/24
 PersistentKeepalive = 25
 ```
@@ -480,7 +511,57 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 # Select "Yes" to enable automatic security updates
 ```
 
-### 2.8 Prevent Sleep / Suspend
+### 2.6b SSH Key Authentication
+
+Disable password-based SSH login and require key authentication. **Complete all steps before closing your existing SSH session.**
+
+**On your Mac** — generate a key if you don't have one, then copy it to the NUC:
+
+```bash
+# Check for existing key:
+ls ~/.ssh/id_ed25519.pub
+
+# If missing, generate one:
+ssh-keygen -t ed25519 -C "tom@mac" -f ~/.ssh/id_ed25519
+
+# Copy public key to NUC:
+ssh-copy-id -i ~/.ssh/id_ed25519.pub tom@192.168.1.50
+
+# Test key auth before disabling passwords:
+ssh -i ~/.ssh/id_ed25519 tom@192.168.1.50
+```
+
+Confirm you can log in without a password prompt before proceeding.
+
+**On the NUC** — harden `sshd_config`:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Set these values (add or uncomment as needed):
+
+```
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+PermitRootLogin no
+```
+
+```bash
+sudo systemctl restart sshd
+```
+
+**From a new terminal on your Mac**, verify passwordless login still works:
+
+```bash
+ssh tom@192.168.1.50
+# Should connect without a password prompt
+```
+
+> SSH is only accessible via the WireGuard VPN tunnel when connecting remotely — port 22 is never forwarded on the router.
+
+### 2.7b Prevent Sleep / Suspend
 
 Debian's `systemd` will attempt to suspend the system on inactivity by default. This must be disabled on a headless production server.
 
@@ -525,7 +606,7 @@ sudo systemctl is-enabled sleep.target
 
 ---
 
-### 2.7 UPS Integration (CyberPower GX1500U)
+### 2.8 UPS Integration (CyberPower GX1500U)
 
 #### Physical Connection
 
@@ -546,10 +627,12 @@ Also connect power:
 PowerPanel Personal is **not in apt repos** — download the `.deb` directly from CyberPower:
 
 ```
-https://www.cyberpower.com/global/en/product/sku/powerpanel_personal_for_linux
+https://www.cyberpower.com/global/en/product/sku/powerpanel_for_linux
 ```
 
-Download on your Mac and transfer to the NUC via SCP (WireGuard must be up):
+> **Debian 12 is not listed by name** on the download page. Select the newest **64-bit `.deb`** available (labeled for Ubuntu 22.04 or the highest Debian version shown — e.g. Debian 11). These packages are built against standard `glibc` and are fully compatible with Debian 12 Bookworm. Do **not** download an `.rpm` or 32-bit package.
+
+Download on your Mac and transfer to the NUC via SCP:
 
 ```bash
 # On your Mac:
@@ -1069,7 +1152,7 @@ docker exec formio node /app/post-bootstrap.js 2>&1 | tee -a logs/post-bootstrap
 
 - `.windsurf/workflows/deploy-nuc.md` — Ongoing deployment workflow
 - `.windsurf/workflows/deploy-production-formio.md` — Promote Form.io schema changes
-- `deployment/nuc-setup.sh` — Automated system setup script (installs WireGuard)
-- `deployment/nuc-local-backup.sh` — Local USB backup script
+- `scripts/nuc-setup.sh` — Automated system setup script (installs WireGuard)
+- `scripts/nuc-local-backup.sh` — Local USB backup script
 - `docs/DEPLOYMENT.md` — General deployment documentation
 - `docs/INFRASTRUCTURE.md` — AWS EC2 infrastructure (backup/failover)
