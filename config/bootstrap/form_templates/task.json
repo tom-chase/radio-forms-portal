@@ -12,7 +12,7 @@
       "alternateTitle": "Tasks",
       "submissionsTitle": "Task List",
       "formsList": {
-        "hidden": false
+        "hidden": true
       }
     },
     "tabulatorList": {

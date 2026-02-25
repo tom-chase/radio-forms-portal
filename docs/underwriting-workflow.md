@@ -1,7 +1,7 @@
 # Underwriting/Sponsorship Workflow Documentation
 
-**Version:** 1.0  
-**Last Updated:** February 5, 2026
+**Version:** 2.0  
+**Last Updated:** February 25, 2026
 
 ---
 
@@ -13,9 +13,12 @@
 4. [Data Flow](#data-flow)
 5. [Approval Workflows](#approval-workflows)
 6. [Donation Tracking](#donation-tracking)
-7. [Access Control](#access-control)
-8. [Implementation Guide](#implementation-guide)
-9. [Future Enhancements](#future-enhancements)
+7. [FCC Compliance](#fcc-compliance)
+8. [Access Control](#access-control)
+9. [Spot Revision Tracking](#spot-revision-tracking)
+10. [Future Enhancements](#future-enhancements)
+11. [Troubleshooting](#troubleshooting)
+12. [Support & Maintenance](#support--maintenance)
 
 ---
 
@@ -31,7 +34,9 @@ The Underwriting Workflow is a comprehensive Form.io-based system for managing c
 - **Campaign Management**: Both sponsor-specific and station-wide campaign tracking
 - **Aircheck Logging**: Manual entry with future automation/upload support
 - **Activity Logging**: Polymorphic note linking to any record type
-- **Responsive Design**: Mobile-friendly Tabulator lists with priority-based column hiding
+- **Spot Revision Tracking**: Full revision history for spot copy via `revisionTracking`
+- **FCC Compliance**: Built-in review gates to prevent prohibited promotional language
+- **Group-Based Access**: Department-scoped permissions via `groupPermissions`
 
 ---
 
@@ -40,54 +45,52 @@ The Underwriting Workflow is a comprehensive Form.io-based system for managing c
 ### Resource Hierarchy
 
 ```
-┌─────────────┐       ┌─────────────┐       ┌─────────────┐
-│    orgs     │◀──N:1─┤   contact   │       │    user     │
-│ (companies) │       │  (people)   │──N:1──▶  (logins)   │
-└──────┬──────┘       └─────────────┘       └─────────────┘
-       │                                           
-       │ 1:N                                       
-       ▼                                           
-┌─────────────┐       ┌─────────────┐       ┌─────────────┐
-│ uwContracts │──1:N──▶│ uwCampaigns │──1:N──▶│  uwSpots    │
-│ (agreements)│       │  (periods)  │       │ (messages)  │
-└──────┬──────┘       └──────┬──────┘       └──────┬──────┘
-       │                     │                     │
-       │                     │ 1:N                 │
-       │                     ▼                     │
-       │              ┌─────────────┐              │
-       │              │   uwLogs    │◀─────────────┘
-       │              │ (airchecks) │
-       │              └─────────────┘
+┌──────────────┐       ┌─────────────┐       ┌─────────────┐
+│ organization │◀──N:1─┤   contact   │       │    user     │
+│ (companies)  │       │  (people)   │──N:1──▶  (logins)   │
+└──────┬───────┘       └─────────────┘       └─────────────┘
        │
-       │ 1:N (via parentRef)
+       │ 1:N
        ▼
-┌─────────────┐
-│    note     │ ◀── Also linked from contact, campaign, spot
-│ (activity)  │
-└─────────────┘
+┌────────────────────┐   ┌─────────────────────┐   ┌──────────────────┐
+│ underwritingContract│──1:N──▶underwritingCampaign│──1:N──▶underwritingSpot│
+│    (agreements)     │   │      (periods)       │   │   (messages)     │
+└────────────────────┘   └──────────┬──────────┘   └────────┬─────────┘
+                                    │                        │
+                                    │ 1:N                    │
+                                    ▼                        │
+                          ┌──────────────────┐               │
+                          │ underwritingLog  │◀──────────────┘
+                          │   (airchecks)    │
+                          └──────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  note (activity)  ◀── linked from any of the above records  │
+│                       and from event records                 │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ### File Structure
 
 ```
 config/bootstrap/form_templates/
-├── orgs.json              # Organizations resource
-├── contact.json           # Contacts resource (with donation tracking)
-├── contactIntake.json     # Public intake form
-├── uwContracts.json       # Contracts resource (with approval workflow)
-├── uwCampaigns.json       # Campaigns resource (with station-wide field)
-├── uwSpots.json           # Spots resource (with approval workflow)
-├── uwLogs.json            # Aircheck log entries resource
-└── note.json              # Notes resource (with parentRef linking)
+├── organization.json          # Organizations resource
+├── contact.json               # Contacts resource (with donation tracking)
+├── contactIntake.json         # Public intake form
+├── underwritingContract.json  # Contracts resource (with approval workflow)
+├── underwritingCampaign.json  # Campaigns resource (with station-wide field)
+├── underwritingSpot.json      # Spots resource (with approval + revision tracking)
+├── underwritingLog.json       # Aircheck log entries resource
+└── note.json                  # Notes resource (with polymorphic parentRef)
 ```
 
 ---
 
 ## Resources & Forms
 
-### 1. Organizations (`orgs`)
+### 1. Organizations (`organization`)
 
-**Path:** `/orgs`  
+**Path:** `/organization`  
 **Type:** Resource  
 **Purpose:** Master organization records for sponsors, partners, and vendors
 
@@ -96,14 +99,23 @@ config/bootstrap/form_templates/
 | Field | Type | Description |
 |-------|------|-------------|
 | `name` | textfield | Organization name (required) |
-| `orgType` | select | Underwriter, Partner, Vendor, Other |
-| `onAirName` | textfield | How to announce on-air |
+| `orgType` | select | Underwriter/Sponsor, Community Partner, Vendor/Supplier, Other |
+| `taxStatus` | select | For-Profit, Non-Profit |
+| `nonprofitType` | select | 501(c)(3), 501(c)(4), 501(c)(6), Other (shown when taxStatus = nonprofit) |
+| `ein` | textfield | Federal Tax ID / EIN (XX-XXXXXXX format, IRS prefix validation) |
+| `onAirName` | textfield | How to announce on-air (if different from legal name) |
+| `status` | select | Prospect, Active, Inactive, Do Not Contact |
 | `phone` | phoneNumber | Primary phone |
 | `website` | url | Website URL |
-| `billingAddress` | textarea | Billing address |
+| `physicalAddress` | textarea | Physical address |
+| `billingAddress` | textarea | Billing address (leave blank if same as physical) |
 | `billingEmail` | email | Invoice email |
-| `status` | select | Prospect, Active, Inactive, Do Not Contact |
-| `notes` | textarea (ckeditor) | Internal notes |
+| `billingContactName` | textfield | Name of billing contact |
+| `notes` | textarea (ckeditor) | Internal notes (not visible to organization) |
+
+#### EIN Validation
+
+The `ein` field uses an input mask (`99-9999999`) and custom validation against all valid IRS two-digit prefixes. Empty values are accepted (EIN is optional).
 
 #### Tabulator Columns
 
@@ -129,9 +141,9 @@ config/bootstrap/form_templates/
 | `lastName` | textfield | Last name (required) |
 | `email` | email | Email address |
 | `phone` | phoneNumber | Phone number |
-| `organization` | select (resource: orgs) | Linked organization |
+| `organization` | select (resource: organization) | Linked organization |
 | `roleAtOrg` | textfield | Title/role at organization |
-| `contactType` | selectboxes | Sponsor, Member/Donor, Partner, Vendor, Volunteer, Other |
+| `contactType` | selectboxes | Sponsor Contact, Member/Donor, Community Partner, Vendor, Volunteer Prospect, Other |
 | `status` | select | Active, Pending Review, Inactive |
 | `source` | select | Website, Referral, Event, Cold Call, Other |
 | `linkedUser` | select (resource: user) | Portal login (optional) |
@@ -184,7 +196,7 @@ value = (function() {
 
 ### 3. Contact Intake (`contactIntake`)
 
-**Path:** `/contact-intake`  
+**Path:** `/contactintake`  
 **Type:** Form (not resource)  
 **Purpose:** Public-facing form for anonymous prospect submissions
 
@@ -196,15 +208,16 @@ value = (function() {
 | `lastName` | textfield | Last name (required) |
 | `email` | email | Email (required) |
 | `phone` | phoneNumber | Phone number |
-| `organization` | textfield | Organization name |
+| `organization` | textfield | Free-text organization name |
 | `message` | textarea | Message/inquiry |
 | `source` | hidden | Auto-set to "website" |
-| `honeypot` | hidden | Spam protection |
+| `honeypot` | textfield (hidden via CSS) | Spam protection — must remain blank |
 
 #### Access
 
 - **Anonymous:** `create_own` (can submit)
-- **Staff/Management:** `read_all` (can review)
+- **Authenticated/Staff/Management/Admin:** `read_all` (can review)
+- **Underwriting department** (via `groupPermissions`): `read_all`
 
 #### Future Enhancement
 
@@ -212,9 +225,9 @@ A custom action will be added to automatically create a `contact` resource submi
 
 ---
 
-### 4. Underwriting Contracts (`uwContracts`)
+### 4. Underwriting Contracts (`underwritingContract`)
 
-**Path:** `/uw-contracts`  
+**Path:** `/underwritingcontract`  
 **Type:** Resource  
 **Purpose:** Sponsorship agreements and contracts
 
@@ -223,7 +236,7 @@ A custom action will be added to automatically create a `contact` resource submi
 | Field | Type | Description |
 |-------|------|-------------|
 | `contractName` | textfield | Contract name (required) |
-| `organization` | select (resource: orgs) | Sponsor org (required) |
+| `organization` | select (resource: organization) | Sponsor org (required) |
 | `primaryContact` | select (resource: contact) | Primary contact |
 | `startDate` | datetime | Contract start (required) |
 | `endDate` | datetime | Contract end (required) |
@@ -242,9 +255,9 @@ Each approval level has:
 - `[level]ApprovalDate` (datetime, conditional on approved)
 
 **Approval Levels:**
-1. Program Manager
-2. General Manager
-3. Compliance Officer
+1. Program Manager (`programManager`)
+2. General Manager (`generalManager`)
+3. Compliance Officer (`complianceOfficer`)
 
 #### Status Flow
 
@@ -262,9 +275,9 @@ Draft → Pending Approval → Active → Expired/Cancelled
 
 ---
 
-### 5. Underwriting Campaigns (`uwCampaigns`)
+### 5. Underwriting Campaigns (`underwritingCampaign`)
 
-**Path:** `/uw-campaigns`  
+**Path:** `/underwritingcampaign`  
 **Type:** Resource  
 **Purpose:** Sponsor-specific campaign periods within broader station campaigns
 
@@ -272,9 +285,9 @@ Draft → Pending Approval → Active → Expired/Cancelled
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `campaignName` | textfield | Campaign name (required) - sponsor-specific |
-| `organization` | select (resource: orgs) | Sponsor org (required) |
-| `contract` | select (resource: uwContracts) | Linked contract (optional) |
+| `campaignName` | textfield | Campaign name (required) — sponsor-specific |
+| `organization` | select (resource: organization) | Sponsor org (required) |
+| `contract` | select (resource: underwritingContract) | Linked contract (optional) |
 | `primaryContact` | select (resource: contact) | Campaign contact |
 | `stationCampaign` | textfield | **Station-wide campaign** (e.g., "Fall Fund Drive 2025") |
 | `onAirName` | textfield | Short on-air label |
@@ -299,9 +312,9 @@ Draft → Pending Approval → Active → Expired/Cancelled
 
 ---
 
-### 6. Underwriting Spots (`uwSpots`)
+### 6. Underwriting Spots (`underwritingSpot`)
 
-**Path:** `/uw-spots`  
+**Path:** `/underwritingspot`  
 **Type:** Resource  
 **Purpose:** Individual underwriting messages/promos
 
@@ -310,21 +323,23 @@ Draft → Pending Approval → Active → Expired/Cancelled
 | Field | Type | Description |
 |-------|------|-------------|
 | `spotName` | textfield | Spot name (required) |
-| `campaign` | select (resource: uwCampaigns) | Parent campaign (required) |
+| `campaign` | select (resource: underwritingCampaign) | Parent campaign (required) |
 | `lengthSeconds` | number | Duration in seconds |
-| `copy` | textarea (ckeditor) | Script/copy text |
+| `copy` | textarea (ckeditor) | Script/copy text (revision-tracked) |
 | `audioUrl` | url | Audio file link (for future upload/serving) |
 | `attachments` | datagrid | File attachments (name, URL, description) |
 | `status` | select | Draft, Pending Approval, Approved, Deprecated |
 
 #### Approval Workflow Fields
 
-Same structure as contracts:
-1. Program Manager
-2. General Manager
-3. Compliance Officer
+Same structure as contracts but with a different first-level approver:
+1. Program Director (`programDirector`)
+2. General Manager (`generalManager`)
+3. Compliance Officer (`complianceOfficer`)
 
 Each level has: `[level]Approved`, `[level]Approver`, `[level]ApprovalDate`
+
+> **Note:** Contracts use `programManager`; Spots use `programDirector`. These are different roles reflecting different approval chains.
 
 #### Status Flow
 
@@ -341,9 +356,9 @@ Draft → Pending Approval → Approved → Deprecated
 
 ---
 
-### 7. Underwriting Logs (`uwLogs`)
+### 7. Underwriting Logs (`underwritingLog`)
 
-**Path:** `/uw-logs`  
+**Path:** `/underwritinglog`  
 **Type:** Resource  
 **Purpose:** Track actual airings (airchecks) for billing and reporting
 
@@ -352,8 +367,8 @@ Draft → Pending Approval → Approved → Deprecated
 | Field | Type | Description |
 |-------|------|-------------|
 | `airDateTime` | datetime | Air date/time (required) |
-| `campaign` | select (resource: uwCampaigns) | Campaign |
-| `spot` | select (resource: uwSpots) | Spot aired |
+| `campaign` | select (resource: underwritingCampaign) | Campaign |
+| `spot` | select (resource: underwritingSpot) | Spot aired |
 | `programName` | textfield | Show name |
 | `positionNotes` | textfield | Break position |
 | `source` | select | Manual Entry, Automation Import, Digital Upload |
@@ -397,8 +412,8 @@ The `audioFileUrl` and `fileHash` fields are prepared for:
 | `title` | textfield | Brief summary (required) |
 | `content` | textarea (ckeditor) | Note content |
 | `author` | textfield (calculated) | Auto-populated from user.data.email |
-| `parentType` | select | Organization, Contact, Contract, Campaign, Spot |
-| `parentId` | select (dynamic) | Record selector (updates based on parentType) |
+| `parentType` | select | Organization, Contact, Contract, Campaign, Spot, Event |
+| `parentId` | hidden (calculated) | Consolidated record ID (from conditional fields below) |
 | `sharePublic` | checkbox | Share with public |
 | `shareRoles` | select (multiple) | Share with roles |
 | `shareDepartments` | select (multiple) | Share with departments |
@@ -408,16 +423,16 @@ The `audioFileUrl` and `fileHash` fields are prepared for:
 #### Polymorphic Linking
 
 Notes can be linked to any record type via `parentRef` container:
-- **parentType:** Specifies the resource (orgs, contact, uwContracts, uwCampaigns, uwSpots)
-- **parentId:** Dynamic select dropdown that loads submissions from the selected resource type
+- **parentType:** Specifies the resource (`organization`, `contact`, `underwritingcontract`, `underwritingcampaign`, `underwritingspot`, `event`)
+- **parentId:** Hidden calculated field — consolidates the value from the matching conditional select
 
 #### Dynamic Record Selection
 
 The note form uses **conditional resource fields** to provide proper record selection:
-- Five separate select fields: `parentId_orgs`, `parentId_contact`, `parentId_uwContracts`, `parentId_uwCampaigns`, `parentId_uwSpots`
+- Six separate select fields: `parentId_orgs`, `parentId_contact`, `parentId_uwContracts`, `parentId_uwCampaigns`, `parentId_uwSpots`, `parentId_event`
 - Each field uses `dataSrc: "resource"` with proper resource reference
 - Each field has `customConditional` to show only when matching `parentType` is selected
-- A hidden `parentId` field uses `calculateValue` to consolidate the selected value
+- The hidden `parentId` field uses `calculateValue` to consolidate the selected value
 
 **Benefits:**
 - Proper Form.io resource integration with "Add Resource" buttons
@@ -476,38 +491,36 @@ The notes system is integrated via `notesUI.js` module:
    ↓
 4. Contract Creation
    ↓
-   Create uwContracts (status: draft)
+   Create underwritingContract (status: draft)
    Link to organization and contact
    ↓
-5. Approval Process
+5. Contract Approval
    ↓
    Program Manager → General Manager → Compliance Officer
-   ↓
-6. Contract Activation
-   ↓
    Update status: active
    ↓
-7. Campaign Creation
+6. Campaign Creation
    ↓
-   Create uwCampaigns
+   Create underwritingCampaign
    Link to contract and organization
-   Set station-wide campaign
+   Set station-wide campaign name
    ↓
-8. Spot Production
+7. Spot Production
    ↓
-   Create uwSpots
+   Create underwritingSpot
    Link to campaign
-   Go through approval workflow
+   Program Director → General Manager → Compliance Officer
+   Update status: approved
    ↓
-9. Aircheck Logging
+8. Aircheck Logging
    ↓
-   Create uwLogs entries
+   Create underwritingLog entries
    Link to campaign and spot
    ↓
-10. Activity Tracking
-    ↓
-    Create note entries at any step
-    Link via parentRef to relevant records
+9. Activity Tracking
+   ↓
+   Create note entries at any step
+   Link via parentRef to the relevant record
 ```
 
 ---
@@ -516,24 +529,36 @@ The notes system is integrated via `notesUI.js` module:
 
 ### 3-Level Approval Process
 
-Both **contracts** and **spots** use the same approval workflow structure.
+Both **contracts** and **spots** use the same 3-level structure, but the first level differs between the two.
 
-#### Approval Levels
+#### Approval Levels — Contracts (`underwritingContract`)
 
-1. **Program Manager**
+1. **Program Manager** (`programManager`)
    - Reviews content alignment with programming
    - Checks scheduling feasibility
    - Validates messaging appropriateness
 
-2. **General Manager**
+2. **General Manager** (`generalManager`)
    - Reviews business terms
    - Approves financial commitments
    - Final operational sign-off
 
-3. **Compliance Officer**
+3. **Compliance Officer** (`complianceOfficer`)
    - Ensures FCC compliance
    - Validates non-commercial nature
    - Checks legal requirements
+
+#### Approval Levels — Spots (`underwritingSpot`)
+
+1. **Program Director** (`programDirector`)
+   - Reviews copy for FCC compliance and messaging appropriateness
+   - Checks spot length and scheduling fit
+
+2. **General Manager** (`generalManager`)
+   - Reviews business terms and approves production
+
+3. **Compliance Officer** (`complianceOfficer`)
+   - Final FCC compliance check before spot is approved to air
 
 #### Approval Fields (per level)
 
@@ -612,149 +637,195 @@ Automatically calculated based on 365-day rolling window:
 
 ## Access Control
 
-### Role-Based Permissions
+### Role Hierarchy
 
-| Resource | Anonymous | Authenticated | Programmer | Staff | Underwriting | Management | Admin |
-|----------|-----------|---------------|------------|-------|--------------|------------|-------|
-| `orgs` | - | - | read | read | CRUD | CRUD | CRUD |
-| `contact` | - | read_own | read | read | CRUD | CRUD | CRUD |
-| `uwContracts` | - | - | read* | read | CRUD | CRUD | CRUD |
-| `uwCampaigns` | - | - | read | read | CRUD | CRUD | CRUD |
-| `uwSpots` | - | - | read | read | CRUD | CRUD | CRUD |
-| `uwLogs` | - | - | CRUD | read | CRUD | CRUD | CRUD |
-| `note` | - | CRUD_own | CRUD_own | CRUD_own | CRUD_own | CRUD_all | CRUD |
-| `contactIntake` | create | - | - | - | - | - | - |
+The system uses a simplified five-level role hierarchy (roles `programmer`, `underwriting`, and `volunteer` were removed in February 2026 and replaced by department-based scoping):
 
-*Programmers see active campaigns/spots for scheduling purposes
+```
+anonymous → authenticated → staff → management → administrator
+```
 
-### Notes on Permissions
+### Group-Based Department Scoping
 
-- **Anonymous:** Can only submit to `contactIntake` form
-- **Programmers:** Need read access to campaigns/spots for show scheduling, can create log entries
-- **Staff:** Read-only access to underwriting resources
-- **Underwriting Role:** Full CRUD on all underwriting resources
-- **Management:** Full CRUD on all resources
-- **Admin:** Full system access
+Underwriting-specific CRUD access is controlled via `groupPermissions` on each form's settings, not via roles. Users must be members of the **Underwriting** department group to access the underwriting forms in the sidebar and perform CRUD operations.
 
-### Share Settings
+```json
+"groupPermissions": [
+  {
+    "resource": "UNDERWRITING_DEPT_PLACEHOLDER",
+    "fieldName": "departments",
+    "access": ["read_all", "create_all", "update_all", "delete_all"],
+    "_groupName": "Underwriting"
+  }
+]
+```
 
-The `note` resource includes row-level security via share settings:
-- Share with specific roles
-- Share with departments
-- Share with committees
-- Share with individual users
-- Share publicly (optional)
+The placeholder ID (`UNDERWRITING_DEPT_PLACEHOLDER`) is resolved to the real department submission ID at bootstrap time by `scripts/post-bootstrap.js`.
+
+### Permissions by Resource
+
+| Resource | Anonymous | Authenticated | Staff | Mgmt/Admin | Underwriting dept |
+|----------|-----------|---------------|-------|------------|-------------------|
+| `organization` | — | read | read | CRUD | CRUD |
+| `contact` | — | read | CRUD_own | CRUD_all | CRUD |
+| `underwritingContract` | — | — | read | CRUD | CRUD |
+| `underwritingCampaign` | — | — | read | CRUD | CRUD |
+| `underwritingSpot` | — | — | read | CRUD | CRUD |
+| `underwritingLog` | — | — | read | CRUD | CRUD |
+| `note` | — | CRUD_own | CRUD_own | CRUD_all | CRUD_own |
+| `contactIntake` | create | read | read/update | CRUD | read |
+
+### Row-Level Security (Share Settings)
+
+The `contact`, `book`, and `note` resources use a client-side share-settings model for row-level security. Each submission can be shared with:
+- **Specific roles** (`shareRoles`)
+- **Departments** (`shareDepartments`)
+- **Committees** (`shareCommittees`)
+- **Individual users** (`shareUsers`)
+- **Public** (`sharePublic: true`)
+
+If a submission has share settings defined but none match the current user, access is restricted to the submission owner and administrators. This is enforced in `rbacService.js` via `checkSubmissionRowAccess()`.
 
 ---
 
 ## Implementation Guide
 
-### Step 1: Import Form Templates
+The underwriting forms are bootstrapped automatically via the standard project setup workflow. See the `/local-dev-setup` workflow for full instructions. Key bootstrap steps:
 
-Import the following files via Form.io bootstrap or admin interface:
+### Step 1: Bootstrap Forms
 
 ```bash
-config/bootstrap/form_templates/
-├── orgs.json
-├── contact.json
-├── contactIntake.json
-├── note.json              # Update existing
-├── uwContracts.json
-├── uwCampaigns.json
-├── uwSpots.json
-└── uwLogs.json
+node scripts/bootstrap.js
+node scripts/post-bootstrap.js
 ```
 
-### Step 2: Verify Resource Creation
+`post-bootstrap.js` resolves all `UNDERWRITING_DEPT_PLACEHOLDER` references in `groupPermissions` to the real Underwriting department submission ID.
 
-Check that all resources are created with correct paths:
-- `/orgs`
+### Step 2: Verify Resource Paths
+
+Confirm all resources are available at their correct paths:
+- `/organization`
 - `/contact`
-- `/contact-intake`
+- `/contactintake`
+- `/underwritingcontract`
+- `/underwritingcampaign`
+- `/underwritingspot`
+- `/underwritinglog`
 - `/note`
-- `/uw-contracts`
-- `/uw-campaigns`
-- `/uw-spots`
-- `/uw-logs`
 
-### Step 3: Configure Roles
+### Step 3: Verify Underwriting Department Group
 
-Ensure the following roles exist:
-- `programmer`
-- `staff`
-- `underwriting`
-- `management`
-- `administrator`
+Confirm that the Underwriting department exists and that the intended staff users have their `departments` field set to include Underwriting. Users without this group membership will not see the underwriting forms in the sidebar.
 
 ### Step 4: Test Data Flow
 
-1. **Create Organization:**
-   - Navigate to Organizations
-   - Create test sponsor org
-   - Set type: Underwriter
-   - Set status: Active
+1. **Create Organization:** Type = Underwriter/Sponsor, Status = Active
+2. **Create Contact:** Link to organization, Type = Sponsor Contact
+3. **Create Contract:** Link org and contact, test 3-level approval workflow
+4. **Create Campaign:** Link contract, set station-wide campaign name
+5. **Create Spot:** Link campaign, test Program Director → GM → Compliance Officer workflow
+6. **Create Log Entry:** Link campaign and spot
+7. **Create Note:** From any record detail view — verify parentRef auto-populates
 
-2. **Create Contact:**
-   - Navigate to Contacts
-   - Create test contact
-   - Link to organization
-   - Set type: Sponsor Contact
-   - Test donation history (if Member/Donor type)
-
-3. **Create Contract:**
-   - Navigate to Contracts
-   - Create test contract
-   - Link to organization and contact
-   - Test approval workflow
-
-4. **Create Campaign:**
-   - Navigate to Campaigns
-   - Create test campaign
-   - Link to contract
-   - Set station-wide campaign name
-
-5. **Create Spot:**
-   - Navigate to Spots
-   - Create test spot
-   - Link to campaign
-   - Test approval workflow
-
-6. **Create Log Entry:**
-   - Navigate to Aircheck Logs
-   - Create test log entry
-   - Link to campaign and spot
-
-7. **Create Note:**
-   - From any record detail view
-   - Create note linked to that record
-   - Verify parentRef fields populate
-
-### Step 5: Configure Public Intake
-
-Update `app/contact.html` to point to the new intake form:
-
-```javascript
-// Change formUrl from:
-formUrl: '/contact'
-
-// To:
-formUrl: '/contact-intake'
-```
-
-### Step 6: Test Responsive Design
-
-Test Tabulator lists on different screen sizes:
-- Desktop: All columns visible
-- Tablet: responsive: 0-1 visible
-- Mobile: responsive: 0 only
-
-### Step 7: Configure Email Notifications (Future)
+### Step 5: Configure Email Notifications (Future)
 
 When email credentials are available:
-1. Add Email action to `uwContracts` on status change
-2. Add Email action to `uwSpots` on status change
-3. Configure notification templates
-4. Test approval notification flow
+1. Add Email action to `underwritingContract` on status change
+2. Add Email action to `underwritingSpot` on status change
+3. Configure notification templates for each approval step
+
+---
+
+## FCC Compliance
+
+### What Is Underwriting?
+
+Non-commercial educational (NCE) radio stations may receive funding from sponsors through **underwriting** — a form of sponsorship acknowledgment that differs fundamentally from commercial advertising. Under FCC rules (47 C.F.R. §§ 73.503, 73.621), NCE stations may identify their sponsors but **may not air promotional material**.
+
+### What Makes a Valid Underwriting Acknowledgment
+
+A valid underwriting spot:
+- Identifies the sponsor by name
+- May describe the business, products, or services in a value-neutral way
+- May include a value-neutral slogan or tag line (if not promotional)
+- May include location, phone number, and/or website
+- May include a brief description of the organization's mission (for non-profits)
+
+### Prohibited Content
+
+The following are **not permitted** in underwriting acknowledgments:
+
+| Category | Examples |
+|----------|---------|
+| Calls to action | "Visit us today!", "Call now!", "Buy online at..." |
+| Comparative claims | "the best", "number one", "better than our competitors" |
+| Price information | "only $9.99", "free with purchase", "starting at $X" |
+| Inducements | "sale", "discount", "special offer", "limited time" |
+| Superlatives | "the finest", "unbeatable quality", "the most trusted" |
+| Direct solicitation | Any language urging a listener to take a commercial action |
+
+### Safe-Harbor Language Examples
+
+Valid:
+> "Support for this program comes from Acme Hardware — tools and building supplies serving the community since 1978. acmehardware.com"
+
+Valid:
+> "This program is underwritten by Green Valley Food Co-op — a member-owned natural grocery at 123 Main Street."
+
+Valid:
+> "Funding provided by Riverside Law Group, serving individuals and families in estate planning and elder law."
+
+Invalid (call to action + price):
+> "Visit Acme Hardware this weekend for our best prices of the year — sale ends Sunday!"
+
+Invalid (comparative + superlative):
+> "Green Valley Co-op — the best natural foods in the region. Come taste the difference!"
+
+### Enforcement Context
+
+The FCC has levied fines against NCE stations for airing promotional content. The **3-level approval workflow** built into both `underwritingContract` and `underwritingSpot` is specifically designed to catch FCC violations before a spot airs. The **Compliance Officer** sign-off at level 3 is the final FCC compliance gate.
+
+### Spot Copy Review Checklist
+
+Before approving a spot, reviewers should confirm:
+- No calls to action
+- No price information
+- No comparative or superlative claims
+- No inducement language (sale, discount, offer)
+- Sponsor name is clearly identified
+- Content is factual and value-neutral
+- Length is appropriate (typically 15–30 seconds)
+
+---
+
+## Spot Revision Tracking
+
+The `underwritingSpot` resource has revision tracking enabled on the `copy` field:
+
+```json
+"settings": {
+  "revisionTracking": {
+    "enabled": true,
+    "trackedFields": ["copy"]
+  }
+}
+```
+
+### What This Means
+
+- Every time the `copy` field is saved with a new value, the previous version is stored in Form.io's built-in revision history.
+- Revisions can be retrieved via the Form.io API at `GET /underwritingspot/{id}/v/{revision}`.
+- This provides an audit trail of all copy changes throughout the approval process.
+
+### Use Cases
+
+- **Approval audit trail:** Track exactly what copy was approved at each stage.
+- **Rollback:** Restore a previous version of copy if a new revision introduces compliance issues.
+- **Legal records:** Maintain a timestamped history of all spot copy for FCC record-keeping.
+
+### Future UI Integration
+
+A revision history viewer is planned for the spot detail view, allowing staff to compare versions and restore prior copy without leaving the portal.
 
 ---
 
@@ -862,11 +933,20 @@ show = data.contactType && data.contactType.member === true;
 }
 ```
 
-### Tabulator Columns Not Responsive
+### Tabulator Columns Not Hiding on Small Screens
 
 **Issue:** Columns don't hide on smaller screens.
 
-**Solution:** Ensure `responsiveLayout: "hide"` is set in `tabulatorList` settings.
+**Solution:** Ensure `responsiveLayout: "hide"` is set in `tabulatorList` settings and that each column has a `responsive` integer (0 = always visible; higher numbers hide first).
+
+### Underwriting Forms Not Appearing in Sidebar
+
+**Issue:** A staff user cannot see the underwriting forms (Contracts, Campaigns, Spots, Logs) in the sidebar.
+
+**Solution:**
+1. Verify the user's `departments` field includes the **Underwriting** department.
+2. Confirm `post-bootstrap.js` ran successfully and resolved `UNDERWRITING_DEPT_PLACEHOLDER` to a real ID.
+3. Check the form's `settings.groupPermissions` array contains the correct department submission ID (not the placeholder string).
 
 ### Notes Not Linking to Records
 
@@ -938,6 +1018,7 @@ show = data.contactType && data.contactType.member === true;
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | Feb 5, 2026 | Initial implementation with all 8 resources/forms |
+| 2.0 | Feb 25, 2026 | Corrected all resource names/paths; replaced obsolete role table with group-permissions model; added missing Organization fields (taxStatus, nonprofitType, ein, billingContactName); fixed approval level naming for Spots (programDirector); added note polymorphic link to event; documented Spot Revision Tracking; added FCC Compliance section; updated Implementation Guide for current bootstrap workflow |
 
 ---
 
