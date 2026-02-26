@@ -279,6 +279,11 @@ label.todo-list__label input[type="checkbox"] {
     margin-bottom: 0.5rem;
 }
 
+/* Boot Title */
+h1 button div.editgrid-value {
+    text-transform: uppercase;
+}
+
 /* Field-specific styling examples */
 .editgrid-field-sectionTitle .editgrid-value {
     font-size: 1.1rem;
