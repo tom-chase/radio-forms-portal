@@ -123,7 +123,7 @@ export async function loadForms() {
         // Check if this is a token expiration / bad token error.
         // Form.io CE returns: 440 "Token Expired", 400 "Bad Token".
         const status = e?.status || e?.original?.status || 0;
-        const message = String(e?.message || e?.original?.message || '');
+        const message = String(e?.message || e?.original?.message || e || '');
         
         const isTokenExpired = (
             status === 440 ||
@@ -401,7 +401,7 @@ export async function renderForm(formMeta) {
         // Check if this is a token expiration / bad token error.
         // Form.io CE returns: 440 "Token Expired", 400 "Bad Token".
         const status = e?.status || e?.original?.status || 0;
-        const message = String(e?.message || e?.original?.message || '');
+        const message = String(e?.message || e?.original?.message || e || '');
         
         const isTokenExpired = (
             status === 440 ||
