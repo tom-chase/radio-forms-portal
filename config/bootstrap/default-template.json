@@ -9310,7 +9310,8 @@
       "settings": {
         "ui": {
           "alternateTitle": "Contacts",
-          "submissionsTitle": "Contacts"
+          "submissionsTitle": "Contacts List",
+          "sortOrder": 4
         },
         "tabulatorList": {
           "enabled": true,
@@ -9418,8 +9419,8 @@
       "settings": {
         "ui": {
           "alternateTitle": "Organizations",
-          "submissionsTitle": "Organizations",
-          "sortOrder": 2
+          "submissionsTitle": "Organizations List",
+          "sortOrder": 7
         },
         "tabulatorList": {
           "enabled": true,
@@ -9765,7 +9766,7 @@
         "ui": {
           "alternateTitle": "Contracts",
           "submissionsTitle": "Underwriting Contracts List",
-          "sortOrder": 3
+          "sortOrder": 10
         },
         "groupPermissions": [
           {
@@ -10300,7 +10301,7 @@
         "ui": {
           "alternateTitle": "Campaigns",
           "submissionsTitle": "Underwriting Campaigns List",
-          "sortOrder": 4
+          "sortOrder": 13
         },
         "groupPermissions": [
           {
@@ -10612,7 +10613,7 @@
         "ui": {
           "alternateTitle": "Spots",
           "submissionsTitle": "Spots List",
-          "sortOrder": 5
+          "sortOrder": 16
         },
         "groupPermissions": [
           {
@@ -11051,8 +11052,8 @@
       "settings": {
         "ui": {
           "alternateTitle": "Aircheck Logs",
-          "submissionsTitle": "Aircheck Logs",
-          "sortOrder": 6
+          "submissionsTitle": "Aircheck Logs List",
+          "sortOrder": 19
         },
         "groupPermissions": [
           {

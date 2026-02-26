@@ -55,8 +55,8 @@
   "settings": {
     "ui": {
       "alternateTitle": "Organizations",
-      "submissionsTitle": "Organizations",
-      "sortOrder": 2
+      "submissionsTitle": "Organizations List",
+      "sortOrder": 7
     },
     "tabulatorList": {
       "enabled": true,

@@ -484,7 +484,8 @@
   "settings": {
     "ui": {
       "alternateTitle": "Contacts",
-      "submissionsTitle": "Contacts"
+      "submissionsTitle": "Contacts List",
+      "sortOrder": 4
     },
     "tabulatorList": {
       "enabled": true,

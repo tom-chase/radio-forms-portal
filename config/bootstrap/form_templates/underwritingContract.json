@@ -56,7 +56,7 @@
     "ui": {
       "alternateTitle": "Contracts",
       "submissionsTitle": "Underwriting Contracts List",
-      "sortOrder": 3
+      "sortOrder": 10
     },
     "groupPermissions": [
       {
