@@ -8831,7 +8831,7 @@
       "type": "resource",
       "display": "form",
       "tags": [
-        "General"
+        "Underwriting"
       ],
       "access": [
         {
@@ -12832,7 +12832,7 @@
           "alternateTitle": "Tasks",
           "submissionsTitle": "Task List",
           "formsList": {
-            "hidden": false
+            "hidden": true
           }
         },
         "tabulatorList": {
