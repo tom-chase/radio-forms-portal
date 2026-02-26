@@ -218,6 +218,7 @@ export function renderFormsList(forms) {
 
         const item = document.createElement("div");
         item.className = "accordion-item rfp-tag-section";
+        item.setAttribute("data-tag-slug", tag.toLowerCase().replace(/\s+/g, '-'));
 
         const header = document.createElement("h2");
         header.className = "accordion-header";

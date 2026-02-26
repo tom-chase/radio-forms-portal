@@ -31,7 +31,8 @@ import { showToast, showJsonModal, setJsonModalTitle, escapeHTML, slugify, parse
 import { showSuccess, showAlert, showPrompt, showConfirm, showValidationError } from './ui/modalUtils.js';
 import { initCollapseEvents, syncFormsCollapseUI, setFormsCollapsed, syncCreateCollapseUI, setCreateCollapsed, setCreateToggleEnabled, syncSubsCollapseUI, setSubsCollapsed, syncAdminImportCollapseUI, setAdminToolsButtonState } from './ui/collapseUI.js';
 import { attachFormioErrorHandler, attachUserAdminSubmitGuards, addAttachmentToFormData, destroyLoginForm, renderLoginForm } from './ui/formManagement.js';
-import { rebuildBuilder, mergeForSave } from './ui/builderUI.js';    
+import { rebuildBuilder, mergeForSave } from './ui/builderUI.js';
+import { maybeStartUwTour } from './features/uwOnboarding.js';
 
 initDebugFlag();
 log.debug('Debug logging enabled');
@@ -152,6 +153,13 @@ async function initSession() {
       console.warn("loadForms failed", e);
       showToast("Signed in, but unable to load forms list.", "warning");
     }
+
+    // 6) Underwriting onboarding tour (best-effort, never throw)
+    try {
+      maybeStartUwTour(getUIState('currentUserObj'), getUIState('allVisibleForms'));
+    } catch (e) {
+      console.warn("uwOnboarding failed", e);
+    }
 }
 
 
@@ -191,13 +199,16 @@ domElements.logoutBtn.addEventListener("click", async () => {
 
     // Admin / builder reset
     setUIState('adminMode', false);
-    hide(domElements.adminToolsBtn);
+    setAdminToolsButtonState({ visible: false, enabled: false, title: "Sign in to access admin tools." });
     hide(domElements.adminSection);
-    
+
     setFormsCollapsed(false);
     setCreateCollapsed(true);
     setCreateToggleEnabled(false, "Select a form to create a new submission.");
 
+    // Hide the tour button between sessions
+    const uwTourBtn = document.getElementById('uwTourBtn');
+    if (uwTourBtn) hide(uwTourBtn);
 
     domElements.statusEl.textContent = "Not signed in";
     hide(domElements.logoutBtn);
