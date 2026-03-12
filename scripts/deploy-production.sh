@@ -6,10 +6,10 @@
 set -e
 
 # Configuration
-PROD_SERVER="${PROD_SERVER:-192.168.1.50}"
-PROD_USER="${PROD_USER:-tom}"
-APP_DIR="${PROD_APP_DIR:-/home/tom/radio-forms-portal}"
-BACKUP_DIR="${PROD_BACKUP_DIR:-/home/tom/backups}"
+PROD_SERVER="${PROD_SERVER:-100.15.109.231}"
+PROD_USER="${PROD_USER:-admin}"
+APP_DIR="${PROD_APP_DIR:-/home/admin/radio-forms-portal}"
+BACKUP_DIR="${PROD_BACKUP_DIR:-/home/admin/backups}"
 
 # SSH Key handling
 SSH_KEY=${1:-}

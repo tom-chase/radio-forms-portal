@@ -5741,6 +5741,7 @@
           "height": "60vh",
           "pagination": "local",
           "paginationSize": 25,
+          "paginationCounter": "rows",
           "movableColumns": true,
           "placeholder": "No submissions found.",
           "columns": [
@@ -5754,6 +5755,11 @@
                 "invalidPlaceholder": "(invalid)",
                 "timezone": "America/New_York"
               },
+              "sorter": "datetime",
+              "sorterParams": {
+                "format": "iso"
+              },
+              "headerSortStartingDir": "desc",
               "minWidth": 220
             },
             {
