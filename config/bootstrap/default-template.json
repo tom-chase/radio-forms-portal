@@ -3174,6 +3174,48 @@
       "handler": [
         "before"
       ]
+    },
+    "incidentReport:email": {
+      "title": "Notify Management - New Incident Report",
+      "name": "email",
+      "form": "incidentReport",
+      "settings": {
+        "transport": "default",
+        "from": "noreply@your-domain.com",
+        "replyTo": "",
+        "emails": "management@your-domain.com",
+        "sendEach": false,
+        "subject": "New Incident Report: {{ data.summary }}",
+        "message": "<p>A new incident report has been submitted.</p><p><strong>Date/Time:</strong> {{ data.incidentDate }}</p><p><strong>Reporter:</strong> {{ data.reporter }}</p><p><strong>Severity:</strong> {{ data.severity }}</p><p><strong>Summary:</strong> {{ data.summary }}</p><p><strong>Status:</strong> {{ data.status }}</p><p>Please log in to the forms portal to review the full report.</p>"
+      },
+      "priority": 0,
+      "method": [
+        "create"
+      ],
+      "handler": [
+        "after"
+      ]
+    },
+    "contactIntake:email": {
+      "title": "Notify Management - New Contact Intake",
+      "name": "email",
+      "form": "contactIntake",
+      "settings": {
+        "transport": "default",
+        "from": "noreply@your-domain.com",
+        "replyTo": "{{ data.email }}",
+        "emails": "management@your-domain.com",
+        "sendEach": false,
+        "subject": "New Contact Intake: {{ data.firstName }} {{ data.lastName }}",
+        "message": "<p>A new contact intake form has been submitted.</p><p><strong>Name:</strong> {{ data.firstName }} {{ data.lastName }}</p><p><strong>Email:</strong> {{ data.email }}</p><p><strong>Phone:</strong> {{ data.phone }}</p><p><strong>Organization:</strong> {{ data.organization }}</p><p><strong>Message:</strong></p><p>{{ data.message }}</p><p>Please log in to the forms portal to review and follow up.</p>"
+      },
+      "priority": 0,
+      "method": [
+        "create"
+      ],
+      "handler": [
+        "after"
+      ]
     }
   },
   "resources": {

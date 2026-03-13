@@ -24,6 +24,9 @@ services:
       ROOT_EMAIL: ${ROOT_EMAIL:-admin@example.com}
       ROOT_PASSWORD: ${ROOT_PASSWORD:-changeme}
       API_KEYS: ${API_KEYS}
+      FORMIO_DOMAIN: ${FORMIO_DOMAIN:-http://localhost:3001}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_MANAGEMENT_EMAIL: ${SMTP_MANAGEMENT_EMAIL:-}
     volumes:
       - ./config/env/production.json:/app/config/production.json:ro
       - ./config/bootstrap/default-template.json:/app/default-template.json:ro

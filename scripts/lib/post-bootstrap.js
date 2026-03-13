@@ -563,6 +563,78 @@ show = Array.isArray(user.roles) &&
         }
     }
 
+    // --- Task 4: Patch email action from/emails fields from environment variables ---
+    // The template uses placeholder addresses (noreply@your-domain.com, management@your-domain.com).
+    // This task resolves them to the actual values from SMTP_USER and SMTP_MANAGEMENT_EMAIL.
+    const smtpUser = process.env.SMTP_USER || '';
+    const managementEmail = process.env.SMTP_MANAGEMENT_EMAIL || '';
+
+    if (!smtpUser && !managementEmail) {
+        log('SMTP_USER and SMTP_MANAGEMENT_EMAIL not set. Skipping email action patch.');
+    } else {
+        const emailActionForms = ['incidentReport', 'contactIntake'];
+
+        for (const formName of emailActionForms) {
+            const formId = formMap[formName];
+            if (!formId) {
+                log(`Form ${formName} not found. Skipping email action patch.`);
+                continue;
+            }
+
+            log(`Patching email actions for ${formName}...`);
+            try {
+                const actionsResp = await fetch(`${API_BASE}/form/${formId}/action?limit=100`, { headers });
+                if (!actionsResp.ok) {
+                    log(`WARNING: Could not fetch actions for ${formName}: ${actionsResp.status}`);
+                    continue;
+                }
+
+                const actions = await actionsResp.json();
+                const emailActions = actions.filter(a => a.name === 'email');
+
+                if (!emailActions.length) {
+                    log(`No email actions found on ${formName}. Skipping.`);
+                    continue;
+                }
+
+                for (const action of emailActions) {
+                    const settings = action.settings || {};
+                    let changed = false;
+
+                    if (smtpUser && settings.from && settings.from.includes('your-domain.com') && settings.from.startsWith('noreply@')) {
+                        settings.from = smtpUser;
+                        changed = true;
+                    }
+                    if (managementEmail && settings.emails && settings.emails.includes('your-domain.com')) {
+                        settings.emails = managementEmail;
+                        changed = true;
+                    }
+
+                    if (!changed) {
+                        log(`Email action on ${formName} already resolved. Skipping.`);
+                        continue;
+                    }
+
+                    action.settings = settings;
+                    const patchResp = await fetch(`${API_BASE}/form/${formId}/action/${action._id}`, {
+                        method: 'PUT',
+                        headers,
+                        body: JSON.stringify(action)
+                    });
+
+                    if (patchResp.ok) {
+                        log(`Patched email action on ${formName}: from=${settings.from}, emails=${settings.emails}`);
+                    } else {
+                        const text = await patchResp.text();
+                        log(`ERROR: Failed to patch email action on ${formName}: ${patchResp.status} ${text}`);
+                    }
+                }
+            } catch (e) {
+                log(`ERROR: Exception patching email action for ${formName}: ${e.message}`);
+            }
+        }
+    }
+
     log('Post-bootstrap configuration complete.');
 }
 

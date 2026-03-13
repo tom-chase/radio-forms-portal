@@ -31,13 +31,20 @@
     "captcha"
   ],
   "email": {
-    "type": "smtp",
-    "host": "${SMTP_HOST}",
-    "port": ${SMTP_PORT},
-    "secure": ${SMTP_SECURE},
-    "auth": {
-      "user": "${SMTP_USER}",
-      "pass": "${SMTP_PASS}"
+    "type": "smtp"
+  },
+  "settings": {
+    "email": {
+      "smtp": {
+        "host": "${SMTP_HOST}",
+        "port": "${SMTP_PORT}",
+        "secure": "${SMTP_SECURE}",
+        "ignoreTLS": "false",
+        "auth": {
+          "user": "${SMTP_USER}",
+          "pass": "${SMTP_PASS}"
+        }
+      }
     }
   },
   "actions": ${FORMIO_ACTIONS},
