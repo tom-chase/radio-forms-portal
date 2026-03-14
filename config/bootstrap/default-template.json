@@ -3180,7 +3180,7 @@
       "name": "email",
       "form": "incidentReport",
       "settings": {
-        "transport": "default",
+        "transport": "smtp",
         "from": "noreply@your-domain.com",
         "replyTo": "",
         "emails": "management@your-domain.com",
@@ -3201,7 +3201,7 @@
       "name": "email",
       "form": "contactIntake",
       "settings": {
-        "transport": "default",
+        "transport": "smtp",
         "from": "noreply@your-domain.com",
         "replyTo": "{{ data.email }}",
         "emails": "management@your-domain.com",
