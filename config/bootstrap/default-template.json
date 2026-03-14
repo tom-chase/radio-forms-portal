@@ -3175,6 +3175,18 @@
         "before"
       ]
     },
+    "loginLog:save": {
+      "title": "Save Submission",
+      "name": "save",
+      "form": "loginLog",
+      "priority": 10,
+      "method": [
+        "create"
+      ],
+      "handler": [
+        "before"
+      ]
+    },
     "incidentReport:email": {
       "title": "Notify Management - New Incident Report",
       "name": "email",
@@ -14056,6 +14068,178 @@
           "action": "submit",
           "theme": "primary",
           "input": true
+        }
+      ]
+    },
+    "loginLog": {
+      "title": "Login Log",
+      "type": "resource",
+      "name": "loginLog",
+      "path": "loginlog",
+      "pdfComponents": [],
+      "display": "form",
+      "tags": [
+        "Admin"
+      ],
+      "settings": {
+        "ui": {
+          "hideBadges": true,
+          "submissionsTitle": "Login Events",
+          "sortOrder": 99,
+          "formsList": {
+            "hidden": true
+          }
+        },
+        "tabulatorList": {
+          "enabled": true,
+          "responsiveLayout": "hide",
+          "layout": "fitColumns",
+          "height": "60vh",
+          "pagination": "local",
+          "paginationSize": 50,
+          "movableColumns": true,
+          "placeholder": "No login events found.",
+          "initialSort": [
+            {
+              "column": "created",
+              "dir": "desc"
+            }
+          ],
+          "columns": [
+            {
+              "title": "Date/Time",
+              "field": "created",
+              "formatter": "datetime",
+              "formatterParams": {
+                "inputFormat": "iso",
+                "outputFormat": "MM/dd/yyyy HH:mm:ss",
+                "timezone": "local"
+              },
+              "responsive": 0,
+              "width": 175
+            },
+            {
+              "title": "Email",
+              "field": "data.userEmail",
+              "headerFilter": "input",
+              "responsive": 0,
+              "minWidth": 180
+            },
+            {
+              "title": "IP Address",
+              "field": "data.ipAddress",
+              "headerFilter": "input",
+              "responsive": 1,
+              "width": 140
+            },
+            {
+              "title": "User Agent",
+              "field": "data.userAgent",
+              "responsive": 2,
+              "minWidth": 200
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "label": "Login At",
+          "key": "loginAt",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "ll_loginat"
+        },
+        {
+          "label": "User Email",
+          "key": "userEmail",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "ll_email"
+        },
+        {
+          "label": "User ID",
+          "key": "userId",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "ll_userid"
+        },
+        {
+          "label": "IP Address",
+          "key": "ipAddress",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "ll_ip"
+        },
+        {
+          "label": "User Agent",
+          "key": "userAgent",
+          "type": "textfield",
+          "persistent": true,
+          "input": true,
+          "hidden": true,
+          "tableView": false,
+          "id": "ll_ua"
+        }
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "administrator",
+            "authenticated"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "create_own",
+          "roles": []
+        },
+        {
+          "type": "read_own",
+          "roles": []
+        },
+        {
+          "type": "update_own",
+          "roles": []
+        },
+        {
+          "type": "delete_own",
+          "roles": []
+        },
+        {
+          "type": "create_all",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "type": "read_all",
+          "roles": [
+            "administrator"
+          ]
+        },
+        {
+          "type": "update_all",
+          "roles": []
+        },
+        {
+          "type": "delete_all",
+          "roles": [
+            "administrator"
+          ]
         }
       ]
     },

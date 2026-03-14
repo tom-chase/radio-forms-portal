@@ -5,6 +5,7 @@ import { userIsAdmin } from './services/rbacService.js';
 import { setAppBridge, getAppBridge } from './services/appBridge.js';
 import { CONFIG } from "./config.js";
 import { loadRoles } from "./features/admin/roles.js";
+import { loadLoginLog } from './features/admin/loginLog.js';
 import {
     initFormioService,
     buildUrl,
@@ -33,6 +34,7 @@ import { initCollapseEvents, syncFormsCollapseUI, setFormsCollapsed, syncCreateC
 import { attachFormioErrorHandler, attachUserAdminSubmitGuards, addAttachmentToFormData, destroyLoginForm, renderLoginForm } from './ui/formManagement.js';
 import { rebuildBuilder, mergeForSave } from './ui/builderUI.js';
 import { maybeStartUwTour } from './features/uwOnboarding.js';
+import { recordLoginEvent } from './services/loginLogService.js';
 
 initDebugFlag();
 log.debug('Debug logging enabled');
@@ -103,6 +105,7 @@ async function initSession() {
     }
 
     // 3) Signed in UI path (do not let RBAC/forms load failures bounce us back to login)
+    recordLoginEvent(user).catch(() => {});
     Formio.setUser(user);
     const email = user.data?.email || user.email || "user";
     domElements.statusEl.textContent = `Signed in as ${email}`;
@@ -431,6 +434,22 @@ if (domElements.adminToolsBtn) {
             } catch (e) {
                 console.warn("Failed to load initial admin data:", e);
                 showToast("Some admin data failed to load. Use refresh buttons.", "warning");
+            }
+
+            // Wire login log accordion: load on first expand
+            const loginLogCollapseEl = document.getElementById('adminLoginLogCollapse');
+            if (loginLogCollapseEl) {
+                loginLogCollapseEl.addEventListener('show.bs.collapse', () => {
+                    loadLoginLog(false).catch(() => {});
+                }, { once: true });
+            }
+
+            // Wire login log refresh button
+            const loginLogRefreshBtn = document.getElementById('loginLogRefreshBtn');
+            if (loginLogRefreshBtn) {
+                loginLogRefreshBtn.addEventListener('click', () => {
+                    loadLoginLog(true).catch(() => {});
+                });
             }
         } else {
             hide(domElements.adminSection);
