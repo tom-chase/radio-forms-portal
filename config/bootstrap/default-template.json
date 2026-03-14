@@ -3186,7 +3186,8 @@
         "emails": "management@your-domain.com",
         "sendEach": false,
         "subject": "New Incident Report: {{ data.summary }}",
-        "message": "<p>A new incident report has been submitted.</p><p><strong>Date/Time:</strong> {{ data.incidentDate }}</p><p><strong>Reporter:</strong> {{ data.reporter }}</p><p><strong>Severity:</strong> {{ data.severity }}</p><p><strong>Summary:</strong> {{ data.summary }}</p><p><strong>Status:</strong> {{ data.status }}</p><p>Please log in to the forms portal to review the full report.</p>"
+        "message": "<p>A new incident report has been submitted.</p><p><strong>Date/Time:</strong> {{ data.incidentDate }}</p><p><strong>Reporter:</strong> {{ data.reporter }}</p><p><strong>Severity:</strong> {{ data.severity }}</p><p><strong>Summary:</strong> {{ data.summary }}</p><p><strong>Status:</strong> {{ data.status }}</p><p>Please log in to the forms portal to review the full report.</p>",
+        "template": "https://forms.your-domain.com/email-template.html"
       },
       "priority": 0,
       "method": [
@@ -3207,7 +3208,8 @@
         "emails": "management@your-domain.com",
         "sendEach": false,
         "subject": "New Contact Intake: {{ data.firstName }} {{ data.lastName }}",
-        "message": "<p>A new contact intake form has been submitted.</p><p><strong>Name:</strong> {{ data.firstName }} {{ data.lastName }}</p><p><strong>Email:</strong> {{ data.email }}</p><p><strong>Phone:</strong> {{ data.phone }}</p><p><strong>Organization:</strong> {{ data.organization }}</p><p><strong>Message:</strong></p><p>{{ data.message }}</p><p>Please log in to the forms portal to review and follow up.</p>"
+        "message": "<p>A new contact intake form has been submitted.</p><p><strong>Name:</strong> {{ data.firstName }} {{ data.lastName }}</p><p><strong>Email:</strong> {{ data.email }}</p><p><strong>Phone:</strong> {{ data.phone }}</p><p><strong>Organization:</strong> {{ data.organization }}</p><p><strong>Message:</strong></p><p>{{ data.message }}</p><p>Please log in to the forms portal to review and follow up.</p>",
+        "template": "https://forms.your-domain.com/email-template.html"
       },
       "priority": 0,
       "method": [
@@ -5783,7 +5785,6 @@
           "height": "60vh",
           "pagination": "local",
           "paginationSize": 25,
-          "paginationCounter": "rows",
           "movableColumns": true,
           "placeholder": "No submissions found.",
           "columns": [
@@ -5797,11 +5798,6 @@
                 "invalidPlaceholder": "(invalid)",
                 "timezone": "America/New_York"
               },
-              "sorter": "datetime",
-              "sorterParams": {
-                "format": "iso"
-              },
-              "headerSortStartingDir": "desc",
               "minWidth": 220
             },
             {
