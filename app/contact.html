@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Form</title>
     
+    <!-- Environment Configuration (Generated during deployment) -->
+    <script src="/config.js"></script>
+
     <!-- Bootstrap CSS -->
     <link
         rel="stylesheet"
@@ -211,8 +214,9 @@
     
     <script>
         // Configuration
+        const API_BASE = window.API_BASE_URL || 'http://localhost:3001';
         const CONFIG = {
-            formUrl: '//api.radio.mycopri.org/contactintake',
+            formUrl: API_BASE + '/contactintake',
             resetDelay: 8000, // 8 seconds before showing form again
             enableAnalytics: false // Set to true for production
         };
