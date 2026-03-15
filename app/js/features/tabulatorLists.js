@@ -5,6 +5,7 @@ import { formioRequest } from '../services/formioService.js';
 import { openRoleMgmtModal } from './roleMgmt.js';
 import { log } from '../utils/logger.js';
 import { isSubmissionViewed, markSubmissionViewed, onSubmissionViewed, decrementFormTotal } from '../services/badgeService.js';
+import { downloadSubmissionPdf } from '../services/pdfService.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -690,6 +691,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         if (state.adminMode) {
                             items.push(`<button class="rfp-kebab-item" data-action="json" data-id="${rawSub._id}">View JSON</button>`);
                         }
+                        items.push(`<button class="rfp-kebab-item" data-action="pdf" data-id="${rawSub._id}">Download PDF</button>`);
                         if (canDeleteThis) {
                             if (items.length) items.push('<div class="rfp-kebab-divider"></div>');
                             items.push(`<button class="rfp-kebab-item text-danger" data-action="delete" data-id="${rawSub._id}">Delete</button>`);
@@ -781,6 +783,8 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                             console.error("deleteSubmission error", err);
                             actions.showToast?.("Error deleting submission.", "danger");
                         }
+                    } else if (action === "pdf") {
+                        downloadSubmissionPdf(rawSub, formMeta);
                     } else if (action === "role-mgmt" || action === "role-mgmt-admin") {
                         if (action === 'role-mgmt' && !canManageRoles) return;
                         if (action === 'role-mgmt-admin' && !canManageAdminRoles) return;

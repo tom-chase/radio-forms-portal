@@ -614,6 +614,20 @@ h1 button div.editgrid-value {
     background-color: #fff;
 }
 
+/* Semi-transparent backdrop while PDF is being generated */
+.rfp-pdf-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: 99998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #495057;
+    font-weight: 500;
+}
+
 /* Mobile optimizations for nested accordions */
 @media (max-width: 767.98px) {
     .editgrid-accordion .accordion-button {

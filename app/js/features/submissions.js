@@ -15,6 +15,7 @@ import { showConfirm } from '../ui/modalUtils.js';
 import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tabulatorLists.js?v=2.19';
 import { renderDayPilotCalendar, hasDayPilotConfig, destroyDayPilot } from './dayPilotCalendar.js?v=2.19';
 import { openRoleMgmtModal } from './roleMgmt.js';
+import { downloadSubmissionPdf } from '../services/pdfService.js';
 import { renderViewToggle } from '../utils/viewUtils.js';
 import { openInlineNotesView } from './inlineNotes.js';
 
@@ -373,6 +374,11 @@ export async function renderSubmissionsTable(
                 <i class="bi bi-code-slash"></i>
             </button>`;
 
+        // PDF download
+        actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="pdf" data-id="${encodedId}" title="Download PDF">
+                <i class="bi bi-file-earmark-pdf"></i>
+            </button>`;
+
         if (canEditThis) {
             actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="edit" data-id="${encodedId}" title="Edit submission inline">
                     <i class="bi bi-pencil-square"></i>
@@ -596,6 +602,17 @@ export async function startEditSubmission(submission) {
     if (editBannerText) editBannerText.textContent = "Editing submission…";
     if (editBanner) editBanner.classList.remove("d-none");
 
+    // Show/hide PDF download button
+    const pdfBtn = $("downloadPdfBtn");
+    if (pdfBtn) {
+        if (submission?._id) {
+            pdfBtn.classList.remove('d-none');
+            pdfBtn.onclick = () => downloadSubmissionPdf(submission, state.currentFormMeta, $("formRender"));
+        } else {
+            pdfBtn.classList.add('d-none');
+        }
+    }
+
     // Ensure the create panel is visible while editing.
     actions.setCreateToggleEnabled?.(true);
     actions.setCreateCollapsed?.(false);
@@ -637,6 +654,17 @@ export async function startViewSubmission(submission) {
     if (editBannerText) editBannerText.textContent = "Viewing (read-only)";
     if (cancelEditBtn) cancelEditBtn.textContent = "Close";
     if (editBanner) editBanner.classList.remove("d-none");
+
+    // Show/hide PDF download button
+    const pdfBtn = $("downloadPdfBtn");
+    if (pdfBtn) {
+        if (submission?._id) {
+            pdfBtn.classList.remove('d-none');
+            pdfBtn.onclick = () => downloadSubmissionPdf(submission, state.currentFormMeta, $("formRender"));
+        } else {
+            pdfBtn.classList.add('d-none');
+        }
+    }
 
     // Ensure the create panel is visible while viewing.
     actions.setCreateToggleEnabled?.(true);
@@ -750,6 +778,8 @@ async function wireTableEventHandlers(subs, formMeta, user, permissions) {
                         console.error("deleteSubmission error", err);
                         actions.showToast?.("Error deleting submission.", "danger");
                     }
+                } else if (action === "pdf") {
+                    downloadSubmissionPdf(sub, formMeta);
                 } else if (action === "notes") {
                     await openInlineNotesView(sub, formMeta, user);
                 } else if (action === "role-mgmt" || action === "role-mgmt-admin") {
