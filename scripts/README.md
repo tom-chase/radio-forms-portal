@@ -34,6 +34,7 @@ Scripts for the Radio Forms Portal. Human-facing scripts live at the root; inter
 | `health-check.sh [env]` | System health check (containers, endpoints, disk) |
 | `backup.sh [env]` | Create MongoDB + config + app backup |
 | `cleanup.sh [env] [--deep\|--reset-data]` | Clean up containers, images, logs, temp files |
+| `backup-config.sh` | Archive recovery-critical config files to NAS |
 | `provision-infrastructure.sh [env] [key] [cidr]` | Deploy AWS CloudFormation stack |
 
 ## `lib/` — Internal Helpers

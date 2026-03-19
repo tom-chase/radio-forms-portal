@@ -5,7 +5,8 @@
 #
 # The archive should be a gzip-compressed mongodump archive (.archive.gz)
 # produced by the mongo-backup service (deployment/mongo-backup/backup-mongo.sh).
-# Download it from S3 into ./backups/ first, then pass the path here.
+# Copy it from the Synology NAS (or download from S3 via Hyper Backup) into
+# ./backups/ first, then pass the path here.
 
 set -e
 

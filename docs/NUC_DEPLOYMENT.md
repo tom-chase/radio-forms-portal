@@ -1,6 +1,6 @@
 # NUC Production Deployment Guide
 
-Complete guide for deploying the Radio Forms Portal to an ASUS NUC 14 N150 as the primary production server, with AWS EC2 retained as backup/failover.
+Complete guide for deploying the Radio Forms Portal to an [ASUS NUC 14 N150](https://dlcdnwebimgs.asus.com/files/media/53b7cdd6-e9d1-4779-a6cd-ec5d0d775303/asus-nuc-14-essential-datasheet.pdf) as the primary production server. Backups go to a [Synology DS225 NAS](https://www.synology.com/en-us/products/DS225+#specs) and then to AWS S3 via Hyper Backup. AWS EC2 can be recreated from CloudFormation if failover is needed.
 
 ---
 
@@ -10,7 +10,7 @@ Complete guide for deploying the Radio Forms Portal to an ASUS NUC 14 N150 as th
 - **Cost**: One-time hardware cost vs ~$73/month AWS EC2 (t3.large + EBS + transfer)
 - **Performance**: 16GB DDR5 RAM, 1TB NVMe SSD — significantly exceeds Form.io's minimum requirements
 - **Control**: Full hardware control, no cloud vendor dependency for day-to-day operation
-- **Backup**: EC2 remains available for disaster recovery (can be downsized to t3.small ~$15/month when idle)
+- **Backup**: Synology DS225 NAS (RAID 1) for local backups, replicated to AWS S3 via Hyper Backup
 
 ### Architecture
 ```
@@ -20,7 +20,9 @@ Internet → Verizon CR1000A (ports 80/443/51820 forwarded) → NUC (192.168.1.5
                                                          ├── Caddy (reverse proxy + SSL)
                                                          ├── Form.io CE (API, port 3001)
                                                          ├── MongoDB 6 (port 27017)
-                                                         └── mongo-backup (S3 + local)
+                                                         └── mongo-backup (→ NAS)
+
+Backup: NUC ──NFS/SMB──► Synology DS225 ──Hyper Backup──► AWS S3
 
 Remote Access: Mac ──WireGuard VPN (UDP 51820)──► NUC wg0 (10.8.0.1)
                Mac 10.8.0.2 → ssh admin@10.8.0.1 (port 22 not exposed publicly)
@@ -854,11 +856,9 @@ MONGO_ROOT_USERNAME=admin
 MONGO_ROOT_PASSWORD=<strong-password>
 MONGO_DB_NAME=formio
 
-# AWS S3 Backups (explicit keys required — no IAM role on NUC)
-BACKUPS_S3_BACKUP_BUCKET=radio-forms-backups-ACCOUNTID-production
-BACKUPS_AWS_DEFAULT_REGION=us-east-1
-BACKUPS_AWS_ACCESS_KEY_ID=<your-key-id>
-BACKUPS_AWS_SECRET_ACCESS_KEY=<your-secret-key>
+# NAS Backups (Synology DS225 mounted via NFS/SMB)
+BACKUPS_NAS_PATH=/mnt/nas-backup
+BACKUPS_RETENTION_DAYS=30
 
 # Deployment target (used by deploy-production.sh)
 PROD_SERVER=10.8.0.1        # NUC's WireGuard VPN IP
@@ -1006,43 +1006,205 @@ docker exec mongo mongosh formio --eval "db.forms.countDocuments()"
 
 ## Phase 6: Backup Configuration
 
-### 6.1 S3 Backup (Existing — Works on NUC with Explicit Credentials)
+Backups follow a two-hop strategy:
 
-The existing `mongo-backup` Docker container handles S3 backups. On NUC, unlike EC2, there is no IAM role — ensure `BACKUPS_AWS_ACCESS_KEY_ID` and `BACKUPS_AWS_SECRET_ACCESS_KEY` are set in `.env`.
+1. **NUC → Synology DS225**: The `mongo-backup` Docker container writes MongoDB archives to a NAS-mounted path. A host-level cron job backs up configuration files to the same NAS share.
+2. **Synology → AWS S3**: Synology Hyper Backup replicates the NAS backup set to the retained AWS S3 bucket with client-side encryption.
 
-The backup container runs on the schedule defined in `deployment/mongo-backup/crontab.txt`.
+### 6.1 Synology NAS Setup
 
-### 6.2 Local USB Backup (NUC-Specific Addition)
+#### Create a Dedicated Shared Folder
 
-Connect an external USB drive to the NUC:
+On the Synology DSM web UI:
+1. Open **Control Panel → Shared Folder → Create**.
+2. Name: `nuc-backup` (or your preference).
+3. Enable **data checksum** for advanced integrity.
+4. Set permissions: restrict to the NUC service account and the Synology admin user only.
+
+#### Enable NFS (recommended) or SMB
+
+**NFS** (lower overhead, simpler credential handling):
+1. **Control Panel → File Services → NFS** → Enable NFS service.
+2. On the `nuc-backup` shared folder, click **Edit → NFS Permissions → Create**:
+   - Hostname/IP: `192.168.1.50` (NUC LAN IP)
+   - Privilege: **Read/Write**
+   - Squash: **Map root to admin**
+   - Security: `sys`
+
+**SMB** (alternative — use if NFS is not available):
+1. **Control Panel → File Services → SMB** → Enable SMB service.
+2. Create a dedicated Synology user (e.g., `nuc-backup-svc`) with read/write access to the `nuc-backup` shared folder only.
+
+### 6.2 Mount NAS on the NUC
+
+#### NFS Mount
 
 ```bash
-# Find the USB drive device
-lsblk
-# e.g., /dev/sdb
+# Install NFS client
+sudo apt install -y nfs-common
 
-# Create mount point and mount
-sudo mkdir -p /mnt/usb-backup
-sudo mount /dev/sdb1 /mnt/usb-backup
+# Create mount point
+sudo mkdir -p /mnt/nas-backup
 
-# Make persistent across reboots (add to /etc/fstab):
-echo "UUID=$(blkid -s UUID -o value /dev/sdb1) /mnt/usb-backup ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+# Test mount (replace with your Synology IP)
+sudo mount -t nfs 192.168.1.X:/volume1/nuc-backup /mnt/nas-backup
+
+# Verify write access
+touch /mnt/nas-backup/test && rm /mnt/nas-backup/test
+
+# Make persistent — add to /etc/fstab:
+echo "192.168.1.X:/volume1/nuc-backup /mnt/nas-backup nfs defaults,_netdev,nofail 0 0" | sudo tee -a /etc/fstab
 ```
 
-Install the local backup script:
+#### SMB Mount (alternative)
 
 ```bash
-sudo cp /home/admin/radio-forms-portal/deployment/nuc-local-backup.sh /usr/local/bin/nuc-local-backup.sh
-sudo chmod +x /usr/local/bin/nuc-local-backup.sh
+sudo apt install -y cifs-utils
+
+sudo mkdir -p /mnt/nas-backup
+
+# Store credentials securely
+sudo tee /root/.nas-credentials << 'CRED'
+username=nuc-backup-svc
+password=<service-account-password>
+CRED
+sudo chmod 600 /root/.nas-credentials
+
+# Add to /etc/fstab:
+echo "//192.168.1.X/nuc-backup /mnt/nas-backup cifs credentials=/root/.nas-credentials,uid=1000,gid=1000,_netdev,nofail 0 0" | sudo tee -a /etc/fstab
+
+sudo mount -a
 ```
 
-Set up daily cron job (runs at 2 AM):
+#### Verify
 
 ```bash
-sudo crontab -e
-# Add:
-0 2 * * * /usr/local/bin/nuc-local-backup.sh >> /var/log/nuc-mongo-backup.log 2>&1
+df -h /mnt/nas-backup
+# Should show the Synology volume
 ```
+
+### 6.3 MongoDB Backup (Docker Container)
+
+The `mongo-backup` container writes daily archives to the NAS via a bind mount. This is configured in `docker-compose.yml`:
+
+```yaml
+mongo-backup:
+  environment:
+    - BACKUP_ROOT=/backup/mongo
+    - BACKUP_RETENTION_DAYS=${BACKUPS_RETENTION_DAYS:-30}
+  volumes:
+    - ${BACKUPS_NAS_PATH:-/mnt/nas-backup}:/backup
+```
+
+Ensure `BACKUPS_NAS_PATH` and `BACKUPS_RETENTION_DAYS` are set in `.env` (see Phase 4.2).
+
+The backup container runs on the schedule defined in `deployment/mongo-backup/crontab.txt` (default: daily at 03:00 UTC).
+
+**Verify a backup cycle**:
+```bash
+# Trigger a manual backup
+docker exec mongo-backup /usr/local/bin/backup-mongo.sh
+
+# Confirm archive on NAS
+ls -lh /mnt/nas-backup/mongo/
+```
+
+### 6.4 Configuration Backup (Host Cron)
+
+The `scripts/backup-config.sh` script archives recovery-critical files (`.env`, `docker-compose.yml`, `Caddyfile`, `formio-config.json.template`, `config/bootstrap`, `config/actions`) to the NAS.
+
+Set up a daily cron job on the NUC host (runs at 04:00, after the Mongo backup at 03:00).
+The script sources `$PROJECT_DIR/.env` automatically, so only `PROJECT_DIR` needs to be passed:
+
+```bash
+# One-liner (no editor):
+echo '0 4 * * * PROJECT_DIR=/home/admin/radio-forms-portal /home/admin/radio-forms-portal/scripts/backup-config.sh >> /var/log/config-backup.log 2>&1' | sudo crontab -
+
+# Verify:
+sudo crontab -l
+```
+
+**Verify**:
+```bash
+sudo /home/admin/radio-forms-portal/scripts/backup-config.sh
+ls -lh /mnt/nas-backup/config/
+```
+
+### 6.5 Synology Hyper Backup to AWS S3
+
+Hyper Backup replicates the NAS backup set to the retained AWS S3 bucket, providing off-site disaster recovery.
+
+#### Create a Dedicated IAM User
+
+In the AWS Console (IAM):
+1. Create a user: `synology-backup-svc` (programmatic access only).
+2. Attach an inline policy scoped to the backup bucket:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": [
+        "arn:aws:s3:::radio-forms-backups-ACCOUNTID-production",
+        "arn:aws:s3:::radio-forms-backups-ACCOUNTID-production/*"
+      ]
+    }
+  ]
+}
+```
+
+3. Save the access key ID and secret access key securely.
+
+#### Configure Hyper Backup Task
+
+On the Synology DSM web UI:
+1. Open **Hyper Backup** → **+** → **Data backup task**.
+2. Destination: **S3 Storage**.
+3. Enter the IAM credentials from above.
+4. Bucket: `radio-forms-backups-ACCOUNTID-production`
+5. Prefix/Directory: `hyper-backup/` (keeps Hyper Backup data separate from any legacy S3 backups).
+6. Select the `nuc-backup` shared folder as the source.
+7. Schedule: daily (e.g., 05:00 — after both NUC backup jobs complete).
+8. **Enable client-side encryption** — Hyper Backup will prompt for an encryption password.
+   - **Store this password securely outside the NAS** (password manager, printed copy in a safe, etc.). Without it, the S3 data cannot be restored.
+9. Retention: use Synology's "Smart Recycle" or a custom policy matching your needs.
+
+#### Enable Notifications
+
+**Control Panel → Notification → Email/Push**:
+- Enable notifications for Hyper Backup task failures so you are alerted if replication stops.
+
+#### Verify
+
+1. Run the Hyper Backup task manually.
+2. Confirm objects appear in the S3 bucket under the `hyper-backup/` prefix.
+3. Perform a test restore via Hyper Backup to confirm the encryption password works.
+
+### 6.6 Restore from Backup
+
+**Restore latest Mongo backup (inside the container)**:
+```bash
+# Uses the "find latest" fallback — no argument needed
+docker exec mongo-backup /usr/local/bin/restore-mongo.sh
+
+# Or specify an explicit archive:
+docker exec mongo-backup /usr/local/bin/restore-mongo.sh /backup/mongo/20250315-030000/mongo.archive.gz
+```
+
+**Restore from S3 (disaster recovery)**:
+1. Open Synology Hyper Backup → select the S3 task → **Restore**.
+2. Enter the encryption password.
+3. Restore the `nuc-backup` shared folder contents.
+4. Mount the restored share on the NUC and restore from the local archive as above.
 
 ---
 
@@ -1105,20 +1267,47 @@ curl -I https://forms.your-domain.com
 
 ---
 
-## Phase 8: EC2 Backup/Failover Setup
+## Phase 8: AWS Failover Posture
 
-After NUC is confirmed stable:
+The EC2 instance and Elastic IP have been decommissioned. AWS is retained only for:
+- **Route 53** — DNS management
+- **S3** — off-site backup destination (via Synology Hyper Backup)
+- **CloudFormation** — rebuild path if EC2 failover is ever needed
 
-1. **Downsize EC2** to `t3.small` (~$15/month) to reduce costs while keeping it available
-2. **Keep EC2 `.env`** current — update if you change secrets
-3. **Rollback procedure** (if NUC fails):
+### Failover Procedure (if NUC becomes unavailable)
+
+1. **Provision a new EC2 instance** from the existing CloudFormation template:
    ```bash
-   # On your Mac — point deploy at EC2:
-   export PROD_SERVER="<EC2-Elastic-IP>"
-   ./scripts/deploy-production.sh ~/.ssh/your-key.pem
-
-   # Update DNS back to EC2 Elastic IP in Route 53
+   ./scripts/provision-infrastructure.sh production my-key-pair <your-ip>/32
    ```
+2. **Create `.env` and `Caddyfile`** on the new instance (see Phase 4.2 and 4.3).
+   - Uncomment the AWS backup variables in `.env` (see Section 4 in `.env.example`).
+3. **Restore data** from the S3 backup:
+   - Use Synology Hyper Backup to download and decrypt the latest backup set, or
+   - Access the NAS directly if it is still reachable.
+4. **Deploy the application**:
+   ```bash
+   export PROD_SERVER="<new-EC2-public-IP>"
+   ./scripts/deploy-production.sh ~/.ssh/your-ec2-key.pem
+   ```
+5. **Switch to the AWS compose file** on the EC2 instance (no NAS mount available):
+   ```bash
+   # On EC2:
+   docker compose -f docker-compose.aws.yml up -d --build
+   ```
+   This uses a Docker volume for backups instead of the NAS bind mount.
+6. **Set up S3 sync** (optional — the EC2 IAM role provides credentials):
+   ```bash
+   sudo apt install -y awscli
+   # Add a cron to sync the backup volume to S3:
+   # 0 5 * * * docker run --rm -v radio-forms-portal_mongo-backup-data:/backup:ro amazon/aws-cli s3 sync /backup s3://radio-forms-backups-ACCOUNTID-production/ec2-backup/
+   ```
+7. **Update DNS** in Route 53 to point at the new EC2 public IP.
+
+### What Was Removed
+- **Elastic IP**: Released — no ongoing cost.
+- **EC2 instance**: Terminated — no ongoing cost.
+- **Note**: The original CloudFormation stack may still own the S3 bucket. If you delete the stack, ensure the S3 bucket is preserved (set `DeletionPolicy: Retain` on the bucket resource, or move the bucket to a separate stack first).
 
 ---
 
@@ -1194,6 +1383,6 @@ docker exec formio node /app/post-bootstrap.js 2>&1 | tee -a logs/post-bootstrap
 - `.windsurf/workflows/deploy-nuc.md` — Ongoing deployment workflow
 - `.windsurf/workflows/deploy-production-formio.md` — Promote Form.io schema changes
 - `scripts/nuc-setup.sh` — Automated system setup script (installs WireGuard)
-- `scripts/nuc-local-backup.sh` — Local USB backup script
+- `scripts/backup-config.sh` — Host-level configuration backup to NAS
 - `docs/DEPLOYMENT.md` — General deployment documentation
-- `docs/INFRASTRUCTURE.md` — AWS EC2 infrastructure (backup/failover)
+- `docs/INFRASTRUCTURE.md` — AWS CloudFormation infrastructure (failover rebuild path)

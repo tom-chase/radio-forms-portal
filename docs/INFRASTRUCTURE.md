@@ -1,5 +1,7 @@
 # Infrastructure Documentation
 
+> **Current Status (2026)**: The EC2 instance and Elastic IP have been decommissioned. Production runs on the NUC (see `docs/NUC_DEPLOYMENT.md`). The CloudFormation template and S3 backup bucket are retained as the EC2 failover rebuild path. Route 53 remains the DNS provider.
+
 ## 🏗️ AWS CloudFormation Infrastructure
 
 The entire infrastructure is defined as code in `infrastructure/cloudformation.yaml`. This ensures reproducibility and consistency across environments.

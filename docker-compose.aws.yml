@@ -1,4 +1,16 @@
-# Docker Compose configuration for a custom, production, Form.io community-edition application
+# Docker Compose configuration for AWS EC2 failover deployment
+#
+# Usage:  docker compose -f docker-compose.aws.yml up -d --build
+#
+# This is a standalone variant of docker-compose.yml for the EC2 rebuild path.
+# Differences from the NUC compose file:
+#   - mongo-backup writes to a named Docker volume (no NAS mount)
+#   - Off-site S3 replication must be handled separately (e.g. host-level
+#     aws s3 sync cron — see docs/NUC_DEPLOYMENT.md Phase 8)
+#
+# The primary compose file (docker-compose.yml) targets the NUC with a
+# Synology NAS bind mount for backups.
+
 services:
   mongo:
     image: mongo:6.0
@@ -71,7 +83,7 @@ services:
       - BACKUP_ROOT=/backup/mongo
       - BACKUP_RETENTION_DAYS=${BACKUPS_RETENTION_DAYS:-30}
     volumes:
-      - ${BACKUPS_NAS_PATH:-/mnt/nas-backup}:/backup
+      - mongo-backup-data:/backup
     networks:
       - radio-forms
 
@@ -79,6 +91,7 @@ volumes:
   mongo-data:
   caddy_data:
   caddy_config:
+  mongo-backup-data:
 
 networks:
   radio-forms:

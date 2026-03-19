@@ -41,13 +41,12 @@ Remove these entries when testing from outside the local network.
 
 When outside the local network, WireGuard tunnels your SSH connection — no `/etc/hosts` changes needed for SSH access.
 
-### S3 Backup Credentials
-Unlike EC2 (which uses an IAM role), the NUC requires explicit AWS credentials in `.env`:
+### NAS Backup Mount
+The `mongo-backup` container writes archives to a Synology NAS via a bind mount at `BACKUPS_NAS_PATH` (default: `/mnt/nas-backup`). Verify the mount is active before deploying:
+```bash
+ssh admin@10.8.0.1 "df -h /mnt/nas-backup"
 ```
-BACKUPS_AWS_ACCESS_KEY_ID=your-key-id
-BACKUPS_AWS_SECRET_ACCESS_KEY=your-secret-key
-```
-Alternatively, use the local USB backup script (`scripts/nuc-local-backup.sh`) instead of or in addition to S3.
+If the mount is down, Docker Compose will start but the backup container will fail to write. See `docs/NUC_DEPLOYMENT.md` Phase 6 for NAS mount setup.
 
 ## Deployment Steps
 

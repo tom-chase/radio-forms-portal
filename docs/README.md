@@ -50,7 +50,7 @@ Full setup and operational guide for the on-premises NUC production server:
 - **UPS**: CyberPower GX1500U + PowerPanel integration
 - **Application Deployment**: Tarball push via WireGuard
 - **Data Migration**: `mongodump`/`mongorestore` from EC2
-- **Backup**: S3 backup (explicit AWS credentials) + local USB backup
+- **Backup**: NAS backup (Synology DS225) + off-site replication to AWS S3 via Hyper Backup
 - **DNS Cutover**: DDNS setup and Route 53 A-record update
 
 ---
@@ -175,7 +175,7 @@ docs/NUC_DEPLOYMENT.md          # On-prem NUC production setup
 docs/SECURITY.md                # Security procedures
 docs/STAGING.md                 # Staging environment
 ../scripts/backup.sh              # Backup procedures
-../scripts/nuc-local-backup.sh    # NUC local USB backup
+../scripts/backup-config.sh          # NAS configuration backup
 ../scripts/health-check.sh        # Monitoring
 ```
 

@@ -48,7 +48,7 @@ Details live in rules, workflows, memories, and `docs/`. Brief pointers:
 
 - **Primary Domain**: `forms.your-domain.com`
 - **API Domain**: `api.forms.your-domain.com`
-- **User**: `admin` (EC2)
+- **User**: `admin` (NUC primary; EC2 decommissioned — rebuild via CloudFormation)
 - **OS**: Debian 12 (Bookworm)
 - **Secrets**: Managed via `.env` (locally) and generated config files (for app stability).
 - **Key Scripts**: See `scripts/README.md` for full script reference.

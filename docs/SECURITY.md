@@ -17,10 +17,13 @@ Port 3001 (Form.io)   → INTERNAL ONLY   # Behind reverse proxy
 ```
 
 #### **IAM Role Configuration**
+
+> **Note**: The EC2 instance has been decommissioned. The IAM role below is retained in the CloudFormation template for the rebuild-path. S3 backup access is now provided by a dedicated `synology-backup-svc` IAM user with bucket-scoped permissions (see `docs/NUC_DEPLOYMENT.md` Phase 6.5).
+
 ```json
 {
   "RoleName": "RadioFormsEC2Role",
-  "Description": "EC2 role for Radio Forms application",
+  "Description": "EC2 role for Radio Forms application (used only if EC2 is reprovisioned)",
   "Policies": [
     {
       "PolicyName": "S3BackupAccess",

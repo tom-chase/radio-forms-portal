@@ -1,61 +1,42 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ===== Config from environment =====
 MONGO_URI="${MONGO_URI:?MONGO_URI not set}"
-
-S3_BUCKET_NAME="${S3_BACKUP_BUCKET:?S3_BACKUP_BUCKET not set}"
-S3_PREFIX="${S3_PREFIX:-}"
-
+BACKUP_ROOT="${BACKUP_ROOT:-/backup/mongo}"
 RESTORE_ROOT="/restore"
-mkdir -p "${RESTORE_ROOT}"
+ARCHIVE_ARG="${1:-}"
 
-# Optional argument: specific S3 key (e.g. 20241207-010203.archive.gz)
-S3_KEY="${1:-}"
+mkdir -p "${RESTORE_ROOT}"
 
 echo "[mongo-restore] Starting restore"
 echo "[mongo-restore] Mongo URI: ${MONGO_URI}"
-echo "[mongo-restore] S3 bucket: s3://${S3_BUCKET_NAME}/${S3_PREFIX}"
 
-# ===== Helper: get latest backup object =====
-get_latest_backup() {
-    local prefix="$1"
-
-    if [ -z "$prefix" ]; then
-        aws s3 ls "s3://${S3_BUCKET_NAME}/"
-    else
-        aws s3 ls "s3://${S3_BUCKET_NAME}/${prefix}/"
-    fi | awk '$4 ~ /\.archive\.gz$/ {print}' | sort | tail -n 1
-}
-
-# ===== Select backup to restore =====
-if [[ -z "${S3_KEY}" ]]; then
-    echo "[mongo-restore] No S3 key provided; searching for latest .archive.gz in s3://${S3_BUCKET_NAME}/${S3_PREFIX}/"
-    LATEST_LINE="$(get_latest_backup "${S3_PREFIX}")"
-
-    if [[ -z "${LATEST_LINE}" ]]; then
-        echo "[mongo-restore] ERROR: No backups found in s3://${S3_BUCKET_NAME}/${S3_PREFIX}/"
+if [[ -z "${ARCHIVE_ARG}" ]]; then
+    echo "[mongo-restore] No archive specified — searching for latest in ${BACKUP_ROOT}..."
+    LATEST_DIR="$(find "${BACKUP_ROOT}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -n 1)"
+    if [[ -z "${LATEST_DIR}" ]]; then
+        echo "[mongo-restore] ERROR: No backup directories found in ${BACKUP_ROOT}" >&2
         exit 1
     fi
-
-    S3_KEY="$(awk '{print $4}' <<< "${LATEST_LINE}")"
+    LOCAL_ARCHIVE="${LATEST_DIR}/mongo.archive.gz"
+    if [[ ! -f "${LOCAL_ARCHIVE}" ]]; then
+        echo "[mongo-restore] ERROR: Archive not found in latest directory: ${LOCAL_ARCHIVE}" >&2
+        exit 1
+    fi
+elif [[ "${ARCHIVE_ARG}" = /* ]]; then
+    LOCAL_ARCHIVE="${ARCHIVE_ARG}"
+else
+    LOCAL_ARCHIVE="${RESTORE_ROOT}/${ARCHIVE_ARG}"
 fi
 
-S3_URI="s3://${S3_BUCKET_NAME}${S3_PREFIX:+/${S3_PREFIX}}/${S3_KEY}"
-LOCAL_ARCHIVE="${RESTORE_ROOT}/${S3_KEY}"
-
-echo "[mongo-restore] Selected backup: ${S3_URI}"
-echo "[mongo-restore] Downloading to ${LOCAL_ARCHIVE}..."
-
-# ===== Download backup =====
-if ! aws s3 cp "${S3_URI}" "${LOCAL_ARCHIVE}"; then
-    echo "[mongo-restore] ERROR: Download from S3 failed" >&2
+if [[ ! -f "${LOCAL_ARCHIVE}" ]]; then
+    echo "[mongo-restore] ERROR: Archive not found: ${LOCAL_ARCHIVE}" >&2
     exit 1
 fi
 
-echo "[mongo-restore] Download complete. Running mongorestore..."
+echo "[mongo-restore] Selected backup: ${LOCAL_ARCHIVE}"
+echo "[mongo-restore] Running mongorestore..."
 
-# WARNING: --drop will drop collections before restoring.
 if mongorestore \
     --uri="${MONGO_URI}" \
     --archive="${LOCAL_ARCHIVE}" \
@@ -67,6 +48,7 @@ else
     exit 1
 fi
 
-# Optional local cleanup
-find "${RESTORE_ROOT}" -mindepth 1 -maxdepth 1 -type f -mtime +7 -exec rm -f {} \; || true
-echo "[mongo-restore] Local cleanup done (older than 7 days)"
+if [[ "${LOCAL_ARCHIVE}" == "${RESTORE_ROOT}/"* ]]; then
+    find "${RESTORE_ROOT}" -mindepth 1 -maxdepth 1 -type f -mtime +7 -exec rm -f {} \; || true
+    echo "[mongo-restore] Local cleanup done (older than 7 days)"
+fi

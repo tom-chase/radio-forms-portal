@@ -1,8 +1,7 @@
 FROM mongo:6.0
 
-# Install cron and AWS CLI + MongoDB tools
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends cron awscli && \
+    apt-get install -y --no-install-recommends cron && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy backup & restore scripts

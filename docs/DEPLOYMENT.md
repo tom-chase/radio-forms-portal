@@ -51,10 +51,10 @@ Production deployment now consists of two independent channels:
  
 Two production targets are supported — both use the same script:
 
-| Target | Guide |
-|--------|-------|
-| **AWS EC2** | Below | 
-| **ASUS NUC 14** (on-prem, via WireGuard) | `docs/NUC_DEPLOYMENT.md` · `.windsurf/workflows/deploy-nuc.md` |
+| Target | Status | Guide |
+|--------|--------|-------|
+| **ASUS NUC 14** (on-prem, via WireGuard) | **Active** | `docs/NUC_DEPLOYMENT.md` · `.windsurf/workflows/deploy-nuc.md` |
+| **AWS EC2** | Decommissioned (rebuild via CloudFormation) | Below |
 
 ### 1) On your laptop
  
