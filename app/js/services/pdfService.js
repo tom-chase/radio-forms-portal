@@ -9,7 +9,7 @@ import { getAppBridge } from './appBridge.js';
 import { getCurrentUserWithRoles } from './sessionService.js';
 
 const PDF_OPTIONS = {
-    margin:      [10, 10, 10, 10], // mm: top, left, bottom, right
+    margin:      [10, 10, 14, 10], // mm: top, left, bottom, right (extra bottom for page numbers)
     filename:    'submission.pdf',
     image:       { type: 'jpeg', quality: 0.95 },
     html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
@@ -140,7 +140,7 @@ export async function downloadSubmissionPdf(submission, formMeta, formRenderEl) 
             const user = await getCurrentUserWithRoles();
             const htmlStr = await templateFn({ submission, formMeta, user });
             container = document.createElement('div');
-            container.style.cssText = 'width:210mm;background:#fff;padding:10mm;';
+            container.style.cssText = 'width:190mm;background:#fff;box-sizing:border-box;';
             container.innerHTML = htmlStr;
             document.body.appendChild(container);
             captureTarget = container;
@@ -190,10 +190,27 @@ export async function downloadSubmissionPdf(submission, formMeta, formRenderEl) 
         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
         // Generate PDF from the capture target
-        await html2pdf()
-            .set({ ...PDF_OPTIONS, filename })
-            .from(captureTarget)
-            .save();
+        const pdfOpts = { ...PDF_OPTIONS, filename };
+        if (templateFn) {
+            // Two-pass: render to PDF object first, stamp page numbers, then save
+            const worker = html2pdf().set(pdfOpts).from(captureTarget);
+            const pdf = await worker.toPdf().get('pdf');
+            const totalPages = pdf.internal.getNumberOfPages();
+            const pageW = pdf.internal.pageSize.getWidth();
+            const pageH = pdf.internal.pageSize.getHeight();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setTextColor(150);
+                pdf.text(`Page ${i} of ${totalPages}`, pageW / 2, pageH - 4, { align: 'center' });
+            }
+            await worker.save();
+        } else {
+            await html2pdf()
+                .set(pdfOpts)
+                .from(captureTarget)
+                .save();
+        }
 
         // Cleanup
         removeBackdrop();

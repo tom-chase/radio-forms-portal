@@ -131,18 +131,18 @@ export default function renderContract({ submission, formMeta, user }) {
         : '';
 
     return `
-<div style="font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.5;color:#212529;background:#fff;padding:0;">
+<div style="font-family:'Times New Roman',Times,serif;font-size:11pt;line-height:1.5;color:#212529;background:#fff;padding:0;box-sizing:border-box;width:100%;overflow:hidden;">
 
     <!-- ===== HEADER ===== -->
-    <div style="border-bottom:2px solid #0d6efd;padding-bottom:12px;margin-bottom:20px;">
-        <table style="width:100%;border-collapse:collapse;">
+    <div style="border-bottom:2px solid #0d6efd;padding-bottom:12px;margin-bottom:20px;page-break-inside:avoid;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
             <tr>
-                <td style="vertical-align:middle;">
+                <td style="vertical-align:middle;width:55%;">
                     ${logoHtml}
-                    <div style="font-size:15pt;font-weight:700;color:#0d6efd;">${esc(stationName)}${stationCall ? ' &mdash; ' + esc(stationCall) : ''}</div>
+                    <div style="font-size:15pt;font-weight:700;color:#0d6efd;word-break:break-word;">${esc(stationName)}${stationCall ? ' &mdash; ' + esc(stationCall) : ''}</div>
                     ${stationAddress ? `<div style="font-size:9pt;color:#6c757d;margin-top:2px;">${esc(stationAddress)}</div>` : ''}
                 </td>
-                <td style="vertical-align:top;text-align:right;">
+                <td style="vertical-align:top;text-align:right;width:45%;">
                     <div style="font-size:14pt;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#212529;">Underwriting Agreement</div>
                     <div style="font-size:9pt;color:#6c757d;margin-top:4px;">Contract #: ${contractId}</div>
                     <div style="font-size:9pt;color:#6c757d;">Status: <strong>${status}</strong></div>
@@ -152,18 +152,18 @@ export default function renderContract({ submission, formMeta, user }) {
     </div>
 
     <!-- ===== PARTIES ===== -->
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
         <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Parties</div>
-        <table style="width:100%;border-collapse:collapse;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
             <tr>
-                <td style="width:50%;vertical-align:top;padding-right:16px;">
+                <td style="width:50%;vertical-align:top;padding-right:16px;word-break:break-word;">
                     <div style="font-weight:700;margin-bottom:4px;">Station</div>
                     <div>${esc(stationName)}</div>
                     ${stationCall ? `<div>${esc(stationCall)}</div>` : ''}
                     ${stationAddress ? `<div style="white-space:pre-line;">${esc(stationAddress)}</div>` : ''}
                     <div style="margin-top:6px;font-style:italic;font-size:9.5pt;color:#495057;">Non-Commercial Educational Broadcaster</div>
                 </td>
-                <td style="width:50%;vertical-align:top;padding-left:16px;border-left:1px solid #dee2e6;">
+                <td style="width:50%;vertical-align:top;padding-left:16px;border-left:1px solid #dee2e6;word-break:break-word;">
                     <div style="font-weight:700;margin-bottom:4px;">Sponsor / Underwriter</div>
                     <div>${sponsorName}</div>
                     ${sponsorAddress ? `<div style="white-space:pre-line;">${sponsorAddress}</div>` : ''}
@@ -176,12 +176,12 @@ export default function renderContract({ submission, formMeta, user }) {
     </div>
 
     <!-- ===== CONTRACT DETAILS ===== -->
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
         <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Contract Details</div>
-        <table style="width:100%;border-collapse:collapse;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
             <tr>
                 <td style="width:25%;padding:5px 8px;font-weight:600;background:#f8f9fa;border:1px solid #dee2e6;">Contract Name</td>
-                <td style="width:75%;padding:5px 8px;border:1px solid #dee2e6;" colspan="3">${contractName || '—'}</td>
+                <td style="width:75%;padding:5px 8px;border:1px solid #dee2e6;word-break:break-word;" colspan="3">${contractName || '—'}</td>
             </tr>
             <tr>
                 <td style="padding:5px 8px;font-weight:600;background:#f8f9fa;border:1px solid #dee2e6;">Contract Period</td>
@@ -200,29 +200,22 @@ export default function renderContract({ submission, formMeta, user }) {
 
     <!-- ===== BACKGROUND & PURPOSE ===== -->
     ${recitals ? `
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
         <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Background &amp; Purpose</div>
         <div style="font-size:10.5pt;">${recitals}</div>
     </div>` : ''}
 
-    <!-- ===== TERMS & CONDITIONS ===== -->
-    ${terms ? `
-    <div style="margin-bottom:20px;">
-        <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Terms &amp; Conditions</div>
-        <div style="font-size:10.5pt;">${terms}</div>
-    </div>` : ''}
-
     <!-- ===== APPROVED COPY / MESSAGING SUMMARY ===== -->
     ${copySummary ? `
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
         <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Approved Messaging Summary</div>
         <div style="font-size:10.5pt;padding:10px 12px;background:#f8f9fa;border-left:3px solid #0d6efd;">${copySummary}</div>
     </div>` : ''}
 
     <!-- ===== APPROVAL RECORD ===== -->
-    <div style="margin-bottom:20px;">
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
         <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Internal Approval Record</div>
-        <table style="width:100%;border-collapse:collapse;font-size:10pt;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:10pt;">
             <thead>
                 <tr style="background:#f8f9fa;">
                     <th style="padding:6px 8px;border:1px solid #dee2e6;text-align:left;">Level</th>
@@ -239,11 +232,16 @@ export default function renderContract({ submission, formMeta, user }) {
         </table>
     </div>
 
+    <!-- ===== TERMS REFERENCE ===== -->
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
+        <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Terms &amp; Conditions</div>
+        <p style="font-size:10pt;margin:0;">This Agreement is subject to the <em>On-Air Sponsorship, Underwriting &amp; PSA Guidelines</em> set forth in full in the attachment to this document. By signing below, both parties acknowledge they have read, understand, and agree to be bound by those terms.</p>
+    </div>
+
     <!-- ===== SIGNATURE BLOCK ===== -->
-    <div style="margin-bottom:24px;">
+    <div style="margin-bottom:24px;page-break-inside:avoid;page-break-before:avoid;">
         <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:14px;">Signatures</div>
-        <p style="font-size:10pt;margin-bottom:14px;">By signing below, both parties agree to the terms of this Underwriting Agreement.</p>
-        <table style="width:100%;border-collapse:collapse;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
             <tr>
                 <!-- Station signature column -->
                 <td style="width:48%;vertical-align:top;padding-right:12px;">
@@ -289,17 +287,17 @@ export default function renderContract({ submission, formMeta, user }) {
         </table>
     </div>
 
+    <!-- ===== TERMS & CONDITIONS ===== -->
+    ${terms ? `
+    <div style="margin-bottom:20px;page-break-inside:avoid;">
+        <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Terms &amp; Conditions</div>
+        <div style="font-size:10.5pt;">${terms}</div>
+    </div>` : ''}
+
     <!-- ===== FOOTER ===== -->
-    <div style="border-top:1px solid #dee2e6;padding-top:10px;font-size:8.5pt;color:#6c757d;">
-        <table style="width:100%;border-collapse:collapse;">
-            <tr>
-                <td>Contract ID: ${contractId} &bull; Generated: ${generatedDate}</td>
-                <td style="text-align:right;">${esc(stationName)} &bull; Non-Commercial Educational Broadcaster (FCC 47 C.F.R. &sect;&sect;&nbsp;73.503, 73.621)</td>
-            </tr>
-        </table>
-        <div style="margin-top:4px;font-style:italic;">
-            This document was generated from the Radio Forms Portal. The executed (signed) copy supersedes this draft for all legal purposes.
-        </div>
+    <div style="border-top:1px solid #dee2e6;padding-top:10px;font-size:8.5pt;color:#6c757d;margin-top:8px;page-break-inside:avoid;page-break-before:avoid;">
+        <div style="margin-bottom:2px;">Contract ID: ${contractId} &bull; Generated: ${generatedDate} &bull; ${esc(stationName)} &bull; Non-Commercial Educational Broadcaster (FCC 47 C.F.R. &sect;&sect;&nbsp;73.503, 73.621)</div>
+        <div style="font-style:italic;">This document was generated from the Radio Forms Portal. The executed (signed) copy supersedes this draft for all legal purposes.</div>
     </div>
 
 </div>`;
