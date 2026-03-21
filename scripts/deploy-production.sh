@@ -35,7 +35,8 @@ TAR_FILE="$TEMP_DIR/deploy.tar.gz"
 # CRITICAL: We exclude .env so we don't overwrite production secrets with local ones
 # We also exclude app/config.js and config/env/production.json because these are
 # generated on the server from the server's .env (see config generation below).
-tar -czf "$TAR_FILE" \
+# COPYFILE_DISABLE suppresses macOS resource fork (._*) files in the tarball.
+COPYFILE_DISABLE=1 tar -czf "$TAR_FILE" \
     --exclude='.git' \
     --exclude='.github' \
     --exclude='.windsurf' \
@@ -76,6 +77,9 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
     echo "📦 Extracting new version..."
     tar -xzf /tmp/deploy.tar.gz -C .
     rm /tmp/deploy.tar.gz
+
+    # Remove any macOS resource fork files (._*) from previous deployments
+    find . -name '._*' -not -path './.git/*' -delete
 
     # Ensure scripts are executable
     chmod +x scripts/*.sh scripts/lib/*.sh
@@ -122,8 +126,8 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
 
     # Generate Frontend Configuration from server's .env values
     echo "🔧 Generating frontend configuration..."
-    printf '// Generated during deployment - DO NOT EDIT\nwindow.API_BASE_URL = '"'"'https://%s'"'"';\nwindow.SPA_ORIGIN = '"'"'https://%s'"'"';\n' "\$API_DOMAIN" "\$SPA_DOMAIN" > app/config.js
-    echo "   app/config.js -> API: https://\${API_DOMAIN}, SPA: https://\${SPA_DOMAIN}"
+    printf '// Generated during deployment - DO NOT EDIT\nwindow.API_BASE_URL = '"'"'https://%s'"'"';\nwindow.SPA_ORIGIN = '"'"'https://%s'"'"';\nwindow.STATION_NAME = '"'"'%s'"'"';\nwindow.STATION_CALL_SIGN = '"'"'%s'"'"';\nwindow.STATION_ADDRESS = '"'"'%s'"'"';\nwindow.STATION_LOGO_URL = '"'"'%s'"'"';\n' "\$API_DOMAIN" "\$SPA_DOMAIN" "\${STATION_NAME:-Your Radio Station}" "\${STATION_CALL_SIGN:-[CALL SIGN]}" "\${STATION_ADDRESS:-}" "\${STATION_LOGO_URL:-}" > app/config.js
+    echo "   app/config.js -> API: https://\${API_DOMAIN}, SPA: https://\${SPA_DOMAIN}, Station: \${STATION_NAME:-Your Radio Station}"
 
     echo "✅ Configuration generated"
     

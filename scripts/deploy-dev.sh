@@ -62,10 +62,24 @@ echo "🔧 Generating Form.io configuration..."
 
 # Generate Frontend Configuration for development
 echo "🔧 Generating frontend configuration..."
+# Source .env to pick up STATION_* and any other vars
+if [ -f .env ]; then
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" ]] && continue
+    if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
+      export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+    fi
+  done < .env
+fi
 cat > app/config.js << JS_EOF
 // Generated during deployment - DO NOT EDIT
 window.API_BASE_URL = 'http://localhost:3001';
 window.SPA_ORIGIN = 'http://localhost:3000';
+window.STATION_NAME = '${STATION_NAME:-Your Radio Station}';
+window.STATION_CALL_SIGN = '${STATION_CALL_SIGN:-[CALL SIGN]}';
+window.STATION_ADDRESS = '${STATION_ADDRESS:-}';
+window.STATION_LOGO_URL = '${STATION_LOGO_URL:-}';
 JS_EOF
 
 # Stop any existing development containers

@@ -9826,7 +9826,8 @@
         "ui": {
           "alternateTitle": "Contracts",
           "submissionsTitle": "Underwriting Contracts List",
-          "sortOrder": 10
+          "sortOrder": 10,
+          "pdfTemplate": "underwritingContract"
         },
         "groupPermissions": [
           {
@@ -10281,6 +10282,100 @@
                   }
                 }
               ]
+            }
+          ]
+        },
+        {
+          "label": "Background & Purpose",
+          "key": "contractRecitals",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Recitals",
+              "key": "recitals",
+              "type": "textarea",
+              "editor": "ckeditor",
+              "input": true,
+              "inputFormat": "html",
+              "tableView": false,
+              "description": "Background context and purpose of this agreement",
+              "defaultValue": "<p>This Underwriting Agreement (\"Agreement\") is entered into between the Station and the Sponsor identified above. The Station is a non-commercial educational (NCE) radio broadcaster licensed by the Federal Communications Commission (FCC). The Sponsor wishes to support the Station's programming through underwriting, and the Station agrees to provide on-air acknowledgment in accordance with FCC rules and Station policies.</p><p>This Agreement sets forth the terms under which the Station will broadcast underwriting acknowledgments on behalf of the Sponsor during the contract period specified above.</p>"
+            }
+          ]
+        },
+        {
+          "label": "Terms & Conditions",
+          "key": "contractTerms",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Terms",
+              "key": "terms",
+              "type": "textarea",
+              "editor": "ckeditor",
+              "input": true,
+              "inputFormat": "html",
+              "tableView": false,
+              "description": "Standard on-air underwriting guidelines and FCC compliance terms",
+              "defaultValue": "<p><strong>On-Air Sponsorship, Underwriting, and PSA Guidelines</strong></p><p>Adherence to these On-Air Underwriting Guidelines will ensure compliance with the Station's obligations under its FCC license and station policies.</p><ol><li>Underwriting acknowledgments are generally expected to last 15\u201320 seconds and will not exceed 30 seconds.</li><li>Underwriting acknowledgments will be played between programs or other breaks so they do not interrupt regular programming.</li><li>Underwriting acknowledgments will be recorded and produced as a dry read or with non-promotional music, or the spot may be played during a music bed between programs.</li><li>For underwriting by non-profit organizations, the organization's nonprofit status will be mentioned in the acknowledgment.</li><li><strong>Underwriting acknowledgments MAY NOT contain the following language:</strong><ul><li>Language that is promotional</li><li>Comparative or qualitative language to describe an event, product, or service (e.g., \"good,\" \"great,\" \"best,\" \"better,\" \"highly regarded,\" \"famous,\" \"award winning,\" \"latest,\" \"featuring,\" \"starring\" \u2014 \"presents\" is acceptable)</li><li>Repetition of information</li><li>Any reference or allusion to cost (including \"free\"), discounts, or sales</li><li>Calls to action (directly telling the listener to do something)</li><li>Inducements to buy, sell, or lease (e.g., buy-one-get-one)</li></ul></li><li><strong>Underwriting acknowledgments MAY contain the following language:</strong><ul><li>Name of Underwriter</li><li>Underwriter's address, website, and phone number</li><li>Length of time the underwriter has been in business</li><li>Brand or trade name of the underwriter's product, service, or event</li><li>Name of the underwriter's product, service, or event</li><li>Underwriter's well-established slogan that the public already associates with the Underwriter</li><li>Value-neutral description of an event with a date, service, or product</li></ul></li><li>Sponsor's announcements are in rotation with announcements from other Station supporters.</li><li>The Station reserves the right to not accept underwriting support from any entity deemed to be inconsistent with the Station's mission, not in the general interest of its listeners, or potentially detrimental to the welfare and image of the Station.</li></ol>"
+            }
+          ]
+        },
+        {
+          "label": "Signature & Execution",
+          "key": "signatureBlock",
+          "type": "panel",
+          "input": false,
+          "tableView": false,
+          "components": [
+            {
+              "label": "Station Representative Name",
+              "key": "stationRepName",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "label": "Station Representative Title",
+              "key": "stationRepTitle",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "label": "Sponsor Signatory Name",
+              "key": "sponsorSignatoryName",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "label": "Sponsor Signatory Title",
+              "key": "sponsorSignatoryTitle",
+              "type": "textfield",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "label": "Contract Signed Date",
+              "key": "contractSignedDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "enableTime": false,
+              "format": "yyyy-MM-dd"
+            },
+            {
+              "label": "Executed Contract URL",
+              "key": "uploadedContractUrl",
+              "type": "url",
+              "input": true,
+              "tableView": false,
+              "description": "Link to the final signed/executed contract document (upload to cloud storage and paste URL here)"
             }
           ]
         },

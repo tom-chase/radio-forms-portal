@@ -12,7 +12,13 @@ set -e
 
 # Load environment variables from .env file
 if [ -f .env ]; then
-  export $(grep -v '^#' .env | xargs)
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" ]] && continue
+    if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
+      export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+    fi
+  done < .env
 fi
 
 # --- Configuration ---
