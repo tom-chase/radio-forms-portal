@@ -3193,7 +3193,7 @@
       "form": "incidentReport",
       "settings": {
         "transport": "smtp",
-        "template": "email-template.html",
+        "template": "https://radio.mycopri.org/email-template.html",
         "from": "noreply@your-domain.com",
         "replyTo": "",
         "emails": "management@your-domain.com",
@@ -3215,7 +3215,7 @@
       "form": "contactIntake",
       "settings": {
         "transport": "smtp",
-        "template": "email-template.html",
+        "template": "https://radio.mycopri.org/email-template.html",
         "from": "noreply@your-domain.com",
         "replyTo": "{{ data.email }}",
         "emails": "management@your-domain.com",
