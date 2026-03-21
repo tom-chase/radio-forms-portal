@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch');
 
 const API_BASE = process.env.FORMIO_API_BASE || 'http://localhost:3001';
 const ROOT_EMAIL = process.env.ROOT_EMAIL || 'admin@localhost.local';

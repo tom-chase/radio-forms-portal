@@ -30,6 +30,8 @@ services:
       - ./config/env/development.json:/app/config/development.json:ro
       - ./config/bootstrap/default-template.json:/app/default-template.json:ro
       - ./config/actions/UpdateLatestRoleLogId.js:/app/src/actions/UpdateLatestRoleLogId.js:ro
+      - ./scripts/lib/run-migrations.js:/app/run-migrations.js:ro
+      - ./scripts/migrations:/app/migrations:ro
     environment:
       NODE_ENV: development
       DEBUG: formio:*

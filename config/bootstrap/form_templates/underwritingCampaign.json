@@ -143,7 +143,7 @@
             "resource": "organization"
           },
           "valueProperty": "_id",
-          "template": "<span>{{ item.data.name }}</span>",
+          "template": "<span>{{ item.data.name }}{{ item.data.taxStatus === 'nonprofit' ? ' (' + (item.data.nonprofitType || 'Non-Profit') + ')' : item.data.taxStatus === 'forprofit' ? ' (For-Profit)' : '' }}</span>",
           "searchEnabled": true,
           "validate": {
             "required": true
@@ -163,7 +163,7 @@
             "resource": "underwritingContract"
           },
           "valueProperty": "_id",
-          "template": "<span>{{ item.data.contractName }}</span>",
+          "template": "<span>{{ item.data.contractName }}{{ item.data.startDate ? ' (' + item.data.startDate.slice(0,10) + ' – ' + (item.data.endDate ? item.data.endDate.slice(0,10) : '?') + ')' : '' }}</span>",
           "searchEnabled": true,
           "description": "Link to parent contract (optional)",
           "addResource": true,

@@ -107,6 +107,17 @@
           }
         },
         {
+          "field": "data.startDate",
+          "title": "Start Date",
+          "responsive": 2,
+          "width": 120,
+          "formatter": "datetime",
+          "formatterParams": {
+            "inputFormat": "iso",
+            "outputFormat": "MMM d, yyyy"
+          }
+        },
+        {
           "field": "data.endDate",
           "title": "End Date",
           "responsive": 2,
@@ -150,7 +161,7 @@
             "resource": "organization"
           },
           "valueProperty": "_id",
-          "template": "<span>{{ item.data.name }}</span>",
+          "template": "<span>{{ item.data.name }}{{ item.data.ein ? ' (EIN: ' + item.data.ein + ')' : '' }}</span>",
           "searchEnabled": true,
           "validate": {
             "required": true
@@ -284,7 +295,8 @@
           "input": true,
           "inputFormat": "html",
           "tableView": false,
-          "description": "Overview of messaging, key points to include"
+          "description": "Overview of messaging, key points to include",
+          "tooltip": "FCC Compliance Reminder: Underwriting copy MAY NOT contain promotional language, qualitative/comparative descriptions (e.g. 'best', 'award-winning'), calls to action, price references, or inducements to buy. It MAY include the sponsor name, address, website, phone, brand names, and value-neutral event descriptions."
         }
       ]
     },
@@ -366,6 +378,8 @@
           "type": "container",
           "input": false,
           "tableView": false,
+          "disabled": true,
+          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
           "components": [
             {
               "label": "Approved",
@@ -417,6 +431,8 @@
           "type": "container",
           "input": false,
           "tableView": false,
+          "disabled": true,
+          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
           "components": [
             {
               "label": "Approved",
@@ -468,6 +484,8 @@
           "type": "container",
           "input": false,
           "tableView": false,
+          "disabled": true,
+          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
           "components": [
             {
               "label": "Approved",
@@ -562,6 +580,14 @@
       "input": false,
       "tableView": false,
       "components": [
+        {
+          "label": "Station Representative Signature",
+          "key": "stationRepSignature",
+          "type": "signature",
+          "input": true,
+          "tableView": false,
+          "description": "Station representative's digital signature"
+        },
         {
           "label": "Station Representative Name",
           "key": "stationRepName",

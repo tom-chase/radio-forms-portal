@@ -145,7 +145,7 @@
             "resource": "underwritingCampaign"
           },
           "valueProperty": "_id",
-          "template": "<span>{{ item.data.campaignName }}</span>",
+          "template": "<span>{{ item.data.campaignName }}{{ item.data.startDate ? ' (' + item.data.startDate.slice(0,10) + ' – ' + (item.data.endDate ? item.data.endDate.slice(0,10) : '?') + ')' : '' }}</span>",
           "searchEnabled": true,
           "reference": true
         },
@@ -161,7 +161,7 @@
             "resource": "underwritingSpot"
           },
           "valueProperty": "_id",
-          "template": "<span>{{ item.data.spotName }}</span>",
+          "template": "<span>{{ item.data.spotName }}{{ item.data.lengthSeconds ? ' (' + item.data.lengthSeconds + 's)' : '' }}</span>",
           "searchEnabled": true,
           "description": "Which spot was aired",
           "reference": true

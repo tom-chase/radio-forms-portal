@@ -115,7 +115,7 @@ export default function renderContract({ submission, formMeta, user }) {
     const coApproval  = d.complianceOfficerApproval || {};
 
     // Signature block data
-    const sig = d.signatureBlock || {};
+    const stationRepSig       = d.stationRepSignature || '';  // base64 data URL from Form.io signature component
     const stationRepName      = esc(d.stationRepName      || '');
     const stationRepTitle     = esc(d.stationRepTitle     || '');
     const sponsorSignName     = esc(d.sponsorSignatoryName  || '');
@@ -248,7 +248,10 @@ export default function renderContract({ submission, formMeta, user }) {
                 <!-- Station signature column -->
                 <td style="width:48%;vertical-align:top;padding-right:12px;">
                     <div style="font-weight:700;margin-bottom:10px;">For the Station</div>
-                    <div style="border-bottom:1px solid #212529;min-height:32px;margin-bottom:4px;"></div>
+                    ${stationRepSig
+                        ? `<div style="border-bottom:1px solid #212529;min-height:32px;margin-bottom:4px;padding-bottom:2px;"><img src="${stationRepSig}" alt="Station Representative Signature" style="max-height:48px;max-width:200px;object-fit:contain;display:block;" /></div>`
+                        : `<div style="border-bottom:1px solid #212529;min-height:32px;margin-bottom:4px;"></div>`
+                    }
                     <div style="font-size:9pt;color:#6c757d;">Signature</div>
                     <div style="margin-top:10px;">
                         <div style="border-bottom:1px solid #adb5bd;min-height:22px;padding-bottom:2px;">${stationRepName}</div>

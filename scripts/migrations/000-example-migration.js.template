@@ -7,8 +7,6 @@
  * Remove the .template extension when creating a real migration.
  */
 
-const fetch = require('node-fetch');
-
 module.exports = {
     // Unique ID matching the filename (without .js extension)
     id: '000-example-migration',
