@@ -52,6 +52,2666 @@
       ]
     }
   ],
+  "components": [
+    {
+      "label": "Contract Information",
+      "title": "Contract Information",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "contractInfo",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Contract Name",
+          "key": "contractName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "Organization",
+          "tableView": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "698df4db6acc37f73ce2bbfb",
+            "values": [
+              {
+                "label": "",
+                "value": ""
+              }
+            ],
+            "json": "",
+            "url": "",
+            "custom": ""
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.name }}</span>",
+          "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+          },
+          "validateWhenHidden": false,
+          "key": "organization",
+          "type": "select",
+          "noRefreshOnScroll": false,
+          "addResource": true,
+          "reference": true,
+          "input": true,
+          "addResourceLabel": "Add New Organization",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "ignoreCache": false,
+          "idPath": "id",
+          "clearOnRefresh": false,
+          "limit": 100,
+          "lazyLoad": true,
+          "filter": "",
+          "searchEnabled": true,
+          "searchDebounce": 0.3,
+          "searchField": "",
+          "minSearch": 0,
+          "readOnlyValue": false,
+          "selectFields": "",
+          "selectThreshold": 0.3,
+          "uniqueOptions": false,
+          "fuseOptions": {
+            "include": "score",
+            "threshold": 0.3
+          },
+          "indexeddb": {
+            "filter": {}
+          },
+          "customOptions": {},
+          "useExactSearch": false
+        },
+        {
+          "label": "Primary Contact",
+          "tableView": true,
+          "dataSrc": "resource",
+          "data": {
+            "resource": "698df4db6acc37f73ce2bbf6",
+            "values": [
+              {
+                "label": "",
+                "value": ""
+              }
+            ],
+            "json": "",
+            "url": "",
+            "custom": ""
+          },
+          "valueProperty": "_id",
+          "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
+          "validateWhenHidden": false,
+          "key": "primaryContact",
+          "type": "select",
+          "addResource": true,
+          "reference": true,
+          "input": true,
+          "noRefreshOnScroll": false,
+          "addResourceLabel": "Add New Contact",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "ignoreCache": false,
+          "idPath": "id",
+          "clearOnRefresh": false,
+          "limit": 100,
+          "lazyLoad": true,
+          "filter": "",
+          "searchEnabled": true,
+          "searchDebounce": 0.3,
+          "searchField": "",
+          "minSearch": 0,
+          "readOnlyValue": false,
+          "selectFields": "",
+          "selectThreshold": 0.3,
+          "uniqueOptions": false,
+          "fuseOptions": {
+            "include": "score",
+            "threshold": 0.3
+          },
+          "indexeddb": {
+            "filter": {}
+          },
+          "customOptions": {},
+          "useExactSearch": false
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default"
+    },
+    {
+      "label": "Contract Period",
+      "title": "Contract Period",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "contractPeriod",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "breadcrumbClickable": true,
+      "buttonSettings": {
+        "previous": true,
+        "cancel": true,
+        "next": true
+      },
+      "navigateOnEnter": false,
+      "saveOnEnter": false,
+      "scrollToTop": false,
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Start Date",
+          "key": "startDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": "",
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "useLocaleSettings": false,
+          "allowInput": true,
+          "enableDate": true,
+          "defaultDate": "",
+          "displayInTimezone": "viewer",
+          "timezone": "",
+          "datepickerMode": "day",
+          "datePicker": {
+            "showWeeks": true,
+            "startingDay": 0,
+            "initDate": "",
+            "minMode": "day",
+            "maxMode": "year",
+            "yearRows": 4,
+            "yearColumns": 5,
+            "minDate": null,
+            "maxDate": null
+          },
+          "timePicker": {
+            "hourStep": 1,
+            "minuteStep": 1,
+            "showMeridian": true,
+            "readonlyInput": false,
+            "mousewheel": true,
+            "arrowkeys": true
+          },
+          "customOptions": {}
+        },
+        {
+          "label": "End Date",
+          "key": "endDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": true,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "validate": {
+            "required": true,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": "",
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "useLocaleSettings": false,
+          "allowInput": true,
+          "enableDate": true,
+          "defaultDate": "",
+          "displayInTimezone": "viewer",
+          "timezone": "",
+          "datepickerMode": "day",
+          "datePicker": {
+            "showWeeks": true,
+            "startingDay": 0,
+            "initDate": "",
+            "minMode": "day",
+            "maxMode": "year",
+            "yearRows": 4,
+            "yearColumns": 5,
+            "minDate": null,
+            "maxDate": null
+          },
+          "timePicker": {
+            "hourStep": 1,
+            "minuteStep": 1,
+            "showMeridian": true,
+            "readonlyInput": false,
+            "mousewheel": true,
+            "arrowkeys": true
+          },
+          "customOptions": {}
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default"
+    },
+    {
+      "label": "Financial Details",
+      "title": "Financial Details",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "financialDetails",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": "",
+        "when": "",
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Total Value (USD)",
+          "key": "totalValue",
+          "type": "number",
+          "input": true,
+          "tableView": true,
+          "delimiter": true,
+          "requireDecimal": true,
+          "validate": {
+            "min": 0,
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "max": "",
+            "step": "any",
+            "integer": ""
+          },
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": []
+        },
+        {
+          "label": "Billing Frequency",
+          "key": "billingFrequency",
+          "type": "select",
+          "input": true,
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "One-time",
+                "value": "one_time"
+              },
+              {
+                "label": "Monthly",
+                "value": "monthly"
+              },
+              {
+                "label": "Quarterly",
+                "value": "quarterly"
+              },
+              {
+                "label": "Custom",
+                "value": "custom"
+              }
+            ],
+            "json": "",
+            "url": "",
+            "resource": "",
+            "custom": ""
+          },
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "dataSrc": "values",
+          "ignoreCache": false,
+          "template": "<span>{{ item.label }}</span>",
+          "idPath": "id",
+          "clearOnRefresh": false,
+          "limit": 100,
+          "valueProperty": "",
+          "lazyLoad": true,
+          "filter": "",
+          "searchEnabled": true,
+          "searchDebounce": 0.3,
+          "searchField": "",
+          "minSearch": 0,
+          "readOnlyValue": false,
+          "selectFields": "",
+          "selectThreshold": 0.3,
+          "uniqueOptions": false,
+          "fuseOptions": {
+            "include": "score",
+            "threshold": 0.3
+          },
+          "indexeddb": {
+            "filter": {}
+          },
+          "customOptions": {},
+          "useExactSearch": false
+        },
+        {
+          "label": "Billing Notes",
+          "key": "billingNotes",
+          "type": "textarea",
+          "input": true,
+          "tableView": false,
+          "description": "Payment schedule, terms, special arrangements",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": "",
+            "minWords": "",
+            "maxWords": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "html",
+          "inputMask": "",
+          "displayMask": "",
+          "rows": 3,
+          "wysiwyg": false,
+          "editor": "",
+          "fixedSize": true
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default",
+      "breadcrumbClickable": true,
+      "buttonSettings": {
+        "previous": true,
+        "cancel": true,
+        "next": true
+      },
+      "navigateOnEnter": false,
+      "saveOnEnter": false,
+      "scrollToTop": false
+    },
+    {
+      "label": "Copy Messaging",
+      "title": "Copy Messaging",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "copyMessaging",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": "",
+        "when": "",
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Copy Summary",
+          "key": "copySummary",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "tableView": false,
+          "description": "Overview of messaging, key points to include",
+          "tooltip": "FCC Compliance Reminder: Underwriting copy MAY NOT contain promotional language, qualitative/comparative descriptions (e.g. 'best', 'award-winning'), calls to action, price references, or inducements to buy. It MAY include the sponsor name, address, website, phone, brand names, and value-neutral event descriptions.",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": "",
+            "minWords": "",
+            "maxWords": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "html",
+          "inputMask": "",
+          "displayMask": "",
+          "rows": 3,
+          "wysiwyg": false,
+          "fixedSize": true
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default"
+    },
+    {
+      "label": "Attachments",
+      "key": "attachments",
+      "type": "datagrid",
+      "input": true,
+      "tableView": false,
+      "reorder": true,
+      "components": [
+        {
+          "label": "File Name",
+          "key": "fileName",
+          "type": "textfield",
+          "input": true,
+          "tableView": true,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "File URL",
+          "key": "fileUrl",
+          "type": "url",
+          "input": true,
+          "tableView": true,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputType": "url",
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "Description",
+          "key": "description",
+          "type": "textfield",
+          "input": true,
+          "tableView": false,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        }
+      ],
+      "placeholder": "",
+      "customClass": "",
+      "defaultValue": null,
+      "hidden": false,
+      "description": "",
+      "tooltip": "",
+      "disabled": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+      },
+      "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": true,
+      "disableAddingRemovingRows": false
+    },
+    {
+      "label": "Internal Approval Record",
+      "title": "Internal Approval Record",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "approvalWorkflow",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Status",
+          "key": "status",
+          "type": "select",
+          "input": true,
+          "tableView": true,
+          "data": {
+            "values": [
+              {
+                "label": "Draft",
+                "value": "draft"
+              },
+              {
+                "label": "Pending Approval",
+                "value": "pending"
+              },
+              {
+                "label": "Active",
+                "value": "active"
+              },
+              {
+                "label": "Expired",
+                "value": "expired"
+              },
+              {
+                "label": "Cancelled",
+                "value": "cancelled"
+              }
+            ],
+            "json": "",
+            "url": "",
+            "resource": "",
+            "custom": ""
+          },
+          "defaultValue": "draft",
+          "placeholder": "",
+          "customClass": "",
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "onlyAvailableItems": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "dataSrc": "values",
+          "ignoreCache": false,
+          "template": "<span>{{ item.label }}</span>",
+          "idPath": "id",
+          "clearOnRefresh": false,
+          "limit": 100,
+          "valueProperty": "",
+          "lazyLoad": true,
+          "filter": "",
+          "searchEnabled": true,
+          "searchDebounce": 0.3,
+          "searchField": "",
+          "minSearch": 0,
+          "readOnlyValue": false,
+          "selectFields": "",
+          "selectThreshold": 0.3,
+          "uniqueOptions": false,
+          "fuseOptions": {
+            "include": "score",
+            "threshold": 0.3
+          },
+          "indexeddb": {
+            "filter": {}
+          },
+          "customOptions": {},
+          "useExactSearch": false
+        },
+        {
+          "label": "Program Manager Approval",
+          "key": "programManagerApproval",
+          "type": "container",
+          "input": false,
+          "tableView": false,
+          "disabled": true,
+          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
+          "components": [
+            {
+              "label": "Approved",
+              "key": "programManagerApproved",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true,
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": null,
+              "hidden": false,
+              "labelPosition": "right",
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false
+              },
+              "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "inputType": "checkbox",
+              "value": "",
+              "name": ""
+            },
+            {
+              "label": "Approver",
+              "key": "programManagerApprover",
+              "type": "select",
+              "input": true,
+              "tableView": false,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "698df4db6acc37f73ce2bbb2",
+                "values": [
+                  {
+                    "label": "",
+                    "value": ""
+                  }
+                ],
+                "json": "",
+                "url": "",
+                "custom": ""
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.email }}</span>",
+              "reference": true,
+              "conditional": {
+                "show": true,
+                "when": "programManagerApproved",
+                "eq": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": null,
+              "hidden": false,
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false,
+                "onlyAvailableItems": false
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "ignoreCache": false,
+              "idPath": "id",
+              "clearOnRefresh": false,
+              "limit": 100,
+              "lazyLoad": true,
+              "filter": "",
+              "searchEnabled": true,
+              "searchDebounce": 0.3,
+              "searchField": "",
+              "minSearch": 0,
+              "readOnlyValue": false,
+              "selectFields": "",
+              "selectThreshold": 0.3,
+              "uniqueOptions": false,
+              "fuseOptions": {
+                "include": "score",
+                "threshold": 0.3
+              },
+              "indexeddb": {
+                "filter": {}
+              },
+              "customOptions": {},
+              "useExactSearch": false
+            },
+            {
+              "label": "Approval Date",
+              "key": "programManagerApprovalDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "conditional": {
+                "show": true,
+                "when": "programManagerApproved",
+                "eq": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": "",
+              "hidden": false,
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "format": "yyyy-MM-dd hh:mm a",
+              "useLocaleSettings": false,
+              "allowInput": true,
+              "enableDate": true,
+              "enableTime": true,
+              "defaultDate": "",
+              "displayInTimezone": "viewer",
+              "timezone": "",
+              "datepickerMode": "day",
+              "datePicker": {
+                "showWeeks": true,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": null,
+                "maxDate": null
+              },
+              "timePicker": {
+                "hourStep": 1,
+                "minuteStep": 1,
+                "showMeridian": true,
+                "readonlyInput": false,
+                "mousewheel": true,
+                "arrowkeys": true
+              },
+              "customOptions": {}
+            }
+          ],
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "hideLabel": true,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "tree": true
+        },
+        {
+          "label": "General Manager Approval",
+          "key": "generalManagerApproval",
+          "type": "container",
+          "input": false,
+          "tableView": false,
+          "disabled": true,
+          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
+          "components": [
+            {
+              "label": "Approved",
+              "key": "generalManagerApproved",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true,
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": null,
+              "hidden": false,
+              "labelPosition": "right",
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false
+              },
+              "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "inputType": "checkbox",
+              "value": "",
+              "name": ""
+            },
+            {
+              "label": "Approver",
+              "key": "generalManagerApprover",
+              "type": "select",
+              "input": true,
+              "tableView": false,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "698df4db6acc37f73ce2bbb2",
+                "values": [
+                  {
+                    "label": "",
+                    "value": ""
+                  }
+                ],
+                "json": "",
+                "url": "",
+                "custom": ""
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.email }}</span>",
+              "reference": true,
+              "conditional": {
+                "show": true,
+                "when": "generalManagerApproved",
+                "eq": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": null,
+              "hidden": false,
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false,
+                "onlyAvailableItems": false
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "ignoreCache": false,
+              "idPath": "id",
+              "clearOnRefresh": false,
+              "limit": 100,
+              "lazyLoad": true,
+              "filter": "",
+              "searchEnabled": true,
+              "searchDebounce": 0.3,
+              "searchField": "",
+              "minSearch": 0,
+              "readOnlyValue": false,
+              "selectFields": "",
+              "selectThreshold": 0.3,
+              "uniqueOptions": false,
+              "fuseOptions": {
+                "include": "score",
+                "threshold": 0.3
+              },
+              "indexeddb": {
+                "filter": {}
+              },
+              "customOptions": {},
+              "useExactSearch": false
+            },
+            {
+              "label": "Approval Date",
+              "key": "generalManagerApprovalDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "conditional": {
+                "show": true,
+                "when": "generalManagerApproved",
+                "eq": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": "",
+              "hidden": false,
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "format": "yyyy-MM-dd hh:mm a",
+              "useLocaleSettings": false,
+              "allowInput": true,
+              "enableDate": true,
+              "enableTime": true,
+              "defaultDate": "",
+              "displayInTimezone": "viewer",
+              "timezone": "",
+              "datepickerMode": "day",
+              "datePicker": {
+                "showWeeks": true,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": null,
+                "maxDate": null
+              },
+              "timePicker": {
+                "hourStep": 1,
+                "minuteStep": 1,
+                "showMeridian": true,
+                "readonlyInput": false,
+                "mousewheel": true,
+                "arrowkeys": true
+              },
+              "customOptions": {}
+            }
+          ],
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "hideLabel": true,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "tree": true
+        },
+        {
+          "label": "Compliance Officer Approval",
+          "key": "complianceOfficerApproval",
+          "type": "container",
+          "input": false,
+          "tableView": false,
+          "disabled": true,
+          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
+          "components": [
+            {
+              "label": "Approved",
+              "key": "complianceOfficerApproved",
+              "type": "checkbox",
+              "input": true,
+              "tableView": true,
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": null,
+              "hidden": false,
+              "labelPosition": "right",
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false
+              },
+              "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "inputType": "checkbox",
+              "value": "",
+              "name": ""
+            },
+            {
+              "label": "Approver",
+              "key": "complianceOfficerApprover",
+              "type": "select",
+              "input": true,
+              "tableView": false,
+              "dataSrc": "resource",
+              "data": {
+                "resource": "698df4db6acc37f73ce2bbb2",
+                "values": [
+                  {
+                    "label": "",
+                    "value": ""
+                  }
+                ],
+                "json": "",
+                "url": "",
+                "custom": ""
+              },
+              "valueProperty": "_id",
+              "template": "<span>{{ item.data.email }}</span>",
+              "reference": true,
+              "conditional": {
+                "show": true,
+                "when": "complianceOfficerApproved",
+                "eq": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": null,
+              "hidden": false,
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false,
+                "onlyAvailableItems": false
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "ignoreCache": false,
+              "idPath": "id",
+              "clearOnRefresh": false,
+              "limit": 100,
+              "lazyLoad": true,
+              "filter": "",
+              "searchEnabled": true,
+              "searchDebounce": 0.3,
+              "searchField": "",
+              "minSearch": 0,
+              "readOnlyValue": false,
+              "selectFields": "",
+              "selectThreshold": 0.3,
+              "uniqueOptions": false,
+              "fuseOptions": {
+                "include": "score",
+                "threshold": 0.3
+              },
+              "indexeddb": {
+                "filter": {}
+              },
+              "customOptions": {},
+              "useExactSearch": false
+            },
+            {
+              "label": "Approval Date",
+              "key": "complianceOfficerApprovalDate",
+              "type": "datetime",
+              "input": true,
+              "tableView": false,
+              "conditional": {
+                "show": true,
+                "when": "complianceOfficerApproved",
+                "eq": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "defaultValue": "",
+              "hidden": false,
+              "description": "",
+              "tooltip": "",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false,
+                "custom": "",
+                "customPrivate": false,
+                "strictDateValidation": false,
+                "multiple": false,
+                "unique": false
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": [],
+              "format": "yyyy-MM-dd hh:mm a",
+              "useLocaleSettings": false,
+              "allowInput": true,
+              "enableDate": true,
+              "enableTime": true,
+              "defaultDate": "",
+              "displayInTimezone": "viewer",
+              "timezone": "",
+              "datepickerMode": "day",
+              "datePicker": {
+                "showWeeks": true,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": null,
+                "maxDate": null
+              },
+              "timePicker": {
+                "hourStep": 1,
+                "minuteStep": 1,
+                "showMeridian": true,
+                "readonlyInput": false,
+                "mousewheel": true,
+                "arrowkeys": true
+              },
+              "customOptions": {}
+            }
+          ],
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "hideLabel": true,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "tree": true
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default",
+      "breadcrumbClickable": true,
+      "buttonSettings": {
+        "previous": true,
+        "cancel": true,
+        "next": true
+      },
+      "navigateOnEnter": false,
+      "saveOnEnter": false,
+      "scrollToTop": false
+    },
+    {
+      "label": "Recitals",
+      "title": "Recitals",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "contractRecitals",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Recitals",
+          "key": "recitals",
+          "type": "textarea",
+          "editor": "ckeditor",
+          "input": true,
+          "tableView": false,
+          "description": "Background context and purpose of this agreement",
+          "defaultValue": "<p>This Underwriting Agreement (\"Agreement\") is entered into between the Station and the Sponsor identified above. The Station is a non-commercial educational (NCE) radio broadcaster licensed by the Federal Communications Commission (FCC). The Sponsor wishes to support the Station's programming through underwriting, and the Station agrees to provide on-air acknowledgment in accordance with FCC rules and Station policies.</p><p>This Agreement sets forth the terms under which the Station will broadcast underwriting acknowledgments on behalf of the Sponsor during the contract period specified above.</p>",
+          "placeholder": "",
+          "customClass": "",
+          "hidden": false,
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": "",
+            "minWords": "",
+            "maxWords": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "html",
+          "inputMask": "",
+          "displayMask": "",
+          "rows": 3,
+          "wysiwyg": false,
+          "fixedSize": true
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default",
+      "breadcrumbClickable": true,
+      "buttonSettings": {
+        "previous": true,
+        "cancel": true,
+        "next": true
+      },
+      "navigateOnEnter": false,
+      "saveOnEnter": false,
+      "scrollToTop": false
+    },
+    {
+      "label": "Terms and Conditions",
+      "title": "Terms and Conditions",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "contractTerms",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": "",
+        "when": "",
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Terms",
+          "placeholder": "",
+          "description": "Standard on-air underwriting guidelines and FCC compliance terms",
+          "tooltip": "",
+          "displayMask": "",
+          "applyMaskOn": "change",
+          "editor": "ckeditor",
+          "customClass": "",
+          "autocomplete": "",
+          "hidden": false,
+          "hideLabel": true,
+          "disabled": false,
+          "tableView": false,
+          "defaultValue": "<p><strong>On-Air Sponsorship, Underwriting, and PSA Guidelines</strong></p><p>Adherence to these On-Air Underwriting Guidelines will ensure compliance with the Station's obligations under its FCC license and station policies.</p><ol><li>Underwriting acknowledgments are generally expected to last 15–20 seconds and will not exceed 30 seconds.</li><li>Underwriting acknowledgments will be played between programs or other breaks so they do not interrupt regular programming.</li><li>Underwriting acknowledgments will be recorded and produced as a dry read or with non-promotional music, or the spot may be played during a music bed between programs.</li><li>For underwriting by non-profit organizations, the organization's nonprofit status will be mentioned in the acknowledgment.</li><li><strong>Underwriting acknowledgments MAY NOT contain the following language:</strong><ul><li>Language that is promotional</li><li>Comparative or qualitative language to describe an event, product, or service (e.g., \"good,\" \"great,\" \"best,\" \"better,\" \"highly regarded,\" \"famous,\" \"award winning,\" \"latest,\" \"featuring,\" \"starring\" — \"presents\" is acceptable)</li><li>Repetition of information</li><li>Any reference or allusion to cost (including \"free\"), discounts, or sales</li><li>Calls to action (directly telling the listener to do something)</li><li>Inducements to buy, sell, or lease (e.g., buy-one-get-one)</li></ul></li><li><strong>Underwriting acknowledgments MAY contain the following language:</strong><ul><li>Name of Underwriter</li><li>Underwriter's address, website, and phone number</li><li>Length of time the underwriter has been in business</li><li>Brand or trade name of the underwriter's product, service, or event</li><li>Name of the underwriter's product, service, or event</li><li>Underwriter's well-established slogan that the public already associates with the Underwriter</li><li>Value-neutral description of an event with a date, service, or product</li></ul></li><li>Sponsor's announcements are in rotation with announcements from other Station supporters.</li><li>The Station reserves the right to not accept underwriting support from any entity deemed to be inconsistent with the Station's mission, not in the general interest of its listeners, or potentially detrimental to the welfare and image of the Station.</li></ol>",
+          "inputFormat": "html",
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "pattern": "",
+            "customMessage": "",
+            "custom": "",
+            "customPrivate": false,
+            "json": "",
+            "minLength": "",
+            "maxLength": "",
+            "minWords": "",
+            "maxWords": "",
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "validateWhenHidden": false,
+          "errors": "",
+          "key": "terms",
+          "tags": [],
+          "properties": {},
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": "",
+            "json": ""
+          },
+          "customConditional": "",
+          "logic": [],
+          "attributes": {},
+          "overlay": {
+            "style": "",
+            "page": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "type": "textarea",
+          "rows": 3,
+          "wysiwyg": false,
+          "input": true,
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputMask": "",
+          "fixedSize": true,
+          "isUploadEnabled": false
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default"
+    },
+    {
+      "label": "Signatures",
+      "title": "Signatures",
+      "tooltip": "",
+      "customClass": "",
+      "collapsible": false,
+      "hidden": false,
+      "disabled": false,
+      "key": "signatureBlock",
+      "tags": [],
+      "properties": {},
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": "",
+        "json": ""
+      },
+      "customConditional": "",
+      "logic": [],
+      "attributes": {},
+      "overlay": {
+        "style": "",
+        "page": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "type": "panel",
+      "input": false,
+      "tableView": false,
+      "components": [
+        {
+          "label": "Station Representative Signature",
+          "key": "stationRepSignature",
+          "type": "signature",
+          "input": true,
+          "tableView": false,
+          "description": "Station representative's digital signature",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "footer": "Sign above",
+          "width": "100%",
+          "height": "150px",
+          "penColor": "black",
+          "backgroundColor": "rgb(245,245,235)",
+          "minWidth": "0.5",
+          "maxWidth": "2.5",
+          "keepOverlayRatio": true
+        },
+        {
+          "label": "Station Representative Name",
+          "key": "stationRepName",
+          "type": "textfield",
+          "input": true,
+          "tableView": false,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "Station Representative Title",
+          "key": "stationRepTitle",
+          "type": "textfield",
+          "input": true,
+          "tableView": false,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "Sponsor Signatory Name",
+          "key": "sponsorSignatoryName",
+          "type": "textfield",
+          "input": true,
+          "tableView": false,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "Sponsor Signatory Title",
+          "key": "sponsorSignatoryTitle",
+          "type": "textfield",
+          "input": true,
+          "tableView": false,
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        },
+        {
+          "label": "Contract Signed Date",
+          "key": "contractSignedDate",
+          "type": "datetime",
+          "input": true,
+          "tableView": false,
+          "enableTime": false,
+          "format": "yyyy-MM-dd",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": "",
+          "hidden": false,
+          "description": "",
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "useLocaleSettings": false,
+          "allowInput": true,
+          "enableDate": true,
+          "defaultDate": "",
+          "displayInTimezone": "viewer",
+          "timezone": "",
+          "datepickerMode": "day",
+          "datePicker": {
+            "showWeeks": true,
+            "startingDay": 0,
+            "initDate": "",
+            "minMode": "day",
+            "maxMode": "year",
+            "yearRows": 4,
+            "yearColumns": 5,
+            "minDate": null,
+            "maxDate": null
+          },
+          "timePicker": {
+            "hourStep": 1,
+            "minuteStep": 1,
+            "showMeridian": true,
+            "readonlyInput": false,
+            "mousewheel": true,
+            "arrowkeys": true
+          },
+          "customOptions": {}
+        },
+        {
+          "label": "Executed Contract URL",
+          "key": "uploadedContractUrl",
+          "type": "url",
+          "input": true,
+          "tableView": false,
+          "description": "Link to the final signed/executed contract document (upload to cloud storage and paste URL here)",
+          "placeholder": "",
+          "customClass": "",
+          "defaultValue": null,
+          "hidden": false,
+          "tooltip": "",
+          "disabled": false,
+          "customDefaultValue": "",
+          "calculateValue": "",
+          "attributes": {},
+          "validateOn": "change",
+          "validate": {
+            "required": false,
+            "custom": "",
+            "customPrivate": false,
+            "strictDateValidation": false,
+            "multiple": false,
+            "unique": false,
+            "minLength": "",
+            "maxLength": "",
+            "pattern": ""
+          },
+          "conditional": {
+            "show": null,
+            "when": null,
+            "eq": ""
+          },
+          "overlay": {
+            "style": "",
+            "left": "",
+            "top": "",
+            "width": "",
+            "height": ""
+          },
+          "properties": {},
+          "allowMultipleMasks": false,
+          "addons": [],
+          "mask": false,
+          "inputType": "url",
+          "inputFormat": "plain",
+          "inputMask": "",
+          "displayMask": ""
+        }
+      ],
+      "placeholder": "",
+      "defaultValue": null,
+      "clearOnHide": false,
+      "description": "",
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "allowMultipleMasks": false,
+      "addons": [],
+      "tree": false,
+      "breadcrumb": "default"
+    },
+    {
+      "label": "Internal Notes",
+      "key": "notes",
+      "type": "textarea",
+      "editor": "ckeditor",
+      "input": true,
+      "inputFormat": "html",
+      "tableView": false,
+      "placeholder": "",
+      "customClass": "",
+      "defaultValue": null,
+      "hidden": false,
+      "description": "",
+      "tooltip": "",
+      "disabled": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false,
+        "minLength": "",
+        "maxLength": "",
+        "pattern": "",
+        "minWords": "",
+        "maxWords": ""
+      },
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+      },
+      "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "mask": false,
+      "inputMask": "",
+      "displayMask": "",
+      "rows": 3,
+      "wysiwyg": false,
+      "fixedSize": true
+    },
+    {
+      "label": "Submit",
+      "key": "submit",
+      "type": "button",
+      "action": "submit",
+      "theme": "primary",
+      "input": true,
+      "placeholder": "",
+      "customClass": "",
+      "defaultValue": null,
+      "hidden": false,
+      "tableView": false,
+      "description": "",
+      "tooltip": "",
+      "disabled": false,
+      "customDefaultValue": "",
+      "calculateValue": "",
+      "attributes": {},
+      "validateOn": "change",
+      "validate": {
+        "required": false,
+        "custom": "",
+        "customPrivate": false,
+        "strictDateValidation": false,
+        "multiple": false,
+        "unique": false
+      },
+      "conditional": {
+        "show": null,
+        "when": null,
+        "eq": ""
+      },
+      "overlay": {
+        "style": "",
+        "left": "",
+        "top": "",
+        "width": "",
+        "height": ""
+      },
+      "properties": {},
+      "allowMultipleMasks": false,
+      "addons": [],
+      "leftIcon": "",
+      "rightIcon": ""
+    }
+  ],
   "settings": {
     "ui": {
       "alternateTitle": "Contracts",
@@ -130,527 +2790,5 @@
         }
       ]
     }
-  },
-  "components": [
-    {
-      "label": "Contract Information",
-      "key": "contractInfo",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Contract Name",
-          "key": "contractName",
-          "type": "textfield",
-          "input": true,
-          "tableView": true,
-          "validate": {
-            "required": true
-          }
-        },
-        {
-          "label": "Organization",
-          "key": "organization",
-          "type": "select",
-          "widget": "choicesjs",
-          "input": true,
-          "tableView": true,
-          "dataSrc": "resource",
-          "data": {
-            "resource": "organization"
-          },
-          "valueProperty": "_id",
-          "template": "<span>{{ item.data.name }}{{ item.data.ein ? ' (EIN: ' + item.data.ein + ')' : '' }}</span>",
-          "searchEnabled": true,
-          "validate": {
-            "required": true
-          },
-          "addResource": true,
-          "reference": true
-        },
-        {
-          "label": "Primary Contact",
-          "key": "primaryContact",
-          "type": "select",
-          "widget": "choicesjs",
-          "input": true,
-          "tableView": true,
-          "dataSrc": "resource",
-          "data": {
-            "resource": "contact"
-          },
-          "valueProperty": "_id",
-          "template": "<span>{{ item.data.firstName }} {{ item.data.lastName }}</span>",
-          "searchEnabled": true,
-          "addResource": true,
-          "reference": true
-        }
-      ]
-    },
-    {
-      "label": "Contract Period",
-      "key": "contractPeriod",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Start Date",
-          "key": "startDate",
-          "type": "datetime",
-          "input": true,
-          "tableView": true,
-          "enableTime": false,
-          "format": "yyyy-MM-dd",
-          "validate": {
-            "required": true
-          }
-        },
-        {
-          "label": "End Date",
-          "key": "endDate",
-          "type": "datetime",
-          "input": true,
-          "tableView": true,
-          "enableTime": false,
-          "format": "yyyy-MM-dd",
-          "validate": {
-            "required": true
-          }
-        }
-      ]
-    },
-    {
-      "label": "Financial Details",
-      "key": "financialDetails",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Total Value (USD)",
-          "key": "totalValue",
-          "type": "number",
-          "input": true,
-          "tableView": true,
-          "delimiter": true,
-          "requireDecimal": true,
-          "validate": {
-            "min": 0
-          }
-        },
-        {
-          "label": "Billing Frequency",
-          "key": "billingFrequency",
-          "type": "select",
-          "widget": "choicesjs",
-          "input": true,
-          "tableView": true,
-          "dataSrc": "values",
-          "data": {
-            "values": [
-              {
-                "label": "One-time",
-                "value": "one_time"
-              },
-              {
-                "label": "Monthly",
-                "value": "monthly"
-              },
-              {
-                "label": "Quarterly",
-                "value": "quarterly"
-              },
-              {
-                "label": "Custom",
-                "value": "custom"
-              }
-            ]
-          }
-        },
-        {
-          "label": "Billing Notes",
-          "key": "billingNotes",
-          "type": "textarea",
-          "input": true,
-          "tableView": false,
-          "rows": 3,
-          "description": "Payment schedule, terms, special arrangements"
-        }
-      ]
-    },
-    {
-      "label": "Copy & Messaging",
-      "key": "copyMessaging",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Copy Summary",
-          "key": "copySummary",
-          "type": "textarea",
-          "editor": "ckeditor",
-          "input": true,
-          "inputFormat": "html",
-          "tableView": false,
-          "description": "Overview of messaging, key points to include",
-          "tooltip": "FCC Compliance Reminder: Underwriting copy MAY NOT contain promotional language, qualitative/comparative descriptions (e.g. 'best', 'award-winning'), calls to action, price references, or inducements to buy. It MAY include the sponsor name, address, website, phone, brand names, and value-neutral event descriptions."
-        }
-      ]
-    },
-    {
-      "label": "Attachments",
-      "key": "attachments",
-      "type": "datagrid",
-      "input": true,
-      "tableView": false,
-      "reorder": true,
-      "components": [
-        {
-          "label": "File Name",
-          "key": "fileName",
-          "type": "textfield",
-          "input": true,
-          "tableView": true
-        },
-        {
-          "label": "File URL",
-          "key": "fileUrl",
-          "type": "url",
-          "input": true,
-          "tableView": true
-        },
-        {
-          "label": "Description",
-          "key": "description",
-          "type": "textfield",
-          "input": true,
-          "tableView": false
-        }
-      ]
-    },
-    {
-      "label": "Approval Workflow",
-      "key": "approvalWorkflow",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Status",
-          "key": "status",
-          "type": "select",
-          "widget": "choicesjs",
-          "input": true,
-          "tableView": true,
-          "dataSrc": "values",
-          "data": {
-            "values": [
-              {
-                "label": "Draft",
-                "value": "draft"
-              },
-              {
-                "label": "Pending Approval",
-                "value": "pending"
-              },
-              {
-                "label": "Active",
-                "value": "active"
-              },
-              {
-                "label": "Expired",
-                "value": "expired"
-              },
-              {
-                "label": "Cancelled",
-                "value": "cancelled"
-              }
-            ]
-          },
-          "defaultValue": "draft"
-        },
-        {
-          "label": "Program Manager Approval",
-          "key": "programManagerApproval",
-          "type": "container",
-          "input": false,
-          "tableView": false,
-          "disabled": true,
-          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
-          "components": [
-            {
-              "label": "Approved",
-              "key": "programManagerApproved",
-              "type": "checkbox",
-              "input": true,
-              "tableView": true
-            },
-            {
-              "label": "Approver",
-              "key": "programManagerApprover",
-              "type": "select",
-              "widget": "choicesjs",
-              "input": true,
-              "tableView": false,
-              "dataSrc": "resource",
-              "data": {
-                "resource": "user"
-              },
-              "valueProperty": "_id",
-              "template": "<span>{{ item.data.email }}</span>",
-              "searchEnabled": true,
-              "reference": true,
-              "conditional": {
-                "show": true,
-                "when": "programManagerApproved",
-                "eq": true
-              }
-            },
-            {
-              "label": "Approval Date",
-              "key": "programManagerApprovalDate",
-              "type": "datetime",
-              "input": true,
-              "tableView": false,
-              "enableTime": true,
-              "format": "yyyy-MM-dd HH:mm",
-              "conditional": {
-                "show": true,
-                "when": "programManagerApproved",
-                "eq": true
-              }
-            }
-          ]
-        },
-        {
-          "label": "General Manager Approval",
-          "key": "generalManagerApproval",
-          "type": "container",
-          "input": false,
-          "tableView": false,
-          "disabled": true,
-          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
-          "components": [
-            {
-              "label": "Approved",
-              "key": "generalManagerApproved",
-              "type": "checkbox",
-              "input": true,
-              "tableView": true
-            },
-            {
-              "label": "Approver",
-              "key": "generalManagerApprover",
-              "type": "select",
-              "widget": "choicesjs",
-              "input": true,
-              "tableView": false,
-              "dataSrc": "resource",
-              "data": {
-                "resource": "user"
-              },
-              "valueProperty": "_id",
-              "template": "<span>{{ item.data.email }}</span>",
-              "searchEnabled": true,
-              "reference": true,
-              "conditional": {
-                "show": true,
-                "when": "generalManagerApproved",
-                "eq": true
-              }
-            },
-            {
-              "label": "Approval Date",
-              "key": "generalManagerApprovalDate",
-              "type": "datetime",
-              "input": true,
-              "tableView": false,
-              "enableTime": true,
-              "format": "yyyy-MM-dd HH:mm",
-              "conditional": {
-                "show": true,
-                "when": "generalManagerApproved",
-                "eq": true
-              }
-            }
-          ]
-        },
-        {
-          "label": "Compliance Officer Approval",
-          "key": "complianceOfficerApproval",
-          "type": "container",
-          "input": false,
-          "tableView": false,
-          "disabled": true,
-          "customConditional": "disabled = !user?.roles?.includes('management') && !user?.roles?.includes('administrator');",
-          "components": [
-            {
-              "label": "Approved",
-              "key": "complianceOfficerApproved",
-              "type": "checkbox",
-              "input": true,
-              "tableView": true
-            },
-            {
-              "label": "Approver",
-              "key": "complianceOfficerApprover",
-              "type": "select",
-              "widget": "choicesjs",
-              "input": true,
-              "tableView": false,
-              "dataSrc": "resource",
-              "data": {
-                "resource": "user"
-              },
-              "valueProperty": "_id",
-              "template": "<span>{{ item.data.email }}</span>",
-              "searchEnabled": true,
-              "reference": true,
-              "conditional": {
-                "show": true,
-                "when": "complianceOfficerApproved",
-                "eq": true
-              }
-            },
-            {
-              "label": "Approval Date",
-              "key": "complianceOfficerApprovalDate",
-              "type": "datetime",
-              "input": true,
-              "tableView": false,
-              "enableTime": true,
-              "format": "yyyy-MM-dd HH:mm",
-              "conditional": {
-                "show": true,
-                "when": "complianceOfficerApproved",
-                "eq": true
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "label": "Background & Purpose",
-      "key": "contractRecitals",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Recitals",
-          "key": "recitals",
-          "type": "textarea",
-          "editor": "ckeditor",
-          "input": true,
-          "inputFormat": "html",
-          "tableView": false,
-          "description": "Background context and purpose of this agreement",
-          "defaultValue": "<p>This Underwriting Agreement (\"Agreement\") is entered into between the Station and the Sponsor identified above. The Station is a non-commercial educational (NCE) radio broadcaster licensed by the Federal Communications Commission (FCC). The Sponsor wishes to support the Station's programming through underwriting, and the Station agrees to provide on-air acknowledgment in accordance with FCC rules and Station policies.</p><p>This Agreement sets forth the terms under which the Station will broadcast underwriting acknowledgments on behalf of the Sponsor during the contract period specified above.</p>"
-        }
-      ]
-    },
-    {
-      "label": "Terms & Conditions",
-      "key": "contractTerms",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Terms",
-          "key": "terms",
-          "type": "textarea",
-          "editor": "ckeditor",
-          "input": true,
-          "inputFormat": "html",
-          "tableView": false,
-          "description": "Standard on-air underwriting guidelines and FCC compliance terms",
-          "defaultValue": "<p><strong>On-Air Sponsorship, Underwriting, and PSA Guidelines</strong></p><p>Adherence to these On-Air Underwriting Guidelines will ensure compliance with the Station's obligations under its FCC license and station policies.</p><ol><li>Underwriting acknowledgments are generally expected to last 15–20 seconds and will not exceed 30 seconds.</li><li>Underwriting acknowledgments will be played between programs or other breaks so they do not interrupt regular programming.</li><li>Underwriting acknowledgments will be recorded and produced as a dry read or with non-promotional music, or the spot may be played during a music bed between programs.</li><li>For underwriting by non-profit organizations, the organization's nonprofit status will be mentioned in the acknowledgment.</li><li><strong>Underwriting acknowledgments MAY NOT contain the following language:</strong><ul><li>Language that is promotional</li><li>Comparative or qualitative language to describe an event, product, or service (e.g., \"good,\" \"great,\" \"best,\" \"better,\" \"highly regarded,\" \"famous,\" \"award winning,\" \"latest,\" \"featuring,\" \"starring\" — \"presents\" is acceptable)</li><li>Repetition of information</li><li>Any reference or allusion to cost (including \"free\"), discounts, or sales</li><li>Calls to action (directly telling the listener to do something)</li><li>Inducements to buy, sell, or lease (e.g., buy-one-get-one)</li></ul></li><li><strong>Underwriting acknowledgments MAY contain the following language:</strong><ul><li>Name of Underwriter</li><li>Underwriter's address, website, and phone number</li><li>Length of time the underwriter has been in business</li><li>Brand or trade name of the underwriter's product, service, or event</li><li>Name of the underwriter's product, service, or event</li><li>Underwriter's well-established slogan that the public already associates with the Underwriter</li><li>Value-neutral description of an event with a date, service, or product</li></ul></li><li>Sponsor's announcements are in rotation with announcements from other Station supporters.</li><li>The Station reserves the right to not accept underwriting support from any entity deemed to be inconsistent with the Station's mission, not in the general interest of its listeners, or potentially detrimental to the welfare and image of the Station.</li></ol>"
-        }
-      ]
-    },
-    {
-      "label": "Signature & Execution",
-      "key": "signatureBlock",
-      "type": "panel",
-      "input": false,
-      "tableView": false,
-      "components": [
-        {
-          "label": "Station Representative Signature",
-          "key": "stationRepSignature",
-          "type": "signature",
-          "input": true,
-          "tableView": false,
-          "description": "Station representative's digital signature"
-        },
-        {
-          "label": "Station Representative Name",
-          "key": "stationRepName",
-          "type": "textfield",
-          "input": true,
-          "tableView": false
-        },
-        {
-          "label": "Station Representative Title",
-          "key": "stationRepTitle",
-          "type": "textfield",
-          "input": true,
-          "tableView": false
-        },
-        {
-          "label": "Sponsor Signatory Name",
-          "key": "sponsorSignatoryName",
-          "type": "textfield",
-          "input": true,
-          "tableView": false
-        },
-        {
-          "label": "Sponsor Signatory Title",
-          "key": "sponsorSignatoryTitle",
-          "type": "textfield",
-          "input": true,
-          "tableView": false
-        },
-        {
-          "label": "Contract Signed Date",
-          "key": "contractSignedDate",
-          "type": "datetime",
-          "input": true,
-          "tableView": false,
-          "enableTime": false,
-          "format": "yyyy-MM-dd"
-        },
-        {
-          "label": "Executed Contract URL",
-          "key": "uploadedContractUrl",
-          "type": "url",
-          "input": true,
-          "tableView": false,
-          "description": "Link to the final signed/executed contract document (upload to cloud storage and paste URL here)"
-        }
-      ]
-    },
-    {
-      "label": "Internal Notes",
-      "key": "notes",
-      "type": "textarea",
-      "editor": "ckeditor",
-      "input": true,
-      "inputFormat": "html",
-      "tableView": false
-    },
-    {
-      "label": "Submit",
-      "key": "submit",
-      "type": "button",
-      "action": "submit",
-      "theme": "primary",
-      "input": true
-    }
-  ]
+  }
 }

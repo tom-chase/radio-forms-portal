@@ -529,6 +529,36 @@
             "url": ""
           },
           "fieldSet": false
+        },
+        {
+          "label": "Incident Date Formatted",
+          "key": "incidentDateFormatted",
+          "type": "textfield",
+          "input": true,
+          "hidden": true,
+          "persistent": true,
+          "calculateServer": true,
+          "calculateValue": "var d = data.incidentDate ? new Date(data.incidentDate) : null; if (d && !isNaN(d)) { var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; var h = d.getHours(); var m = d.getMinutes(); var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12; if (h === 0) h = 12; value = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' ' + h + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm; } else { value = data.incidentDate || ''; }",
+          "id": "e_incdate_fmt",
+          "tableView": false,
+          "protected": false,
+          "clearOnHide": false,
+          "allowCalculateOverride": false
+        },
+        {
+          "label": "Affected Services Formatted",
+          "key": "affectedServicesFormatted",
+          "type": "textfield",
+          "input": true,
+          "hidden": true,
+          "persistent": true,
+          "calculateServer": true,
+          "calculateValue": "var labels = { fmBroadcast: 'FM Broadcast', liveStream: 'Live Stream', studio: 'Studio Equipment', itNetwork: 'IT / Network', powerHvac: 'Power / HVAC' }; var services = []; if (data.affectedServices) { Object.keys(data.affectedServices).forEach(function(k) { if (data.affectedServices[k] === true) { services.push(labels[k] || k); } }); } value = services.join(', ');",
+          "id": "e_affsvc_fmt",
+          "tableView": false,
+          "protected": false,
+          "clearOnHide": false,
+          "allowCalculateOverride": false
         }
       ],
       "id": "etgp6vl",
