@@ -635,6 +635,74 @@ show = Array.isArray(user.roles) &&
         }
     }
 
+    // --- Task 5: Patch contactIntake marketingContent from environment variables ---
+    // The template uses generic station-neutral defaults for marketingContent.
+    // This task overlays station-specific copy from CONTACT_* env vars.
+    const contactHeadline    = process.env.CONTACT_HEADLINE     || '';
+    const contactTagline     = process.env.CONTACT_TAGLINE      || '';
+    const contactFormTitle   = process.env.CONTACT_FORM_TITLE   || '';
+    const contactFormSubtitle = process.env.CONTACT_FORM_SUBTITLE || '';
+
+    if (!contactHeadline && !contactTagline && !contactFormTitle && !contactFormSubtitle) {
+        log('No CONTACT_* env vars set. Skipping marketingContent patch.');
+    } else {
+        const contactIntakeId = formMap['contactIntake'];
+        if (!contactIntakeId) {
+            log('contactIntake form not found. Skipping marketingContent patch.');
+        } else {
+            log('Patching contactIntake marketingContent from env vars...');
+            try {
+                const ciResp = await fetch(`${API_BASE}/form/${contactIntakeId}`, { headers });
+                if (!ciResp.ok) {
+                    log(`WARNING: Could not fetch contactIntake form: ${ciResp.status}`);
+                } else {
+                    const ciForm = await ciResp.json();
+                    ciForm.settings = ciForm.settings || {};
+                    ciForm.settings.ui = ciForm.settings.ui || {};
+                    ciForm.settings.ui.marketingContent = ciForm.settings.ui.marketingContent || {};
+
+                    const mc = ciForm.settings.ui.marketingContent;
+                    let mcChanged = false;
+
+                    if (contactHeadline && mc.headline !== contactHeadline) {
+                        mc.headline = contactHeadline;
+                        mcChanged = true;
+                    }
+                    if (contactTagline && mc.tagline !== contactTagline) {
+                        mc.tagline = contactTagline;
+                        mcChanged = true;
+                    }
+                    if (contactFormTitle && mc.formTitle !== contactFormTitle) {
+                        mc.formTitle = contactFormTitle;
+                        mcChanged = true;
+                    }
+                    if (contactFormSubtitle && mc.formSubtitle !== contactFormSubtitle) {
+                        mc.formSubtitle = contactFormSubtitle;
+                        mcChanged = true;
+                    }
+
+                    if (!mcChanged) {
+                        log('contactIntake marketingContent already up to date.');
+                    } else {
+                        const putResp = await fetch(`${API_BASE}/form/${contactIntakeId}`, {
+                            method: 'PUT',
+                            headers,
+                            body: JSON.stringify(ciForm)
+                        });
+                        if (putResp.ok) {
+                            log('Patched contactIntake marketingContent from env vars.');
+                        } else {
+                            const text = await putResp.text();
+                            log(`ERROR: Failed to patch contactIntake marketingContent: ${putResp.status} ${text}`);
+                        }
+                    }
+                }
+            } catch (e) {
+                log(`ERROR: Exception patching contactIntake marketingContent: ${e.message}`);
+            }
+        }
+    }
+
     log('Post-bootstrap configuration complete.');
 }
 

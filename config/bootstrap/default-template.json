@@ -2380,7 +2380,7 @@
           "input": true,
           "tableView": false,
           "rows": 5,
-          "description": "Tell us about your interest in sponsoring or partnering with us"
+          "description": "Tell us about your organization and how you'd like to partner with us."
         },
         {
           "label": "Source",
@@ -2400,7 +2400,7 @@
           "description": "Leave this field blank"
         },
         {
-          "label": "Submit",
+          "label": "Request More Information",
           "key": "submit",
           "type": "button",
           "action": "submit",
@@ -2412,7 +2412,49 @@
         "ui": {
           "alternateTitle": "Contact Intake",
           "submissionsTitle": "Contact Intake List",
-          "sortOrder": 1
+          "sortOrder": 1,
+          "marketingContent": {
+            "headline": "Join the Movement: Sustain the Rhythm of Community Radio",
+            "tagline": "An independent, community-funded radio station serving as an amplifier for music and social movements. For decades, we've remained unwavering and independent \u2014 accountable only to the listeners who power our mission.",
+            "stats": [
+              {
+                "icon": "fas fa-users",
+                "title": "A Deeply Rooted Community",
+                "body": "Over 53% of our listeners are African American, and the majority are over the age of 55."
+              },
+              {
+                "icon": "fas fa-graduation-cap",
+                "title": "Influential & Educated",
+                "body": "78% hold advanced degrees; 50% report household income exceeding $120,000."
+              },
+              {
+                "icon": "fas fa-broadcast-tower",
+                "title": "Broad Reach",
+                "body": "Our 50,000-watt signal reaches across the region, complemented by a global digital footprint."
+              }
+            ],
+            "valuesHeading": "What makes an ideal sponsor?",
+            "values": [
+              {
+                "icon": "fas fa-heart",
+                "title": "Mission-Aligned & Justice-Oriented",
+                "body": "Local music venues, grassroots nonprofits, and mission-driven small businesses whose work strengthens the cultural fabric of our region."
+              },
+              {
+                "icon": "fas fa-handshake",
+                "title": "Committed to the Long Game",
+                "body": "Partners who understand that progressive social change is a multi-year effort and seek sustained commitment over quick, one-off spots."
+              },
+              {
+                "icon": "fas fa-user-circle",
+                "title": "Rooted in Candid Humanity",
+                "body": "Real organizations that embrace the humanistic, community spirit of our audience rather than a synthetic corporate identity."
+              }
+            ],
+            "fccNote": "Unlike commercial radio, our sponsorship acknowledgments are fact-based and non-promotional. We welcome support from nonprofits, local businesses, and community organizations \u2014 but we never air sales pitches or advertising language.",
+            "formTitle": "Request Sponsorship Information",
+            "formSubtitle": "We'll be in touch within 2 business days."
+          }
         },
         "groupPermissions": [
           {
