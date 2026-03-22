@@ -208,7 +208,7 @@ export default function renderContract({ submission, formMeta, user }) {
     <!-- ===== APPROVED COPY / MESSAGING SUMMARY ===== -->
     ${copySummary ? `
     <div style="margin-bottom:20px;page-break-inside:avoid;">
-        <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Approved Messaging Summary</div>
+        <div style="font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#0d6efd;border-bottom:1px solid #dee2e6;padding-bottom:4px;margin-bottom:10px;">Messaging Summary</div>
         <div style="font-size:10.5pt;padding:10px 12px;background:#f8f9fa;border-left:3px solid #0d6efd;">${copySummary}</div>
     </div>` : ''}
 
