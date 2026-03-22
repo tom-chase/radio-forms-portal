@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>License Compliance - Radio Forms Portal</title>
+
+    <!-- Environment Configuration -->
+    <script src="/config.js"></script>
+    <script>
+        (function() {
+            var name     = window.STATION_NAME     || '';
+            var callSign = window.STATION_CALL_SIGN || '';
+            var isDefaultName = (name === 'Your Radio Station' || name === '');
+            var isDefaultCall = (callSign === '[CALL SIGN]' || callSign === '');
+            var brand = (!isDefaultName && !isDefaultCall) ? name + ' — ' + callSign
+                      : (!isDefaultName) ? name
+                      : (!isDefaultCall) ? callSign
+                      : 'Radio Forms Portal';
+            document.title = 'License Compliance — ' + brand;
+            window._rfpBrand = brand + ' Forms Portal';
+        })();
+    </script>
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/js/vendor/bootstrap@5.3.8/bootstrap.min.css">
@@ -28,7 +45,13 @@
         <header class="mb-5 border-bottom pb-3">
             <a href="/" class="btn btn-outline-secondary btn-sm float-end">&larr; Back to App</a>
             <h1>Open Source License Compliance</h1>
-            <p class="lead text-muted">The Radio Forms Portal uses the following open source libraries.</p>
+            <p class="lead text-muted"><span id="licensePortalName">Radio Forms Portal</span> uses the following open source libraries.</p>
+            <script>
+                (function() {
+                    var el = document.getElementById('licensePortalName');
+                    if (el && window._rfpBrand && window._rfpBrand !== 'Radio Forms Portal') el.textContent = window._rfpBrand;
+                })();
+            </script>
         </header>
 
         <div class="row">
@@ -176,6 +199,28 @@ https://raw.githubusercontent.com/formio/formio/master/LICENSE.txt</div>
                     </div>
                 </div>
 
+                <!-- Radio Forms Portal (this application) -->
+                <div class="card library-card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Radio Forms Portal</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Upstream:</strong> <a href="https://github.com/tom-chase/radio-forms-portal" target="_blank" rel="noopener noreferrer">https://github.com/tom-chase/radio-forms-portal</a></p>
+                        <p><strong>License:</strong> MIT License</p>
+                        <p><strong>Copyright:</strong> &copy; 2024&ndash;2026 Tom Chase</p>
+                        <p class="mb-2">This portal application is released under the MIT License. Operators who deploy this software for their own station are free to use, modify, and distribute it under the terms of that license.</p>
+                        <div class="license-text">MIT License
+
+Copyright (c) 2024-2026 Tom Chase
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</div>
+                    </div>
+                </div>
+
                 <!-- CKEditor 5 -->
                 <div class="card library-card">
                     <div class="card-header bg-light">
@@ -196,7 +241,15 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
         </div>
 
         <footer class="mt-5 text-center text-muted border-top pt-3">
-            <p>&copy; 2026 Tom Chase. Released under the MIT License.</p>
+            <p id="licenseFooter">&copy; 2026 Radio Forms Portal. Released under the MIT License. | <a href="/" class="text-muted text-decoration-none">&larr; Back to App</a></p>
+            <script>
+                (function() {
+                    var el = document.getElementById('licenseFooter');
+                    if (el && window._rfpBrand && window._rfpBrand !== 'Radio Forms Portal') {
+                        el.innerHTML = el.innerHTML.replace('Radio Forms Portal', window._rfpBrand);
+                    }
+                })();
+            </script>
         </footer>
     </div>
 </body>

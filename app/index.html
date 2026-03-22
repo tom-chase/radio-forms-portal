@@ -7,6 +7,15 @@
 
         <!-- Environment Configuration (Generated during deployment) -->
         <script src="/config.js"></script>
+        <script>
+            // Set page title from station identity (runs after config.js)
+            (function() {
+                var name = window.STATION_NAME || window.STATION_CALL_SIGN;
+                if (name && name !== 'Your Radio Station' && name !== '[CALL SIGN]') {
+                    document.title = name + ' — Forms Portal';
+                }
+            })();
+        </script>
 
         <!-- Favicon & App Icons -->
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -66,10 +75,30 @@
         <!-- Top Navbar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
             <div class="container-fluid">
-                <span class="navbar-brand d-flex align-items-center">
+                <span class="navbar-brand d-flex align-items-center" id="navbarBrand">
                 <i class="bi bi-broadcast-pin me-2"></i>
                 Radio Forms Portal
                 </span>
+                <script>
+                    (function() {
+                        var logoUrl  = window.STATION_LOGO_URL  || '';
+                        var callSign = window.STATION_CALL_SIGN || '';
+                        var name     = window.STATION_NAME     || '';
+                        var el = document.getElementById('navbarBrand');
+                        if (!el) return;
+                        var isDefaultCall = (callSign === '[CALL SIGN]' || callSign === '');
+                        var isDefaultName = (name === 'Your Radio Station' || name === '');
+                        if (logoUrl) {
+                            var label = callSign || name || 'Forms Portal';
+                            el.innerHTML = '<img src="' + logoUrl + '" alt="' + label + ' logo" style="max-height:60px;max-width:140px;object-fit:contain;margin-right:8px;" />Forms Portal';
+                        } else if (!isDefaultCall) {
+                            el.innerHTML = '<i class="bi bi-broadcast-pin me-2"></i>' + callSign + ' Forms Portal';
+                        } else if (!isDefaultName) {
+                            el.innerHTML = '<i class="bi bi-broadcast-pin me-2"></i>' + name + ' Forms Portal';
+                        }
+                        // else: leave default as-is
+                    })();
+                </script>
                 <div class="d-flex align-items-center ms-auto gap-2">
                 <span
                     id="statusText"
@@ -655,11 +684,31 @@
         <footer class="container-fluid py-3 border-top mt-4 bg-light">
             <div class="row">
                 <div class="col-12 text-center text-muted small">
-                    <p class="mb-0">
-                        &copy; 2026 Tom Chase | 
+                    <p class="mb-0" id="footerCopyright">
+                        &copy; 2026 Radio Forms Portal | 
                         <a href="/licenses.html" class="text-decoration-none text-muted">License Compliance</a> |
                         <a href="https://github.com/tom-chase/radio-forms-portal" class="text-decoration-none text-muted" target="_blank">GitHub</a>
                     </p>
+                    <script>
+                        (function() {
+                            var name     = window.STATION_NAME     || '';
+                            var callSign = window.STATION_CALL_SIGN || '';
+                            var isDefaultName = (name === 'Your Radio Station' || name === '');
+                            var isDefaultCall = (callSign === '[CALL SIGN]' || callSign === '');
+                            var holder = '';
+                            if (!isDefaultName && !isDefaultCall) {
+                                holder = name + ' &mdash; ' + callSign;
+                            } else if (!isDefaultName) {
+                                holder = name;
+                            } else if (!isDefaultCall) {
+                                holder = callSign;
+                            }
+                            if (holder) {
+                                var el = document.getElementById('footerCopyright');
+                                if (el) el.innerHTML = el.innerHTML.replace('Radio Forms Portal', holder);
+                            }
+                        })();
+                    </script>
                 </div>
             </div>
         </footer>
