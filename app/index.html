@@ -687,12 +687,13 @@
                     <p class="mb-0" id="footerCopyright">
                         &copy; 2026 Radio Forms Portal | 
                         <a href="/licenses.html" class="text-decoration-none text-muted">License Compliance</a> |
-                        <a href="https://github.com/tom-chase/radio-forms-portal" class="text-decoration-none text-muted" target="_blank">GitHub</a>
+                        <a href="https://github.com/tom-chase/radio-forms-portal" class="text-decoration-none text-muted" target="_blank">Radio Forms Portal</a>
                     </p>
                     <script>
                         (function() {
-                            var name     = window.STATION_NAME     || '';
-                            var callSign = window.STATION_CALL_SIGN || '';
+                            var name     = window.STATION_NAME      || '';
+                            var callSign = window.STATION_CALL_SIGN  || '';
+                            var website  = window.STATION_WEBSITE_URL || '';
                             var isDefaultName = (name === 'Your Radio Station' || name === '');
                             var isDefaultCall = (callSign === '[CALL SIGN]' || callSign === '');
                             var holder = '';
@@ -704,8 +705,11 @@
                                 holder = callSign;
                             }
                             if (holder) {
+                                var display = website
+                                    ? '<a href="' + website + '" class="text-decoration-none text-muted" target="_blank" rel="noopener">' + holder + '</a>'
+                                    : holder;
                                 var el = document.getElementById('footerCopyright');
-                                if (el) el.innerHTML = el.innerHTML.replace('Radio Forms Portal', holder);
+                                if (el) el.innerHTML = el.innerHTML.replace('Radio Forms Portal', display);
                             }
                         })();
                     </script>

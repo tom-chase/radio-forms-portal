@@ -80,6 +80,7 @@ window.STATION_NAME = '${STATION_NAME:-Your Radio Station}';
 window.STATION_CALL_SIGN = '${STATION_CALL_SIGN:-[CALL SIGN]}';
 window.STATION_ADDRESS = '${STATION_ADDRESS:-}';
 window.STATION_LOGO_URL = '${STATION_LOGO_URL:-}';
+window.STATION_WEBSITE_URL = '${STATION_WEBSITE_URL:-}';
 JS_EOF
 
 # Stop any existing development containers
