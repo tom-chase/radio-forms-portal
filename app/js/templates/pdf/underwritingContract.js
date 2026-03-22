@@ -124,7 +124,7 @@ export default function renderContract({ submission, formMeta, user }) {
 
     // Generated date
     const generatedDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const contractId    = submission._id ? submission._id.slice(-8).toUpperCase() : 'DRAFT';
+    const contractId    = d.contractId || (submission._id ? submission._id.slice(-8).toUpperCase() : 'DRAFT');
 
     const logoHtml = stationLogo
         ? `<img src="${esc(stationLogo)}" alt="${esc(stationName)} logo" style="max-height:60px;max-width:200px;object-fit:contain;display:block;margin-bottom:6px;" />`

@@ -464,6 +464,39 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
             return origSubmit(...args);
         };
     }
+    // For underwritingContract: compute a true sequential contractId before save.
+    if (formMeta?.name === 'underwritingContract' && !readOnly) {
+        const prevSubmit = formio.submit.bind(formio);
+        formio.submit = async function (...args) {
+            try {
+                const data = this.submission?.data || {};
+                const year = data.startDate ? new Date(data.startDate).getFullYear() : new Date().getFullYear();
+                const type = data.contractType || 'UW';
+                const orgName = (data.organization?.data?.name) || '';
+                const abbr = orgName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8).toUpperCase();
+                if (year && abbr) {
+                    const prefix = `${year}-${type}-${abbr}`;
+                    const existingId = data.contractId || '';
+                    const alreadySet = existingId.startsWith(prefix + '-') && /\d{3}$/.test(existingId);
+                    if (!alreadySet) {
+                        const res = await formioRequest(`/underwritingcontract/submission?data.contractId__regex=^${encodeURIComponent(prefix + '-')}&select=data.contractId&limit=1000`);
+                        const subs = Array.isArray(res) ? res : [];
+                        let maxSeq = 0;
+                        for (const s of subs) {
+                            const parts = (s?.data?.contractId || '').split('-');
+                            const seq = parseInt(parts[parts.length - 1], 10);
+                            if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+                        }
+                        data.contractId = `${prefix}-${String(maxSeq + 1).padStart(3, '0')}`;
+                    }
+                }
+            } catch (err) {
+                console.warn('[ContractId] Could not compute sequential ID, keeping existing value.', err);
+            }
+            return prevSubmit(...args);
+        };
+    }
+
     actions.attachFormioErrorHandler?.(formio, "Main form");
     actions.attachUserAdminSubmitGuards?.(formio, formMeta);
 

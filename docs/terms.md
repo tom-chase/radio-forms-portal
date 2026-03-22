@@ -1,8 +1,6 @@
-
-
 On-Air Sponsorship, Underwriting, and PSA Guidelines
 
-Adherence to these On-Air Underwriting Guidelines with ensure compliance with WPFW’s obligations under its FCC license and Pacific Foundation and WPFW station policies.
+Adherence to these On-Air Underwriting Guidelines will ensure compliance with the station's obligations under its FCC license and station policies.
 
 1. Underwriting acknowledgments are generally expected to last 15 -20 seconds and will not exceed 30 seconds.
 
@@ -29,6 +27,6 @@ Adherence to these On-Air Underwriting Guidelines with ensure compliance with WP
     * Underwriter's well-established slogan that the public already associates with the Underwriter
     * Value-neutral description of an event with a date, service, or product.
 
-7. Your announcements are in rotation with announcements from other WPFW supporters.
+7. Your announcements are in rotation with announcements from other station supporters.
 
-8. WPFW reserves the right to not accept underwriting support from any entity deemed to be inconsistent with the station’s mission, not in the general interest of its listeners, or potentially detrimental to the welfare and image of the station.
+8. The station reserves the right to not accept underwriting support from any entity deemed to be inconsistent with the station's mission, not in the general interest of its listeners, or potentially detrimental to the welfare and image of the station.

@@ -10486,6 +10486,103 @@
               "displayMask": ""
             },
             {
+              "label": "Contract Type",
+              "key": "contractType",
+              "type": "select",
+              "input": true,
+              "tableView": true,
+              "data": {
+                "values": [
+                  {
+                    "label": "UW \u2014 Underwriting",
+                    "value": "UW"
+                  },
+                  {
+                    "label": "SP \u2014 Sponsorship",
+                    "value": "SP"
+                  },
+                  {
+                    "label": "PS \u2014 Program Sponsorship",
+                    "value": "PS"
+                  },
+                  {
+                    "label": "EV \u2014 Event Sponsorship",
+                    "value": "EV"
+                  }
+                ]
+              },
+              "dataSrc": "values",
+              "defaultValue": "UW",
+              "validate": {
+                "required": true
+              },
+              "placeholder": "",
+              "customClass": "",
+              "hidden": false,
+              "description": "",
+              "tooltip": "Select the type of sponsorship agreement.",
+              "disabled": false,
+              "customDefaultValue": "",
+              "calculateValue": "",
+              "attributes": {},
+              "validateOn": "change",
+              "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {},
+              "allowMultipleMasks": false,
+              "addons": []
+            },
+            {
+              "label": "Contract ID",
+              "key": "contractId",
+              "type": "textfield",
+              "input": true,
+              "tableView": true,
+              "disabled": true,
+              "placeholder": "Auto-generated on save",
+              "customClass": "",
+              "hidden": false,
+              "description": "Auto-generated: [Year]-[Type]-[Sponsor]-[Seq]. Editable if needed.",
+              "tooltip": "",
+              "defaultValue": "",
+              "customDefaultValue": "",
+              "calculateValue": "var year = '';\nif (data.startDate) {\n  var d = new Date(data.startDate);\n  if (!isNaN(d.getTime())) year = d.getFullYear();\n}\nvar type = data.contractType || 'UW';\nvar orgName = '';\nif (data.organization && data.organization.data && data.organization.data.name) {\n  orgName = data.organization.data.name;\n} else if (data.organization && typeof data.organization === 'string') {\n  orgName = '';\n}\nvar abbr = orgName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8).toUpperCase() || 'ORG';\nvar seq = 'NEW';\nif (instance && instance.root && instance.root.submission && instance.root.submission._id) {\n  var id = instance.root.submission._id;\n  seq = String(parseInt(id.slice(-4), 16) % 1000).padStart(3, '0');\n}\nif (year && abbr !== 'ORG') {\n  value = year + '-' + type + '-' + abbr + '-' + seq;\n} else {\n  value = '';\n}",
+              "allowMultipleMasks": false,
+              "addons": [],
+              "mask": false,
+              "inputFormat": "plain",
+              "inputMask": "",
+              "displayMask": "",
+              "attributes": {},
+              "validateOn": "change",
+              "validate": {
+                "required": false
+              },
+              "conditional": {
+                "show": null,
+                "when": null,
+                "eq": ""
+              },
+              "overlay": {
+                "style": "",
+                "left": "",
+                "top": "",
+                "width": "",
+                "height": ""
+              },
+              "properties": {}
+            },
+            {
               "label": "Organization",
               "tableView": true,
               "dataSrc": "resource",

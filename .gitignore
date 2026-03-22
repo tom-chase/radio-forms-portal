@@ -49,6 +49,7 @@ backups/
 # Tools (sensitive data)
 tools/
 docs/chats_ext/
+docs/uw_forms_cleanup.md
 config/bootstrap/form_templates/editgrid_templates/
 config/bootstrap/docs/pdf_outputs/
 config/bootstrap/form_templates/submissions/
