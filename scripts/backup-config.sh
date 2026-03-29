@@ -1,14 +1,17 @@
 #!/bin/bash
-set -euo pipefail
+set -e
 
-PROJECT_DIR="${PROJECT_DIR:-/home/admin/radio-forms-portal}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source the project .env to pick up BACKUPS_NAS_PATH and BACKUPS_RETENTION_DAYS
-if [[ -f "$PROJECT_DIR/.env" ]]; then
-    set -a
-    # shellcheck disable=SC1091
-    . "$PROJECT_DIR/.env"
-    set +a
+# Load environment variables from .env file
+if [ -f "$SCRIPT_DIR/../.env" ]; then
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" ]] && continue
+    if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
+      export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+    fi
+  done < "$SCRIPT_DIR/../.env"
 fi
 
 BACKUP_ROOT="${BACKUPS_NAS_PATH:-/mnt/nas-backup}/config"

@@ -1145,13 +1145,23 @@ In the AWS Console (IAM):
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "ListBucketsRequired",
       "Effect": "Allow",
       "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::*"
+    },
+    {
+      "Sid": "BucketAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
         "s3:GetObject",
         "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket",
-        "s3:GetBucketLocation"
+        "s3:DeleteObject"
       ],
       "Resource": [
         "arn:aws:s3:::radio-forms-backups-ACCOUNTID-production",
@@ -1161,6 +1171,8 @@ In the AWS Console (IAM):
   ]
 }
 ```
+
+> **Note**: `s3:ListAllMyBuckets` must be scoped to `arn:aws:s3:::*` — AWS does not allow this action to be restricted to a single bucket ARN. Without it, Hyper Backup fails with "Insufficient privileges" when attempting to enumerate buckets during task setup. All write/read/delete actions remain locked to the specific bucket.
 
 3. Save the access key ID and secret access key securely.
 
@@ -1267,23 +1279,62 @@ curl -I https://forms.your-domain.com
 
 ---
 
-## Phase 8: AWS Failover Posture
+## Phase 8: EC2 Decommission
 
-The EC2 instance and Elastic IP have been decommissioned. AWS is retained only for:
+The EC2 instance, Elastic IP, VPC, and associated resources have been decommissioned. AWS is retained only for:
 - **Route 53** — DNS management
 - **S3** — off-site backup destination (via Synology Hyper Backup)
-- **CloudFormation** — rebuild path if EC2 failover is ever needed
+- **CloudFormation template** — rebuild path if EC2 failover is ever needed
+
+### What Was Decommissioned (March 2026)
+
+The CloudFormation stack `radio-forms-production-stack` was deleted. The following resources were removed:
+- **EC2 instance** (`t3.large`) — terminated
+- **EBS root volume** — deleted automatically (`DeleteOnTermination: true`)
+- **Elastic IP** — released (eliminates ~$3.65/month reserved-IP charge)
+- **VPC, subnet, route table, internet gateway** — deleted
+- **Security group** — deleted
+- **IAM role + instance profile** — deleted
+
+The **S3 backup bucket** (`radio-forms-backups-ACCOUNTID-production`) was **retained** — CloudFormation cannot delete a non-empty bucket, so it was skipped during stack deletion and then explicitly retained using the `--retain-resources` flag on the second delete pass.
+
+The **`synology-backup-svc` IAM user** (used by Hyper Backup) was created outside CloudFormation and was unaffected.
+
+### How the Stack Was Deleted
+
+```bash
+# First pass — initiates deletion (will fail on non-empty S3 bucket)
+aws cloudformation delete-stack --stack-name radio-forms-production-stack
+
+# Second pass — retains the bucket, removes the stack record
+aws cloudformation delete-stack \
+  --stack-name radio-forms-production-stack \
+  --retain-resources BackupBucket
+```
+
+### Verify Decommission
+
+```bash
+# No EIP remaining
+aws ec2 describe-addresses \
+  --query 'Addresses[?Tags[?Key==`Name` && contains(Value,`radio-forms`)]]'
+
+# Backup bucket still exists with Hyper Backup data
+aws s3 ls s3://radio-forms-backups-$(aws sts get-caller-identity --query Account --output text)-production/hyper-backup/ | head -5
+
+# synology-backup-svc IAM user intact
+aws iam get-user --user-name synology-backup-svc
+```
 
 ### Failover Procedure (if NUC becomes unavailable)
 
-1. **Provision a new EC2 instance** from the existing CloudFormation template:
+1. **Provision a new EC2 instance** from the CloudFormation template:
    ```bash
    ./scripts/provision-infrastructure.sh production my-key-pair <your-ip>/32
    ```
 2. **Create `.env` and `Caddyfile`** on the new instance (see Phase 4.2 and 4.3).
-   - Uncomment the AWS backup variables in `.env` (see Section 4 in `.env.example`).
 3. **Restore data** from the S3 backup:
-   - Use Synology Hyper Backup to download and decrypt the latest backup set, or
+   - Use Synology Hyper Backup to download and decrypt the latest backup set from S3, or
    - Access the NAS directly if it is still reachable.
 4. **Deploy the application**:
    ```bash
@@ -1292,22 +1343,9 @@ The EC2 instance and Elastic IP have been decommissioned. AWS is retained only f
    ```
 5. **Switch to the AWS compose file** on the EC2 instance (no NAS mount available):
    ```bash
-   # On EC2:
    docker compose -f docker-compose.aws.yml up -d --build
    ```
-   This uses a Docker volume for backups instead of the NAS bind mount.
-6. **Set up S3 sync** (optional — the EC2 IAM role provides credentials):
-   ```bash
-   sudo apt install -y awscli
-   # Add a cron to sync the backup volume to S3:
-   # 0 5 * * * docker run --rm -v radio-forms-portal_mongo-backup-data:/backup:ro amazon/aws-cli s3 sync /backup s3://radio-forms-backups-ACCOUNTID-production/ec2-backup/
-   ```
-7. **Update DNS** in Route 53 to point at the new EC2 public IP.
-
-### What Was Removed
-- **Elastic IP**: Released — no ongoing cost.
-- **EC2 instance**: Terminated — no ongoing cost.
-- **Note**: The original CloudFormation stack may still own the S3 bucket. If you delete the stack, ensure the S3 bucket is preserved (set `DeletionPolicy: Retain` on the bucket resource, or move the bucket to a separate stack first).
+6. **Update DNS** in Route 53 to point at the new EC2 public IP.
 
 ---
 
