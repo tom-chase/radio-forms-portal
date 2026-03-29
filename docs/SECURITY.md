@@ -267,4 +267,4 @@ If EC2 is reprovisioned, the `RadioFormsEC2Role` in `infrastructure/cloudformati
 
 ---
 
-**Security Contact**: tomchase@duck.com
+**Security Contact**: [Open a GitHub Issue](https://github.com/tom-chase/radio-forms-portal/issues)

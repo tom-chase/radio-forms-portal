@@ -236,4 +236,4 @@ See **[CASCADE_INTEGRATION.md](CASCADE_INTEGRATION.md)** for details on how to m
 ---
 
 **Documentation Hub Last Updated**: 2026-03-29
-**Maintainer**: tomchase@duck.com
+**Maintainer**: [GitHub Issues](https://github.com/tom-chase/radio-forms-portal/issues)

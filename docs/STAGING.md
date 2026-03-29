@@ -397,4 +397,4 @@ curl http://localhost:3001/health
 ---
 
 **Last Updated**: 2026-01-21
-**Maintainer**: tomchase@duck.com
+**Maintainer**: [GitHub Issues](https://github.com/tom-chase/radio-forms-portal/issues)
