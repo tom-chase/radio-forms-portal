@@ -178,6 +178,35 @@ We opted for the **Embedded Array** approach for the following reasons:
 - **Payload**: Send request body in `data` option, not `body`.
 - **Example**: `formioRequest('/user/submission/123', { method: 'PUT', data: updatedData })`
 
+## Form UI Settings Schema (`form.settings.ui`)
+
+In addition to `groupPermissions`, the `form.settings.ui` object controls several frontend behaviours. These are set in `config/bootstrap/form_templates/<form>.json` under `settings.ui`.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `alternateTitle` | string | *(form title)* | Override the display title in the sidebar and form header. Does not affect the Form.io Admin Builder select. |
+| `sortOrder` | integer | *(alphabetical)* | Controls display order of forms within their tag/section in the sidebar. Lower values appear first. Forms without a `sortOrder` fall back to alphabetical by display title. Ties are broken alphabetically. |
+| `submissionsTitle` | string | `"Submissions"` | Override the "Submissions" header in the submissions list accordion. Set to `""` to hide the header and subtitle entirely. |
+| `formsList.hidden` | boolean | `false` | Hide the form from the sidebar list for all users, including admins. Does not affect the Admin Builder select. Used on internal resources like `viewedSubmissions` and `loginLog`. |
+| `hideBadges` | boolean | `false` | Skip sidebar badge count fetching and Tabulator new-row styling for this form. Applied to `user` and `engineeringSchedule`. |
+| `pdfTemplate` | string | *(none)* | Custom PDF template key. If set, `pdfService.js` loads `app/js/templates/pdf/{key}.js` instead of the default form-capture mode. See `docs/FEATURES.md` → PDF Download. |
+
+### Example
+
+```json
+"settings": {
+  "ui": {
+    "alternateTitle": "Engineering Shifts",
+    "sortOrder": 1,
+    "submissionsTitle": "Upcoming Shifts",
+    "hideBadges": true
+  },
+  "groupPermissions": [...]
+}
+```
+
+---
+
 ## Troubleshooting
 
 ### Issue: Users cannot see a form despite being in the group

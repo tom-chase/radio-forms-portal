@@ -1,353 +1,270 @@
 # Security Documentation
 
-## 🔐 Production Security Setup
+> **Current Production** (2026): ASUS NUC 14 on-prem server behind WireGuard VPN. EC2 is decommissioned — see the [AWS / EC2 Failover](#-aws--ec2-failover-path) section for the rebuild path and the remaining AWS surface (S3 + Route 53 only).
 
-### **AWS Security Configuration**
-
-#### **Security Group: RadioFormsSG**
-```bash
-# Inbound Rules (Principle of Least Privilege):
-Port 22  (SSH)    → YOUR_HOME_IP/32    # Admin access only
-Port 80  (HTTP)    → 0.0.0.0/0        # Redirect to HTTPS
-Port 443 (HTTPS)   → 0.0.0.0/0        # Public web access
-
-# Blocked from public:
-Port 27017 (MongoDB) → INTERNAL ONLY   # No direct DB access
-Port 3001 (Form.io)   → INTERNAL ONLY   # Behind reverse proxy
-```
-
-#### **IAM Role Configuration**
-
-> **Note**: The EC2 instance has been decommissioned. The IAM role below is retained in the CloudFormation template for the rebuild-path. S3 backup access is now provided by a dedicated `synology-backup-svc` IAM user with bucket-scoped permissions (see `docs/NUC_DEPLOYMENT.md` Phase 6.5).
-
-```json
-{
-  "RoleName": "RadioFormsEC2Role",
-  "Description": "EC2 role for Radio Forms application (used only if EC2 is reprovisioned)",
-  "Policies": [
-    {
-      "PolicyName": "S3BackupAccess",
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket"
-      ],
-      "Resource": "arn:aws:s3:::radio-forms-backups-*"
-    },
-    {
-      "PolicyName": "CloudWatchAccess", 
-      "Effect": "Allow",
-      "Action": [
-        "cloudwatch:PutMetricData",
-        "cloudwatch:GetMetricStatistics",
-        "logs:CreateLogGroup",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "*"
-    }
-  ],
-  "TrustRelationship": {
-    "Service": "ec2.amazonaws.com"
-  }
-}
-```
-
-### **Network Security**
-
-#### **VPC Configuration**
-```bash
-# Network Design:
-- Custom VPC: 10.0.0.0/16
-- Public Subnets: 10.0.1.0/24, 10.0.2.0/24
-- Private Subnets: 10.0.10.0/24, 10.0.20.0/24
-- Internet Gateway: For public subnets
-- NAT Gateways: For private subnets
-```
-
-#### **SSL/TLS Configuration**
-```bash
-# Certificate Management:
-Provider: Let's Encrypt (via Caddy)
-Auto-renewal: Enabled
-Email: example@your-domain.com
-Staging CA: acme-staging-v02.api.letsencrypt.org
-
-# Security Headers:
-Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: no-referrer-when-downgrade
-Content-Security-Policy: default-src 'self'; script-src 'self'
-```
-
-## 🖥️ Server Security Hardening
-
-### **Operating System Security**
-```bash
-# Debian 12 (Bookworm) Hardening:
-
-# 1. System Updates
-sudo apt update && sudo apt upgrade -y
-sudo apt autoremove -y
-
-# 2. Firewall Configuration
-sudo ufw enable
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow ssh
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw deny 27017/tcp  # Block MongoDB from internet
-sudo ufw --force enable
-
-# 3. SSH Security
-sudo nano /etc/ssh/sshd_config
-# Configure:
-PasswordAuthentication no
-PermitRootLogin no
-PubkeyAuthentication yes
-MaxAuthTries 3
-ClientAliveInterval 300
-ClientAliveCountMax 2
-
-sudo systemctl restart sshd
-```
-
-### **Application Security**
-
-#### **Form.io Configuration**
-```json
-{
-  "jwt": {
-    "secret": "${JWT_SECRET}",           # 32+ character random string
-    "expireTime": "1h"               # Short expiration for security
-    "issuer": "formio"
-  },
-  "trust proxy": true,                  # Behind Caddy reverse proxy
-  "settings": {
-    "cors": {
-      "enabled": true,
-      "origin": "https://forms.your-domain.com"  # Specific domains only
-    }
-  }
-}
-```
-
-#### **Environment Variables Security**
-```bash
-# Production .env file security:
-chmod 600 .env                    # Owner read/write only
-chown admin:admin .env             # Correct ownership
-
-# Never commit to git:
-echo ".env" >> .gitignore           # Already configured
-```
-
-### **Database Security**
-
-#### **MongoDB Configuration**
-```yaml
-# Security Settings:
-auth: true
-authorization: enabled
-net:
-  port: 27017
-  bindIp: 127.0.0.1           # Local only
-security:
-  authorization: enabled
-  javascriptEnabled: false        # Prevent code injection
-```
-
-#### **Database Access Control**
-```bash
-# Application user (limited access):
-mongo --username formio_app --password ${APP_PASSWORD} --authenticationDatabase admin
-
-# Admin user (full access):
-mongo --username ${MONGO_ROOT_USERNAME} --password ${MONGO_ROOT_PASSWORD} --authenticationDatabase admin
-
-# Network isolation:
-# MongoDB only accessible from:
-- localhost (within container)
-- Form.io container (internal)
-- Backup container (internal)
-```
-
-## 🔍 Access Control
-
-### **SSH Key Management**
-```bash
-# SSH Key Best Practices:
-1. Use ED25519 or RSA 4096+ keys
-2. Encrypt private keys with passphrase
-3. Rotate keys every 90 days
-4. Never store keys in repository
-5. Use SSH config for host management
-
-# SSH Configuration (~/.ssh/config):
-Host radio-forms-prod
-    HostName your-production-server.com
-    User admin
-    IdentityFile ~/.ssh/radio-forms-prod-key.pem
-    Port 22
-    ForwardAgent no
-    StrictHostKeyChecking yes
-    UserKnownHostsFile ~/.ssh/known_hosts
-```
-
-### **Application Access Control**
-```bash
-# Form.io User Roles:
-- Administrator: Full system access
-- Manager: Form and submission management
-- User: Form submission only
-- Guest: Read-only access
-
-# Access Control Implementation:
-- JWT-based authentication
-- Role-based permissions
-- API rate limiting
-- IP whitelisting for admin
-```
-
-## 🚨 Security Monitoring
-
-### **Intrusion Detection**
-```bash
-# AWS CloudWatch Alarms:
-- SSH brute force attempts
-- Unusual API access patterns
-- Spike in form submissions
-- Database connection failures
-- High error rates
-```
-
-### **Log Monitoring**
-```bash
-# Security Events to Monitor:
-1. Failed login attempts
-2. Privilege escalation attempts
-3. Unusual data access patterns
-4. Configuration changes
-5. Database schema modifications
-6. File upload anomalies
-```
-
-### **Vulnerability Management**
-```bash
-# Regular Security Tasks:
-- Monthly dependency updates (manual version bumps in docker-compose files)
-- Quarterly security scans
-- Annual penetration testing
-- Continuous CVE monitoring
-- SSL certificate expiration monitoring
-```
-
-## 📋 Security Checklist
-
-### **Pre-Deployment Security**
-```bash
-□ Security groups configured correctly
-□ IAM roles with minimum privileges
-□ SSH keys secured and rotated
-□ SSL certificates valid and auto-renewing
-□ Database access restricted
-□ Environment variables secured
-□ Firewall rules applied
-□ Monitoring and alerting configured
-□ Backup encryption verified
-□ Access logging enabled
-□ Security headers configured
-□ CORS properly restricted
-□ Rate limiting implemented
-□ Input validation enabled
-□ Error handling doesn't leak info
-□ Session management secure
-□ File upload restrictions
-□ Database encryption enabled
-```
-
-### **Post-Deployment Security**
-```bash
-□ Production access verified
-□ Security testing completed
-□ Monitoring baseline established
-□ Incident response plan tested
-□ Backup and recovery verified
-□ Security documentation updated
-□ Team training completed
-□ Compliance requirements met
-□ Third-party security audit (if required)
-```
-
-## 🔒 Incident Response
-
-### **Security Incident Categories**
-```bash
-# Level 1 - Critical:
-- Data breach
-- System compromise
-- Production outage
-- Unauthorized admin access
-
-# Level 2 - High:
-- Security vulnerability exploit
-- Performance degradation
-- Partial data exposure
-- Brute force attacks
-
-# Level 3 - Medium:
-- Suspicious activity
-- Minor security misconfiguration
-- Low-impact vulnerabilities
-
-# Level 4 - Low:
-- Information disclosure
-- Security best practice violations
-```
-
-### **Response Procedures**
-```bash
-# Immediate Response (0-15 minutes):
-1. Assess scope and impact
-2. Contain the threat
-3. Preserve evidence
-4. Notify stakeholders
-5. Initiate recovery
-
-# Investigation (15 min - 4 hours):
-1. Root cause analysis
-2. Impact assessment
-3. Vulnerability scanning
-4. Log analysis
-5. Security improvements
-
-# Recovery (4-24 hours):
-1. System restoration
-2. Security hardening
-3. Testing and validation
-4. Documentation update
-5. Post-incident review
-```
-
-## 📚 Security Resources
-
-### **Documentation**
-- [AWS Security Best Practices](https://docs.aws.amazon.com/security/)
-- [Form.io Security Guide](https://docs.form.io/security/)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
-
-### **Tools & Services**
-- AWS Security Hub
-- AWS CloudTrail (audit logs)
-- AWS Inspector (vulnerability scanning)
-- Let's Encrypt (SSL certificates)
-- UFW (host-based firewall)
+**Last Updated**: 2026-03-29
 
 ---
 
-**Last Updated**: 2026-01-21
+## 🔐 Production Security Model (NUC / On-Prem)
+
+### Network Perimeter
+
+The NUC exposes **three ports** to the internet via Verizon CR1000A port forwarding:
+
+| Port | Protocol | Purpose |
+|---|---|---|
+| 80 | TCP | HTTP — Caddy redirects to HTTPS |
+| 443 | TCP | HTTPS — SPA + API reverse proxy |
+| 51820 | UDP | WireGuard VPN (remote SSH access) |
+
+**Port 22 is never forwarded.** SSH is only reachable through the WireGuard VPN tunnel (`10.8.0.0/24`).
+
+Internal ports (27017 MongoDB, 3001 Form.io) are bound to Docker's internal network only and are never reachable from outside.
+
+### Firewall (UFW)
+
+```bash
+# Default policy
+ufw default deny incoming
+ufw default allow outgoing
+
+# Public rules
+ufw allow 80/tcp      # HTTP (Caddy)
+ufw allow 443/tcp     # HTTPS (Caddy)
+ufw allow 51820/udp   # WireGuard
+
+# SSH: VPN and local LAN only
+ufw allow from 10.8.0.0/24 to any port 22   # WireGuard VPN
+ufw allow from 192.168.1.0/24 to any port 22 # Local LAN
+```
+
+### WireGuard VPN (Remote Access)
+
+Remote SSH to the NUC requires:
+1. WireGuard tunnel active on the Mac (`sudo wg-quick up ~/.config/wireguard/wg0.conf`)
+2. SSH to the VPN IP: `ssh admin@10.8.0.1`
+
+WireGuard uses modern Curve25519 + ChaCha20-Poly1305 cryptography. Keys are generated locally and never transmitted in plaintext. See `docs/NUC_DEPLOYMENT.md` Phase 2.5 for setup details.
+
+### SSH Hardening
+
+```
+PasswordAuthentication no
+PubkeyAuthentication yes
+PermitRootLogin no
+AuthorizedKeysFile .ssh/authorized_keys
+```
+
+Ed25519 keys are required. Password-based SSH login is disabled. See `docs/NUC_DEPLOYMENT.md` Phase 2.6b.
+
+### SSL/TLS
+
+Caddy obtains and auto-renews Let's Encrypt certificates for both domains via ACME HTTP-01 challenge. No manual certificate management is required.
+
+```
+Provider: Let's Encrypt (via Caddy automatic HTTPS)
+Auto-renewal: Yes
+Ports required: 80 (challenge), 443 (HTTPS)
+```
+
+---
+
+## 🖥️ Server Hardening
+
+### OS (Debian 12 Bookworm)
+
+- **Automatic security updates**: `unattended-upgrades` configured for security patches
+- **Intrusion prevention**: `fail2ban` monitors SSH login failures
+- **Sleep disabled**: `systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target`
+- **Wi-Fi disabled**: blacklisted at kernel level (`/etc/modprobe.d/blacklist-wifi.conf`), disabled in BIOS
+- **Swap**: 2GB swap file configured to prevent OOM crashes
+
+### Docker Network Isolation
+
+All services run in a Docker Compose network. MongoDB and Form.io are not exposed on host ports:
+
+```yaml
+# Only Caddy binds to host ports 80 and 443
+# formio and mongo are internal only (no `ports:` mapping)
+```
+
+---
+
+## 🔑 Application Security
+
+### Form.io Configuration
+
+```json
+{
+  "jwt": {
+    "secret": "${JWT_SECRET}",
+    "expireTime": "1h",
+    "issuer": "formio"
+  },
+  "trust proxy": true,
+  "settings": {
+    "cors": {
+      "enabled": true,
+      "origin": "https://forms.your-domain.com"
+    }
+  }
+}
+```
+
+`JWT_SECRET` is a 32+ character random string generated by `scripts/lib/generate-secrets.sh` and stored in `.env`. `trust proxy: true` is required because Caddy terminates TLS and proxies to Form.io.
+
+### Environment Variables
+
+```bash
+chmod 600 .env       # Owner read/write only
+chown admin:admin .env
+```
+
+The production `.env` lives only on the NUC server — it is never included in the deployment tarball. `app/config.js` and `config/env/production.json` are regenerated on-server from `.env` by the deploy script. See `docs/DEPLOYMENT.md` → Hardcoded Config Pattern.
+
+### MongoDB
+
+MongoDB runs in a Docker container and is accessible only from the Form.io and mongo-backup containers on the internal Docker network. Authentication is enabled with `MONGO_ROOT_USERNAME`/`MONGO_ROOT_PASSWORD` from `.env`.
+
+### Role-Based Access Control
+
+The application uses a five-level role hierarchy enforced by Form.io server-side:
+
+```
+anonymous → authenticated → staff → management → administrator
+```
+
+Department-scoped access (Engineering, Underwriting, Programming) and committee-scoped access (Technology) are implemented via client-side group permissions. Row-level security uses the share-settings model. See `docs/GROUP_PERMISSIONS.md` for full details.
+
+---
+
+## 🔑 SSH Key Management
+
+- Use **Ed25519** keys (or RSA 4096+ minimum)
+- Encrypt private keys with a passphrase
+- Never store private keys in the repository
+- Rotate keys when team members leave
+
+```
+# ~/.ssh/config
+Host radio-forms-nuc
+    HostName 10.8.0.1
+    User admin
+    IdentityFile ~/.ssh/mac-to-nuc
+    Port 22
+    ForwardAgent no
+    StrictHostKeyChecking yes
+```
+
+---
+
+## 📋 Security Checklist
+
+### Pre-Deployment
+
+```
+□ WireGuard keys generated and configured on both Mac and NUC
+□ Port 22 NOT forwarded on router
+□ UFW rules applied (80, 443, 51820 only)
+□ SSH password auth disabled
+□ .env permissions: 600, owner admin
+□ JWT_SECRET is 32+ random characters
+□ MongoDB credentials are strong and unique
+□ Caddy SSL certificates obtained (check docker compose logs caddy)
+□ CORS origin set to production SPA domain only
+□ fail2ban running
+□ Automatic security updates enabled
+□ Docker containers not exposing internal ports externally
+□ NAS backup running and verified
+□ Hyper Backup to S3 running and verified
+```
+
+### Post-Deployment
+
+```
+□ SPA loads at https://forms.your-domain.com
+□ API responds at https://api.forms.your-domain.com
+□ Login and form submission work
+□ SSH access via WireGuard only (confirm port 22 not reachable from internet)
+□ MongoDB not reachable from outside Docker network
+□ No .env in deployed tarball
+□ app/config.js on server uses production domains (not localhost)
+□ UPS communicating (pwrstat -status shows Normal)
+```
+
+---
+
+## � Incident Response
+
+### Categories
+
+| Level | Examples |
+|---|---|
+| **1 — Critical** | Data breach, system compromise, unauthorized admin access |
+| **2 — High** | Brute force SSH attempts, partial data exposure, container crash loop |
+| **3 — Medium** | Suspicious activity, minor misconfiguration, fail2ban bans |
+| **4 — Low** | Information disclosure, best practice violations |
+
+### Response Procedure
+
+**Immediate (0–15 min)**
+1. Assess scope and impact
+2. Contain the threat (block IP, rotate credentials, shut down container)
+3. Preserve evidence (copy logs before rotating)
+4. Notify stakeholders
+
+**Investigation (15 min – 4 hours)**
+1. Root cause analysis via logs (`docker compose logs`, `/var/log/auth.log`, `/var/log/fail2ban.log`)
+2. Impact assessment
+3. Security improvements
+
+**Recovery (4–24 hours)**
+1. Restore from NAS backup if data was compromised (see `docs/NUC_DEPLOYMENT.md` Phase 6.6)
+2. Harden against the attack vector
+3. Post-incident review and documentation update
+
+---
+
+## ☁️ AWS / EC2 Failover Path
+
+> The EC2 instance was decommissioned in March 2026. The remaining AWS surface is:
+> - **Route 53** — DNS for `forms.your-domain.com` and `api.forms.your-domain.com`
+> - **S3 bucket** (`radio-forms-backups-ACCOUNTID-production`) — off-site backup destination via Synology Hyper Backup
+> - **`synology-backup-svc` IAM user** — scoped to the backup bucket only (created outside CloudFormation, unaffected by stack deletion)
+> - **CloudFormation template** (`infrastructure/cloudformation.yaml`) — retained as the EC2 rebuild path
+
+If the NUC becomes unavailable, provision a new EC2 instance from the CloudFormation template and restore from S3. See `docs/NUC_DEPLOYMENT.md` Phase 8 (Failover Procedure) for the full sequence.
+
+### IAM Surface (Current)
+
+The only active IAM entity is `synology-backup-svc`:
+
+```json
+{
+  "Sid": "BucketAccess",
+  "Effect": "Allow",
+  "Action": ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+  "Resource": [
+    "arn:aws:s3:::radio-forms-backups-ACCOUNTID-production",
+    "arn:aws:s3:::radio-forms-backups-ACCOUNTID-production/*"
+  ]
+}
+```
+
+If EC2 is reprovisioned, the `RadioFormsEC2Role` in `infrastructure/cloudformation.yaml` will be recreated by the CloudFormation stack.
+
+---
+
+## 📚 References
+
+- [Caddy Security](https://caddyserver.com/docs/caddyfile/directives/tls)
+- [WireGuard](https://www.wireguard.com/)
+- [Form.io Security Guide](https://docs.form.io/security/)
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- `docs/NUC_DEPLOYMENT.md` — Full NUC setup including WireGuard, UFW, UPS, backups
+- `docs/GROUP_PERMISSIONS.md` — Application-layer access control
+
+---
+
 **Security Contact**: tomchase@duck.com

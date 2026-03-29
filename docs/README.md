@@ -8,11 +8,15 @@ This directory contains comprehensive documentation for the Radio Forms Portal p
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Deployment procedures, dual-target (EC2 + NUC), ARM64 setup | Developers, DevOps |
-| **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)** | AWS EC2 CloudFormation setup, networking, scaling | DevOps, System Admins |
-| **[NUC_DEPLOYMENT.md](NUC_DEPLOYMENT.md)** | On-prem ASUS NUC 14 setup, WireGuard VPN, UPS, data migration | DevOps, System Admins |
-| **[SECURITY.md](SECURITY.md)** | Security configuration, hardening | DevOps, Security Team |
-| **[STAGING.md](STAGING.md)** | Staging environment setup and workflow | Developers, QA Team |
+| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Deployment procedures, dual-target (NUC + EC2 failover), ARM64 setup | Developers, DevOps |
+| **[NUC_DEPLOYMENT.md](NUC_DEPLOYMENT.md)** | On-prem ASUS NUC 14 setup, WireGuard VPN, UPS, backups, EC2 failover | DevOps, System Admins |
+| **[INFRASTRUCTURE.md](INFRASTRUCTURE.md)** | AWS CloudFormation (EC2 failover rebuild path) | DevOps, System Admins |
+| **[SECURITY.md](SECURITY.md)** | NUC security model (WireGuard, UFW, hardening), AWS failover surface | DevOps, Security Team |
+| **[GROUP_PERMISSIONS.md](GROUP_PERMISSIONS.md)** | Group permissions, three-layer access model, form.settings.ui schema | Developers |
+| **[FEATURES.md](FEATURES.md)** | Frontend features: PDF download, badges, login log, uploads, onboarding, SMTP | Developers |
+| **[MIGRATIONS.md](MIGRATIONS.md)** | Database migration guide | Developers |
+| **[COMMON_ISSUES.md](COMMON_ISSUES.md)** | Troubleshooting common dev issues | Developers |
+| **[STAGING.md](STAGING.md)** | Staging environment (planned/future) | Developers, QA Team |
 | **[../README.md](../README.md)** | Project overview, getting started, ARM64 compatibility | All Contributors |
 | **[../scripts/README.md](../scripts/README.md)** | Script documentation | Developers, DevOps |
 | **[../AGENT.md](../AGENT.md)** | AI agent orientation, quick reference | AI Agents, Developers |
@@ -133,50 +137,51 @@ Step-by-step deployment guides and workflows:
 ../scripts/README.md             # Script usage guide
 
 # Development Workflow:
-docs/DEPLOYMENT.md              # Development procedures
-docs/STAGING.md                 # Staging environment setup
-docs/INFRASTRUCTURE.md          # Production environment
+docs/DEPLOYMENT.md              # Development + deployment procedures
+docs/CICD_CHECKLIST.md          # End-to-end workflow checklist
+docs/COMMON_ISSUES.md           # Troubleshooting
+docs/MIGRATIONS.md              # Schema migration guide
+
+# Feature Reference:
+docs/FEATURES.md                # PDF, badges, uploads, onboarding, SMTP
+docs/GROUP_PERMISSIONS.md       # Access control + form.settings.ui schema
 ```
 
 #### **🔧 DevOps Engineers**
 ```bash
 # Infrastructure:
-docs/INFRASTRUCTURE.md          # AWS EC2 CloudFormation setup
-docs/NUC_DEPLOYMENT.md          # On-prem NUC setup and operations
+docs/NUC_DEPLOYMENT.md          # On-prem NUC setup and operations (primary)
+docs/INFRASTRUCTURE.md          # AWS CloudFormation (failover rebuild path)
 docs/SECURITY.md                # Security configuration
 
 # Deployment:
-docs/DEPLOYMENT.md              # Deployment automation (EC2 + NUC)
-docs/STAGING.md                 # Staging setup and workflow
+docs/DEPLOYMENT.md              # Deployment automation (NUC + EC2 failover)
 ../scripts/README.md             # Script documentation
 ```
 
 #### **🧪 QA Team**
 ```bash
 # Testing:
-docs/STAGING.md                 # Staging environment setup
+docs/STAGING.md                 # Staging environment (planned/future)
 docs/DEPLOYMENT.md              # Deployment procedures
-../scripts/health-check.sh      # Health monitoring
 ```
 
 #### **🛡️ Security Teams**
 ```bash
 # Security:
-docs/SECURITY.md                # Comprehensive security guide
-docs/DEPLOYMENT.md              # Security in deployment
-../.env.example                 # Security configuration
+docs/SECURITY.md                # NUC security model + AWS surface
+docs/NUC_DEPLOYMENT.md          # WireGuard VPN, UFW, fail2ban setup
+../.env.example                 # Required environment variables
 ```
 
 #### **👨‍💼 System Administrators**
 ```bash
 # Operations:
-docs/INFRASTRUCTURE.md          # AWS EC2 production setup
-docs/NUC_DEPLOYMENT.md          # On-prem NUC production setup
+docs/NUC_DEPLOYMENT.md          # On-prem NUC production setup and backups
 docs/SECURITY.md                # Security procedures
-docs/STAGING.md                 # Staging environment
-../scripts/backup.sh              # Backup procedures
-../scripts/backup-config.sh          # NAS configuration backup
-../scripts/health-check.sh        # Monitoring
+docs/INFRASTRUCTURE.md          # AWS CloudFormation (failover rebuild path)
+../scripts/backup-config.sh     # NAS configuration backup
+../scripts/health-check.sh      # Monitoring
 ```
 
 ---
@@ -230,5 +235,5 @@ See **[CASCADE_INTEGRATION.md](CASCADE_INTEGRATION.md)** for details on how to m
 
 ---
 
-**Documentation Hub Last Updated**: 2026-02-24
+**Documentation Hub Last Updated**: 2026-03-29
 **Maintainer**: tomchase@duck.com
