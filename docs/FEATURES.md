@@ -56,7 +56,16 @@ The underwriting contract template renders a formal legal contract document (inl
 
 ### Station Identity Variables
 
-The PDF header uses station identity injected via `app/config.js` as `window.STATION_*` globals (sourced from `.env` vars `STATION_NAME`, `STATION_CALL_SIGN`, `STATION_ADDRESS`, `STATION_LOGO_URL`). These flow through `CONFIG.STATION` in `app/js/config.js`.
+Station identity is injected via `app/config.js` as `window.STATION_*` globals (sourced from `.env`), flowing through `CONFIG.STATION` in `app/js/config.js`.
+
+| Variable | Used in |
+|---|---|
+| `STATION_NAME` | Navbar fallback (if no call sign set), PDF contract parties block |
+| `STATION_CALL_SIGN` | Navbar branding (preferred over name if set), PDF header |
+| `STATION_ADDRESS` | PDF contract parties block |
+| `STATION_LOGO_URL` | **Navbar header** (replaces the default broadcast-pin icon) + **PDF contract header** |
+
+If `STATION_LOGO_URL` is blank, the navbar shows the default broadcast-pin icon and "Radio Forms Portal"; the PDF omits the logo.
 
 ---
 

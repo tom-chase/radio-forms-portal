@@ -59,3 +59,9 @@ config/bootstrap/form_templates/submissions/
 # Documentation planning notes
 docs/plans/
 docs/pdf_outputs
+
+# Station-specific logo assets (supply your own — do not commit to the public repo)
+# Generic icons (broadcast-pin, favicons, etc.) remain tracked
+app/wpfwLogo_*.png
+app/wpfwLogo_*.jpg
+app/wpfwLogo_*.svg
