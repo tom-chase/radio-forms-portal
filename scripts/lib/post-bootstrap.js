@@ -568,9 +568,11 @@ show = Array.isArray(user.roles) &&
     // This task resolves them to the actual values from SMTP_USER and SMTP_MANAGEMENT_EMAIL.
     const smtpUser = process.env.SMTP_USER || '';
     const managementEmail = process.env.SMTP_MANAGEMENT_EMAIL || '';
+    const spaDomain = process.env.SPA_DOMAIN || '';
+    const templateUrl = spaDomain ? `https://${spaDomain}/email-template.html` : '';
 
-    if (!smtpUser && !managementEmail) {
-        log('SMTP_USER and SMTP_MANAGEMENT_EMAIL not set. Skipping email action patch.');
+    if (!smtpUser && !managementEmail && !templateUrl) {
+        log('SMTP_USER, SMTP_MANAGEMENT_EMAIL, and SPA_DOMAIN not set. Skipping email action patch.');
     } else {
         const emailActionForms = ['incidentReport', 'contactIntake'];
 
@@ -607,6 +609,10 @@ show = Array.isArray(user.roles) &&
                     }
                     if (managementEmail && settings.emails && settings.emails.includes('your-domain.com')) {
                         settings.emails = managementEmail;
+                        changed = true;
+                    }
+                    if (templateUrl && settings.template && settings.template.includes('your-domain.com')) {
+                        settings.template = templateUrl;
                         changed = true;
                     }
 
