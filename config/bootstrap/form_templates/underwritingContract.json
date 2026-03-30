@@ -950,15 +950,6 @@
       "breadcrumb": "default"
     },
     {
-      "label": "Upload file(s)",
-      "key": "uploadAttachments",
-      "type": "button",
-      "action": "event",
-      "event": "s3Upload",
-      "theme": "secondary",
-      "input": true
-    },
-    {
       "label": "Attachments",
       "key": "attachments",
       "type": "datagrid",
@@ -972,144 +963,52 @@
           "type": "textfield",
           "input": true,
           "tableView": true,
-          "placeholder": "",
-          "customClass": "",
-          "defaultValue": null,
-          "hidden": false,
-          "description": "",
-          "tooltip": "",
-          "disabled": false,
-          "customDefaultValue": "",
-          "calculateValue": "",
-          "attributes": {},
-          "validateOn": "change",
-          "validate": {
-            "required": false,
-            "custom": "",
-            "customPrivate": false,
-            "strictDateValidation": false,
-            "multiple": false,
-            "unique": false,
-            "minLength": "",
-            "maxLength": "",
-            "pattern": ""
-          },
-          "conditional": {
-            "show": null,
-            "when": null,
-            "eq": ""
-          },
-          "overlay": {
-            "style": "",
-            "left": "",
-            "top": "",
-            "width": "",
-            "height": ""
-          },
-          "properties": {},
-          "allowMultipleMasks": false,
-          "addons": [],
-          "mask": false,
-          "inputFormat": "plain",
-          "inputMask": "",
-          "displayMask": ""
+          "disabled": true
         },
         {
-          "label": "File URL",
-          "key": "fileUrl",
-          "type": "url",
+          "label": "Size",
+          "key": "size",
+          "type": "textfield",
           "input": true,
           "tableView": true,
-          "placeholder": "",
-          "customClass": "",
-          "defaultValue": null,
-          "hidden": false,
-          "description": "",
-          "tooltip": "",
-          "disabled": false,
-          "customDefaultValue": "",
-          "calculateValue": "",
-          "attributes": {},
-          "validateOn": "change",
-          "validate": {
-            "required": false,
-            "custom": "",
-            "customPrivate": false,
-            "strictDateValidation": false,
-            "multiple": false,
-            "unique": false,
-            "minLength": "",
-            "maxLength": "",
-            "pattern": ""
-          },
-          "conditional": {
-            "show": null,
-            "when": null,
-            "eq": ""
-          },
-          "overlay": {
-            "style": "",
-            "left": "",
-            "top": "",
-            "width": "",
-            "height": ""
-          },
-          "properties": {},
-          "allowMultipleMasks": false,
-          "addons": [],
-          "mask": false,
-          "inputType": "url",
-          "inputFormat": "plain",
-          "inputMask": "",
-          "displayMask": ""
+          "disabled": true
         },
         {
           "label": "Description",
           "key": "description",
           "type": "textfield",
           "input": true,
-          "tableView": false,
-          "placeholder": "",
-          "customClass": "",
-          "defaultValue": null,
-          "hidden": false,
-          "description": "",
-          "tooltip": "",
-          "disabled": false,
-          "customDefaultValue": "",
-          "calculateValue": "",
-          "attributes": {},
-          "validateOn": "change",
-          "validate": {
-            "required": false,
-            "custom": "",
-            "customPrivate": false,
-            "strictDateValidation": false,
-            "multiple": false,
-            "unique": false,
-            "minLength": "",
-            "maxLength": "",
-            "pattern": ""
-          },
-          "conditional": {
-            "show": null,
-            "when": null,
-            "eq": ""
-          },
-          "overlay": {
-            "style": "",
-            "left": "",
-            "top": "",
-            "width": "",
-            "height": ""
-          },
-          "properties": {},
-          "allowMultipleMasks": false,
-          "addons": [],
-          "mask": false,
-          "inputFormat": "plain",
-          "inputMask": "",
-          "displayMask": ""
+          "tableView": false
+        },
+        {
+          "key": "fileUrl",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "storageKey",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "storage",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "type",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "uploadedAt",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
         }
       ],
       "placeholder": "",

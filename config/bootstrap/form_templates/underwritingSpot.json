@@ -196,15 +196,6 @@
       ]
     },
     {
-      "label": "Upload file(s)",
-      "key": "uploadAttachments",
-      "type": "button",
-      "action": "event",
-      "event": "s3Upload",
-      "theme": "secondary",
-      "input": true
-    },
-    {
       "label": "Attachments",
       "key": "attachments",
       "type": "datagrid",
@@ -217,19 +208,51 @@
           "key": "fileName",
           "type": "textfield",
           "input": true,
-          "tableView": true
+          "tableView": true,
+          "disabled": true
         },
         {
-          "label": "File URL",
-          "key": "fileUrl",
-          "type": "url",
+          "label": "Size",
+          "key": "size",
+          "type": "textfield",
           "input": true,
-          "tableView": true
+          "tableView": true,
+          "disabled": true
         },
         {
           "label": "Description",
           "key": "description",
           "type": "textfield",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "fileUrl",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "storageKey",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "storage",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "type",
+          "type": "hidden",
+          "input": true,
+          "tableView": false
+        },
+        {
+          "key": "uploadedAt",
+          "type": "hidden",
           "input": true,
           "tableView": false
         }

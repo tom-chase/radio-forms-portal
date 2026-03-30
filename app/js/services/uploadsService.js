@@ -14,6 +14,40 @@ function shouldUseS3Fallback() {
     return !!CONFIG.UPLOAD?.ENABLE_S3_FALLBACK;
 }
 
+function stripTrailingSlash(value) {
+    return String(value || "").replace(/\/+$/, "");
+}
+
+function getLocalUploadUrlCandidates() {
+    const primaryUrl = String(CONFIG.UPLOAD?.LOCAL_UPLOAD_URL || "").trim();
+    const apiBase = stripTrailingSlash(CONFIG.API_BASE);
+    const apiUploadUrl = apiBase
+        ? `${apiBase}/api/v1/uploads/local`
+        : "";
+
+    const candidates = [];
+    if (primaryUrl) candidates.push(primaryUrl);
+    if (apiUploadUrl && !candidates.includes(apiUploadUrl)) {
+        candidates.push(apiUploadUrl);
+    }
+
+    return candidates;
+}
+
+function isRetryableLocalUploadError(err) {
+    const status = Number(err?.status || err?.original?.status || 0);
+    return [0, 404, 405, 502, 503, 504].includes(status);
+}
+
+function formatFileSize(bytes) {
+    if (bytes == null || isNaN(bytes) || bytes < 0) return "";
+    if (bytes === 0) return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    const value = bytes / Math.pow(1024, i);
+    return `${i === 0 ? value : value.toFixed(1)} ${units[i]}`;
+}
+
 function buildAttachmentMeta(file, uploadSpec, storage) {
     const uploadedAt = uploadSpec?.uploadedAt || new Date().toISOString();
     const objectUrl = uploadSpec?.fileUrl || uploadSpec?.url || "";
@@ -24,7 +58,8 @@ function buildAttachmentMeta(file, uploadSpec, storage) {
         fileUrl: objectUrl,
         description: "",
         name: file.name,
-        size: file.size,
+        sizeBytes: file.size,
+        size: formatFileSize(file.size),
         type: file.type || "application/octet-stream",
         storage,
         storageKey,
@@ -67,21 +102,54 @@ async function uploadFileToS3(file, uploadUrl) {
 }
 
 async function uploadFileToLocal(formio, file, formMeta) {
-    const formData = new FormData();
-    formData.append("file", file, file.name);
-    formData.append("formPath", String(formMeta?.path || "unknown"));
-
     const submissionId = formio?.submission?._id;
-    if (submissionId) {
-        formData.append("submissionId", String(submissionId));
+    const uploadUrls = getLocalUploadUrlCandidates();
+
+    const buildFormData = () => {
+        const formData = new FormData();
+        formData.append("file", file, file.name);
+        formData.append("formPath", String(formMeta?.path || "unknown"));
+        if (submissionId) {
+            formData.append("submissionId", String(submissionId));
+        }
+        return formData;
+    };
+
+    let lastError = null;
+
+    for (let index = 0; index < uploadUrls.length; index += 1) {
+        const uploadUrl = uploadUrls[index];
+        try {
+            const spec = await formioRequest(uploadUrl, {
+                method: "POST",
+                data: buildFormData(),
+            });
+
+            if (index > 0) {
+                log.warn("Primary upload URL failed; fallback URL succeeded", {
+                    primaryUploadUrl: uploadUrls[0],
+                    fallbackUploadUrl: uploadUrl,
+                });
+            }
+
+            return buildAttachmentMeta(file, spec, "local");
+        } catch (err) {
+            lastError = err;
+            const hasAnotherCandidate = index < uploadUrls.length - 1;
+            if (!hasAnotherCandidate || !isRetryableLocalUploadError(err)) {
+                throw err;
+            }
+
+            log.warn("Local upload URL failed; retrying alternate URL", {
+                failedUploadUrl: uploadUrl,
+                nextUploadUrl: uploadUrls[index + 1],
+                status: Number(err?.status || err?.original?.status || 0),
+                error: err?.message || String(err),
+            });
+        }
     }
 
-    const spec = await formioRequest(CONFIG.UPLOAD.LOCAL_UPLOAD_URL, {
-        method: "POST",
-        data: formData,
-    });
-
-    return buildAttachmentMeta(file, spec, "local");
+    throw lastError || new Error("Local upload failed");
 }
 
 async function uploadFileToS3WithMetadata(file, formMeta) {
@@ -113,33 +181,172 @@ async function uploadWithConfiguredProvider(formio, file, formMeta) {
     }
 }
 
-export async function handleS3Upload(formio, formMeta) {
+function isAttachmentsAddButtonClick(formio, target) {
+    const rootElement = formio?.element;
+    const attachmentsComponent = formio?.getComponent?.("attachments");
+    const attachmentsRoot = attachmentsComponent?.element
+        || rootElement?.querySelector?.(".formio-component-attachments");
+
+    if (!attachmentsRoot || !target || typeof target.closest !== "function") {
+        return false;
+    }
+
+    const clickable = target.closest("button, a, [role='button']");
+    if (!clickable || !attachmentsRoot.contains(clickable)) {
+        return false;
+    }
+
+    if (clickable.closest(".datagrid-row")) {
+        return false;
+    }
+
+    const refAttr = String(clickable.getAttribute("ref") || "").toLowerCase();
+    const nameAttr = String(clickable.getAttribute("name") || "").toLowerCase();
+    const dataKeyAttr = String(clickable.getAttribute("data-key") || "").toLowerCase();
+    const text = String(clickable.textContent || "").trim().toLowerCase();
+
+    if (clickable.classList.contains("formio-button-add-row")) {
+        return true;
+    }
+
+    if (["addbutton", "addanother"].includes(refAttr)) {
+        return true;
+    }
+
+    if (["addrow", "addanother"].includes(nameAttr)) {
+        return true;
+    }
+
+    if (["addbutton", "addanother"].includes(dataKeyAttr)) {
+        return true;
+    }
+
+    if (!text || text.includes("remove") || text.includes("cancel") || text.includes("save")) {
+        return false;
+    }
+
+    return text.includes("add attachment") || text === "add another" || text === "add";
+}
+
+export function bindAttachmentsDatagridUpload(formio, formMeta) {
+    const rootElement = formio?.element;
+    const hasAttachmentsDatagrid = !!formio?.getComponent?.("attachments");
+    const isReadOnly = !!formio?.options?.readOnly;
+
+    if (!rootElement || typeof rootElement.addEventListener !== "function") {
+        return;
+    }
+
+    if (!hasAttachmentsDatagrid || isReadOnly || formio.__attachmentsUploadHookBound) {
+        return;
+    }
+
+    const onClick = (event) => {
+        if (!isAttachmentsAddButtonClick(formio, event?.target)) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") {
+            event.stopImmediatePropagation();
+        }
+
+        handleFileUpload(formio, formMeta);
+    };
+
+    rootElement.addEventListener("click", onClick, true);
+    formio.__attachmentsUploadHookBound = true;
+}
+
+export async function deleteAttachment(storageKey) {
+    if (!storageKey) {
+        throw new Error("No storageKey provided for deletion.");
+    }
+    const encodedKey = encodeURIComponent(storageKey);
+    const objectBase = String(CONFIG.UPLOAD?.OBJECT_URL || "").replace(/\/+$/, "");
+    const deleteUrl = `${objectBase}/${encodedKey}`;
+    return formioRequest(deleteUrl, { method: "DELETE" });
+}
+
+export async function handleFileUpload(formio, formMeta) {
     const { actions } = getAppBridge();
 
     // Create a hidden <input type="file" multiple> just for this upload
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    fileInput.multiple = true; // set to false if you want only one file
+    fileInput.multiple = true;
     fileInput.style.display = "none";
 
     document.body.appendChild(fileInput);
 
+    function removeFileInput() {
+        if (fileInput.parentNode) {
+            fileInput.parentNode.removeChild(fileInput);
+        }
+    }
+
+    // Detect cancel: browsers may not fire 'change' when user cancels the picker.
+    // After the picker closes, window regains focus — check if no files were selected.
+    let changeHandled = false;
+    const onWindowFocus = () => {
+        window.removeEventListener("focus", onWindowFocus);
+        // Defer check so a 'change' event that fires slightly after focus can run first.
+        setTimeout(() => {
+            if (!changeHandled) {
+                removeFileInput();
+            }
+        }, 300);
+    };
+    window.addEventListener("focus", onWindowFocus);
+
     fileInput.addEventListener("change", async (event) => {
+        changeHandled = true;
+        window.removeEventListener("focus", onWindowFocus);
         const files = Array.from(event.target.files || []);
 
         if (!files.length) {
-            document.body.removeChild(fileInput);
+            removeFileInput();
+            return;
+        }
+
+        // Validate file sizes before uploading
+        const maxSizeMB = Number(CONFIG.UPLOAD?.MAX_FILE_SIZE_MB) || 50;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+        const validFiles = [];
+        for (const file of files) {
+            if (file.size > maxSizeBytes) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                actions.showToast?.(
+                    `${file.name} (${sizeMB} MB) exceeds the ${maxSizeMB} MB limit.`,
+                    "danger"
+                );
+            } else {
+                validFiles.push(file);
+            }
+        }
+
+        if (!validFiles.length) {
+            removeFileInput();
             return;
         }
 
         actions.showToast?.(
-            `Uploading ${files.length} file(s)...`,
+            `Uploading ${validFiles.length} attachment(s)...`,
             "primary"
         );
 
         let uploadedCount = 0;
+        const totalFiles = validFiles.length;
 
-        for (const file of files) {
+        for (let i = 0; i < totalFiles; i += 1) {
+            const file = validFiles[i];
+            if (totalFiles > 1) {
+                actions.showToast?.(
+                    `Uploading ${i + 1} of ${totalFiles}: ${file.name}`,
+                    "primary"
+                );
+            }
             try {
                 const fileMeta = await uploadWithConfiguredProvider(
                     formio,
@@ -155,7 +362,7 @@ export async function handleS3Upload(formio, formMeta) {
                     err
                 );
                 actions.showToast?.(
-                    `Error uploading ${file.name}: ${
+                    `Error uploading attachment ${file.name}: ${
                         err.message || "Unknown error"
                     }`,
                     "danger"
@@ -165,18 +372,21 @@ export async function handleS3Upload(formio, formMeta) {
 
         if (uploadedCount > 0) {
             actions.showToast?.(
-                "Upload(s) complete. Remember to submit the form.",
+                "Attachment upload complete. Remember to submit the form.",
                 "success"
             );
         } else {
             actions.showToast?.(
-                "No files were uploaded.",
+                "No attachments were uploaded.",
                 "warning"
             );
         }
-        document.body.removeChild(fileInput);
+        removeFileInput();
     });
 
     // Trigger the file picker
     fileInput.click();
 }
+
+// Backward-compatible alias (event name in form schemas is still 's3Upload')
+export { handleFileUpload as handleS3Upload };

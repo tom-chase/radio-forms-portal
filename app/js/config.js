@@ -16,7 +16,8 @@ export const CONFIG = {
     LOCAL_UPLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/local`,
     PRESIGN_URL: `${UPLOAD_BASE}/api/v1/uploads/presign`,
     DOWNLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/download`,
-    OBJECT_URL: `${UPLOAD_BASE}/api/v1/uploads/object`
+    OBJECT_URL: `${UPLOAD_BASE}/api/v1/uploads/object`,
+    MAX_FILE_SIZE_MB: Number(window.UPLOAD_MAX_FILE_SIZE_MB) || 50
   },
 
   STATION: {

@@ -51,6 +51,8 @@ services:
       - UPLOADS_ROOT=/uploads
       - UPLOADS_PORT=3002
       - UPLOAD_S3_PRESIGN_URL=${UPLOAD_S3_PRESIGN_URL:-}
+      - UPLOAD_PUBLIC_BASE=${UPLOAD_PUBLIC_BASE:-}
+      - UPLOADS_MAX_FILE_SIZE_MB=${UPLOAD_MAX_FILE_SIZE_MB:-50}
     volumes:
       - ${UPLOADS_PATH:-/home/admin/radio-forms-portal/uploads}:/uploads
     networks:

@@ -11,7 +11,7 @@ import { getAppBridge } from '../services/appBridge.js';
 import { CONFIG } from '../config.js';
 import { getUIState } from '../state/uiState.js';
 import { markSubmissionViewed, onSubmissionViewed, incrementFormTotal, decrementFormTotal } from '../services/badgeService.js';
-import { handleS3Upload } from '../services/uploadsService.js';
+import { handleFileUpload, bindAttachmentsDatagridUpload } from '../services/uploadsService.js';
 import { showConfirm } from '../ui/modalUtils.js';
 import { renderTabulatorList, hasTabulatorConfig, destroyTabulator } from './tabulatorLists.js?v=2.19';
 import { renderDayPilotCalendar, hasDayPilotConfig, destroyDayPilot } from './dayPilotCalendar.js?v=2.19';
@@ -37,14 +37,25 @@ export async function downloadSubmissionAttachments(submission, uiActions) {
     let downloadCount = 0;
     let directOpenCount = 0;
 
-    for (const attachment of attachments) {
-        try {
-            const usedDirectOpen = await downloadAttachmentWithAuth(attachment);
-            downloadCount += 1;
-            if (usedDirectOpen) directOpenCount += 1;
-        } catch (err) {
-            console.error('attachment download error', err, attachment);
-            actions.showToast?.(`Unable to download ${attachment.fileName}.`, "danger");
+    // Download in batches of 3 for better throughput
+    const concurrency = 3;
+    for (let i = 0; i < attachments.length; i += concurrency) {
+        const batch = attachments.slice(i, i + concurrency);
+        const results = await Promise.allSettled(
+            batch.map(async (attachment) => {
+                const usedDirectOpen = await downloadAttachmentWithAuth(attachment);
+                return { attachment, usedDirectOpen };
+            })
+        );
+        for (const result of results) {
+            if (result.status === 'fulfilled') {
+                downloadCount += 1;
+                if (result.value.usedDirectOpen) directOpenCount += 1;
+            } else {
+                const att = batch[results.indexOf(result)];
+                console.error('attachment download error', result.reason, att);
+                actions.showToast?.(`Unable to download ${att?.fileName || 'attachment'}.`, "danger");
+            }
         }
     }
 
@@ -678,10 +689,14 @@ async function openInlineSubmissionForm(
 
         await actions.safeSetSubmission?.(formio, submission);
 
-        // When the user clicks the "Upload file(s)" button
-        formio.on("s3Upload", () => {
-            handleS3Upload(formio, formMeta);
-        });
+        // Allow upload flow from explicit s3Upload event and attachments datagrid add action
+        if (!readOnly) {
+            formio.on("s3Upload", () => {
+                handleFileUpload(formio, formMeta);
+            });
+        }
+
+        bindAttachmentsDatagridUpload(formio, formMeta);
 
         if (!readOnly) {
             formio.on("submitDone", async () => {

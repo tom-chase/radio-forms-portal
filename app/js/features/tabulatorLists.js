@@ -6,18 +6,12 @@ import { openRoleMgmtModal } from './roleMgmt.js';
 import { log } from '../utils/logger.js';
 import { isSubmissionViewed, markSubmissionViewed, onSubmissionViewed, decrementFormTotal } from '../services/badgeService.js';
 import { downloadSubmissionPdf } from '../services/pdfService.js';
+import { getSubmissionAttachments } from './submissions.js?v=2.19';
 
 function $(id) { return document.getElementById(id); }
 
 function getAttachmentCount(submission) {
-    const rows = submission?.data?.attachments;
-    if (!Array.isArray(rows)) return 0;
-
-    return rows.filter((row) => {
-        const fileUrl = String(row?.fileUrl || row?.url || '').trim();
-        const storageKey = String(row?.storageKey || row?.key || row?.s3Key || '').trim();
-        return !!(fileUrl || storageKey);
-    }).length;
+    return getSubmissionAttachments(submission).length;
 }
 
 function applyAccessorDerivedFields(rows, columns) {

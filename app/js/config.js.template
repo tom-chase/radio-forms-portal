@@ -1,4 +1,8 @@
 // app/js/config.js
+// REFERENCE ONLY — not processed by envsubst or shell expansion.
+// Deploy scripts (deploy-dev.sh, deploy-production.sh) generate app/config.js directly.
+// ${VAR} syntax below is shell placeholder notation showing which env vars map to each field.
+// The JavaScript template literals (`${UPLOAD_BASE}/...`) are NOT shell variables.
 
 // Environment configuration loaded from environment variables
 // Fallback values are for local development only
@@ -16,6 +20,7 @@ export const CONFIG = {
     LOCAL_UPLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/local`,
     PRESIGN_URL: `${UPLOAD_BASE}/api/v1/uploads/presign`,
     DOWNLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/download`,
-    OBJECT_URL: `${UPLOAD_BASE}/api/v1/uploads/object`
+    OBJECT_URL: `${UPLOAD_BASE}/api/v1/uploads/object`,
+    MAX_FILE_SIZE_MB: Number("${UPLOAD_MAX_FILE_SIZE_MB:-50}") || 50
   }
 };

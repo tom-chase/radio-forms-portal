@@ -14,12 +14,12 @@ forms.your-domain.com {
         }
     }
 
-    root * /var/www/html
-    encode gzip
-    file_server
-    
-    # Fallback for SPA client-side routing
-    try_files {path} /index.html
+    handle {
+        root * /var/www/html
+        encode gzip
+        try_files {path} /index.html
+        file_server
+    }
 
     log {
         output file /var/log/spa_access.log

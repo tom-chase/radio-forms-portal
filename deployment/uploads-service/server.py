@@ -1,4 +1,3 @@
-import cgi
 import json
 import mimetypes
 import os
@@ -15,8 +14,12 @@ UPLOADS_ROOT = os.path.normpath(os.getenv("UPLOADS_ROOT", "/uploads"))
 FORMIO_API_BASE = os.getenv("FORMIO_API_BASE", "http://formio:3001").rstrip("/")
 UPLOADS_HOST = os.getenv("UPLOADS_HOST", "0.0.0.0")
 UPLOADS_PORT = int(os.getenv("UPLOADS_PORT", "3002"))
+# If UPLOAD_PUBLIC_BASE is empty, _build_file_url falls back to X-Forwarded-Proto + Host headers
+# from the reverse proxy (Caddy). Set explicitly if the proxy chain doesn't forward these.
 UPLOAD_PUBLIC_BASE = os.getenv("UPLOAD_PUBLIC_BASE", "").strip().rstrip("/")
 UPLOAD_S3_PRESIGN_URL = os.getenv("UPLOAD_S3_PRESIGN_URL", "").strip()
+UPLOADS_MAX_FILE_SIZE_MB = int(os.getenv("UPLOADS_MAX_FILE_SIZE_MB", "50"))
+UPLOADS_MAX_FILE_SIZE_BYTES = UPLOADS_MAX_FILE_SIZE_MB * 1024 * 1024
 
 
 def iso_now():
@@ -46,7 +49,7 @@ class UploadsHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", origin if origin else "*")
         self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-jwt-token, x-token")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
 
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
@@ -183,6 +186,32 @@ class UploadsHandler(BaseHTTPRequestHandler):
 
         self._send_json(404, {"error": "NotFound"})
 
+    def do_DELETE(self):
+        path = urlparse(self.path).path
+
+        if path.startswith("/api/v1/uploads/object/"):
+            storage_key = unquote(path[len("/api/v1/uploads/object/"):])
+            return self._handle_object_delete(storage_key)
+
+        self._send_json(404, {"error": "NotFound"})
+
+    def _handle_object_delete(self, storage_key):
+        _, _auth_headers = self._require_authenticated_user()
+        if _auth_headers is None:
+            return
+
+        abs_path = self._resolve_storage_key(storage_key)
+        if not abs_path:
+            self._send_json(400, {"error": "BadRequest", "message": "Invalid file key."})
+            return
+
+        if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
+            self._send_json(404, {"error": "NotFound", "message": "File not found."})
+            return
+
+        os.remove(abs_path)
+        self._send_json(204, {})
+
     def _handle_local_upload(self):
         user, _ = self._require_authenticated_user()
         if user is None:
@@ -196,33 +225,55 @@ class UploadsHandler(BaseHTTPRequestHandler):
             })
             return
 
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={
-                "REQUEST_METHOD": "POST",
-                "CONTENT_TYPE": content_type,
-                "CONTENT_LENGTH": self.headers.get("Content-Length", "0"),
-            },
-            keep_blank_values=True,
+        content_length = int(self.headers.get("Content-Length", "0") or "0")
+        if UPLOADS_MAX_FILE_SIZE_BYTES > 0 and content_length > UPLOADS_MAX_FILE_SIZE_BYTES:
+            self._send_json(413, {
+                "error": "PayloadTooLarge",
+                "message": f"Upload exceeds the {UPLOADS_MAX_FILE_SIZE_MB} MB limit.",
+            })
+            return
+
+        from multipart import parse_options_header, MultipartParser
+
+        _, options = parse_options_header(content_type)
+        boundary = options.get("boundary")
+        if not boundary:
+            self._send_json(400, {
+                "error": "BadRequest",
+                "message": "Missing multipart boundary.",
+            })
+            return
+
+        parser = MultipartParser(
+            self.rfile, boundary,
+            content_length=content_length or -1,
+            disk_limit=UPLOADS_MAX_FILE_SIZE_BYTES or 2**30,
         )
 
-        if "file" not in form:
+        file_part = None
+        form_fields = {}
+
+        try:
+            for part in parser:
+                if part.name == "file" and part.filename:
+                    file_part = part
+                elif part.name and not part.filename:
+                    form_fields[part.name] = part.value
+        except Exception as exc:
+            self._send_json(400, {
+                "error": "BadRequest",
+                "message": f"Failed to parse multipart data: {exc}",
+            })
+            return
+
+        if file_part is None:
             self._send_json(400, {"error": "BadRequest", "message": "Missing file field."})
             return
 
-        file_field = form["file"]
-        if isinstance(file_field, list):
-            file_field = file_field[0]
-
-        if not getattr(file_field, "file", None):
-            self._send_json(400, {"error": "BadRequest", "message": "No uploaded file data found."})
-            return
-
-        original_name = file_field.filename or "upload.bin"
+        original_name = file_part.filename or "upload.bin"
         safe_name = sanitize_filename(original_name)
-        form_path = sanitize_component(form.getfirst("formPath", "unknown"), "unknown")
-        submission_id = sanitize_component(form.getfirst("submissionId", "draft"), "draft")
+        form_path = sanitize_component(form_fields.get("formPath", "unknown"), "unknown")
+        submission_id = sanitize_component(form_fields.get("submissionId", "draft"), "draft")
 
         rel_dir = os.path.join(form_path, submission_id)
         abs_dir = os.path.normpath(os.path.join(UPLOADS_ROOT, rel_dir))
@@ -234,12 +285,24 @@ class UploadsHandler(BaseHTTPRequestHandler):
         stored_name = f"{uuid.uuid4().hex}_{safe_name}"
         abs_path = os.path.join(abs_dir, stored_name)
 
-        with open(abs_path, "wb") as output_file:
-            shutil.copyfileobj(file_field.file, output_file)
+        file_part.save_as(abs_path)
 
         storage_key = os.path.join(rel_dir, stored_name).replace(os.sep, "/")
         file_size = os.path.getsize(abs_path)
+
+        if UPLOADS_MAX_FILE_SIZE_BYTES > 0 and file_size > UPLOADS_MAX_FILE_SIZE_BYTES:
+            os.remove(abs_path)
+            self._send_json(413, {
+                "error": "PayloadTooLarge",
+                "message": f"Upload exceeds the {UPLOADS_MAX_FILE_SIZE_MB} MB limit.",
+            })
+            return
+
         file_url = self._build_file_url(storage_key)
+        file_content_type = file_part.content_type or "application/octet-stream"
+
+        for part in parser.parts():
+            part.close()
 
         self._send_json(201, {
             "fileName": original_name,
@@ -248,7 +311,7 @@ class UploadsHandler(BaseHTTPRequestHandler):
             "storage": "local",
             "storageKey": storage_key,
             "key": storage_key,
-            "type": file_field.type or "application/octet-stream",
+            "type": file_content_type,
             "size": file_size,
             "uploadedAt": iso_now(),
             "uploadedBy": user.get("_id"),

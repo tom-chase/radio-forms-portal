@@ -3235,14 +3235,13 @@
       "form": "incidentReport",
       "settings": {
         "transport": "smtp",
-        "template": "https://radio.mycopri.org/email-template.html",
+        "template": "https://forms.your-domain.com/email-template.html",
         "from": "noreply@your-domain.com",
         "replyTo": "",
         "emails": "management@your-domain.com",
         "sendEach": false,
         "subject": "New Incident Report: {{ data.summary }}",
-        "message": "<p>A new incident report has been submitted.</p><p><strong>Date/Time:</strong> {{ data.incidentDateFormatted }}</p><p><strong>Reporter:</strong> {{ data.reporter }}</p><p><strong>Severity:</strong> {{ data.severity }}</p><p><strong>Affected Services:</strong> {{ data.affectedServicesFormatted }}</p><p><strong>Summary:</strong> {{ data.summary }}</p><p><strong>Description:</strong> {{ data.description }}</p><p><strong>Actions Taken:</strong> {{ data.actionsTaken }}</p><p>Please log in to the forms portal to review and follow up.</p>",
-        "template": "https://forms.your-domain.com/email-template.html"
+        "message": "<p>A new incident report has been submitted.</p><p><strong>Date/Time:</strong> {{ data.incidentDateFormatted }}</p><p><strong>Reporter:</strong> {{ data.reporter }}</p><p><strong>Severity:</strong> {{ data.severity }}</p><p><strong>Affected Services:</strong> {{ data.affectedServicesFormatted }}</p><p><strong>Summary:</strong> {{ data.summary }}</p><p><strong>Description:</strong> {{ data.description }}</p><p><strong>Actions Taken:</strong> {{ data.actionsTaken }}</p><p>Please log in to the forms portal to review and follow up.</p>"
       },
       "priority": 0,
       "method": [
@@ -3258,14 +3257,13 @@
       "form": "contactIntake",
       "settings": {
         "transport": "smtp",
-        "template": "https://radio.mycopri.org/email-template.html",
+        "template": "https://forms.your-domain.com/email-template.html",
         "from": "noreply@your-domain.com",
         "replyTo": "{{ data.email }}",
         "emails": "management@your-domain.com",
         "sendEach": false,
         "subject": "New Contact Intake: {{ data.firstName }} {{ data.lastName }}",
-        "message": "<p>A new contact intake form has been submitted.</p><p><strong>Name:</strong> {{ data.firstName }} {{ data.lastName }}</p><p><strong>Email:</strong> {{ data.email }}</p><p><strong>Phone:</strong> {{ data.phone }}</p><p><strong>Organization:</strong> {{ data.organization }}</p><p><strong>Message:</strong></p><p>{{ data.message }}</p><p>Source: {{ data.source }}</p><p>Please log in to the <a href='https://radio.mycopri.org'>forms portal</a> to review and follow up.</p>",
-        "template": "https://forms.your-domain.com/email-template.html"
+        "message": "<p>A new contact intake form has been submitted.</p><p><strong>Name:</strong> {{ data.firstName }} {{ data.lastName }}</p><p><strong>Email:</strong> {{ data.email }}</p><p><strong>Phone:</strong> {{ data.phone }}</p><p><strong>Organization:</strong> {{ data.organization }}</p><p><strong>Message:</strong></p><p>{{ data.message }}</p><p>Source: {{ data.source }}</p><p>Please log in to the <a href='https://radio.mycopri.org'>forms portal</a> to review and follow up.</p>"
       },
       "priority": 0,
       "method": [
@@ -11376,15 +11374,6 @@
           "breadcrumb": "default"
         },
         {
-          "label": "Upload file(s)",
-          "key": "uploadAttachments",
-          "type": "button",
-          "action": "event",
-          "event": "s3Upload",
-          "theme": "secondary",
-          "input": true
-        },
-        {
           "label": "Attachments",
           "key": "attachments",
           "type": "datagrid",
@@ -11398,144 +11387,52 @@
               "type": "textfield",
               "input": true,
               "tableView": true,
-              "placeholder": "",
-              "customClass": "",
-              "defaultValue": null,
-              "hidden": false,
-              "description": "",
-              "tooltip": "",
-              "disabled": false,
-              "customDefaultValue": "",
-              "calculateValue": "",
-              "attributes": {},
-              "validateOn": "change",
-              "validate": {
-                "required": false,
-                "custom": "",
-                "customPrivate": false,
-                "strictDateValidation": false,
-                "multiple": false,
-                "unique": false,
-                "minLength": "",
-                "maxLength": "",
-                "pattern": ""
-              },
-              "conditional": {
-                "show": null,
-                "when": null,
-                "eq": ""
-              },
-              "overlay": {
-                "style": "",
-                "left": "",
-                "top": "",
-                "width": "",
-                "height": ""
-              },
-              "properties": {},
-              "allowMultipleMasks": false,
-              "addons": [],
-              "mask": false,
-              "inputFormat": "plain",
-              "inputMask": "",
-              "displayMask": ""
+              "disabled": true
             },
             {
-              "label": "File URL",
-              "key": "fileUrl",
-              "type": "url",
+              "label": "Size",
+              "key": "size",
+              "type": "textfield",
               "input": true,
               "tableView": true,
-              "placeholder": "",
-              "customClass": "",
-              "defaultValue": null,
-              "hidden": false,
-              "description": "",
-              "tooltip": "",
-              "disabled": false,
-              "customDefaultValue": "",
-              "calculateValue": "",
-              "attributes": {},
-              "validateOn": "change",
-              "validate": {
-                "required": false,
-                "custom": "",
-                "customPrivate": false,
-                "strictDateValidation": false,
-                "multiple": false,
-                "unique": false,
-                "minLength": "",
-                "maxLength": "",
-                "pattern": ""
-              },
-              "conditional": {
-                "show": null,
-                "when": null,
-                "eq": ""
-              },
-              "overlay": {
-                "style": "",
-                "left": "",
-                "top": "",
-                "width": "",
-                "height": ""
-              },
-              "properties": {},
-              "allowMultipleMasks": false,
-              "addons": [],
-              "mask": false,
-              "inputType": "url",
-              "inputFormat": "plain",
-              "inputMask": "",
-              "displayMask": ""
+              "disabled": true
             },
             {
               "label": "Description",
               "key": "description",
               "type": "textfield",
               "input": true,
-              "tableView": false,
-              "placeholder": "",
-              "customClass": "",
-              "defaultValue": null,
-              "hidden": false,
-              "description": "",
-              "tooltip": "",
-              "disabled": false,
-              "customDefaultValue": "",
-              "calculateValue": "",
-              "attributes": {},
-              "validateOn": "change",
-              "validate": {
-                "required": false,
-                "custom": "",
-                "customPrivate": false,
-                "strictDateValidation": false,
-                "multiple": false,
-                "unique": false,
-                "minLength": "",
-                "maxLength": "",
-                "pattern": ""
-              },
-              "conditional": {
-                "show": null,
-                "when": null,
-                "eq": ""
-              },
-              "overlay": {
-                "style": "",
-                "left": "",
-                "top": "",
-                "width": "",
-                "height": ""
-              },
-              "properties": {},
-              "allowMultipleMasks": false,
-              "addons": [],
-              "mask": false,
-              "inputFormat": "plain",
-              "inputMask": "",
-              "displayMask": ""
+              "tableView": false
+            },
+            {
+              "key": "fileUrl",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "storageKey",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "storage",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "type",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "uploadedAt",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
             }
           ],
           "placeholder": "",
@@ -13798,15 +13695,6 @@
           ]
         },
         {
-          "label": "Upload file(s)",
-          "key": "uploadAttachments",
-          "type": "button",
-          "action": "event",
-          "event": "s3Upload",
-          "theme": "secondary",
-          "input": true
-        },
-        {
           "label": "Attachments",
           "key": "attachments",
           "type": "datagrid",
@@ -13819,19 +13707,51 @@
               "key": "fileName",
               "type": "textfield",
               "input": true,
-              "tableView": true
+              "tableView": true,
+              "disabled": true
             },
             {
-              "label": "File URL",
-              "key": "fileUrl",
-              "type": "url",
+              "label": "Size",
+              "key": "size",
+              "type": "textfield",
               "input": true,
-              "tableView": true
+              "tableView": true,
+              "disabled": true
             },
             {
               "label": "Description",
               "key": "description",
               "type": "textfield",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "fileUrl",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "storageKey",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "storage",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "type",
+              "type": "hidden",
+              "input": true,
+              "tableView": false
+            },
+            {
+              "key": "uploadedAt",
+              "type": "hidden",
               "input": true,
               "tableView": false
             }

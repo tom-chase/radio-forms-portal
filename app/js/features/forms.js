@@ -1,7 +1,8 @@
 // app/js/features/forms.js
 
 import {
-    handleS3Upload
+    handleFileUpload,
+    bindAttachmentsDatagridUpload
     } from '../services/uploadsService.js';
 import {
     getSubmissionPermissions
@@ -502,10 +503,12 @@ export async function createMainFormInstance(formMeta, readOnly = false, submiss
 
     state.currentFormInstance = formio;
 
-    // When the user clicks the "Upload file(s)" button
+    // Allow upload flow from explicit s3Upload event and attachments datagrid add action
     formio.on("s3Upload", () => {
-        handleS3Upload(formio, formMeta);
+        handleFileUpload(formio, formMeta);
     });
+
+    bindAttachmentsDatagridUpload(formio, formMeta);
 
     formio.on("submitDone", async (result) => {
         const wasEditing = state.isEditing;

@@ -138,28 +138,52 @@ File attachments are uploaded to local NUC storage by default via the `uploads` 
 
 ### Service
 
-`app/js/services/uploadsService.js` — exports `handleS3Upload(formio, formMeta)`.
+- `app/js/services/uploadsService.js` — exports `handleFileUpload(formio, formMeta)`, `bindAttachmentsDatagridUpload(formio, formMeta)`, `deleteAttachment(storageKey)`. Legacy alias `handleS3Upload` is preserved for backward compatibility.
+- `deployment/uploads-service/server.py` — local upload API (Python, `multipart` library), authenticated file serving, and file deletion.
 
-`deployment/uploads-service/server.py` — local upload API and authenticated file serving.
+### Upload Triggers
 
-### Flow
+Uploads can be triggered two ways:
 
-1. A hidden `<input type="file" multiple>` is created and triggered programmatically.
-2. For each selected file, the SPA posts multipart file data to `CONFIG.UPLOAD.LOCAL_UPLOAD_URL` using `formioRequest()`.
-3. The uploads service validates the Form.io token via `/current`, stores the file in `/uploads/<formPath>/<submissionId-or-draft>/`, and returns metadata + object URL.
-4. The metadata object is appended to the form's `attachments` data grid via `actions.addAttachmentToFormData`.
-5. If local upload fails and `CONFIG.UPLOAD.ENABLE_S3_FALLBACK` is `true`, the client requests a presigned S3 URL from `CONFIG.UPLOAD.PRESIGN_URL` and uploads with `PUT`.
+1. **`s3Upload` Form.io event** — if a form schema contains a button component with `action: "event"` and `event: "s3Upload"`, clicking it fires the upload flow. The event listener is only registered on non-readOnly forms.
+2. **Datagrid "Add Another" intercept** — `bindAttachmentsDatagridUpload()` attaches a delegated click listener on the form root element that detects clicks on the `attachments` datagrid's "Add Another" button. It matches by CSS class (`formio-button-add-row`), `ref` attribute, `name` attribute, or button text content. This intercept is **DOM-class dependent** — if Form.io changes its datagrid button markup, the intercept may need updating.
+
+Both triggers are wired in `app/js/features/forms.js` (main form) and `app/js/features/submissions.js` (inline submission form).
+
+### Upload Flow
+
+1. A hidden `<input type="file" multiple>` is created and triggered programmatically. A `window.focus` listener detects picker cancellation and cleans up the orphaned input.
+2. Files exceeding `CONFIG.UPLOAD.MAX_FILE_SIZE_MB` (default 50 MB) are rejected client-side with a per-file toast.
+3. For each valid file, the SPA posts multipart file data to `CONFIG.UPLOAD.LOCAL_UPLOAD_URL` using `formioRequest()`.
+4. The uploads service validates the Form.io token via `/current`, checks `Content-Length` against the server-side `UPLOADS_MAX_FILE_SIZE_MB` limit, stores the file in `/uploads/<formPath>/<submissionId-or-draft>/`, and returns metadata + object URL.
+5. The metadata object is appended to the form's `attachments` data grid via `actions.addAttachmentToFormData`.
+6. If local upload fails and `CONFIG.UPLOAD.ENABLE_S3_FALLBACK` is `true`, the client requests a presigned S3 URL from `CONFIG.UPLOAD.PRESIGN_URL` and uploads with `PUT`.
+7. Per-file progress toasts are shown during multi-file uploads.
+
+### Download Flow
+
+Attachment downloads use authenticated blob retrieval via `formioRequest()` with `responseType: 'blob'`. If the blob download fails and the attachment storage is S3, the download falls back to `window.open()` for direct access.
+
+Three UI touch points provide download access:
+
+- **Table view** (`submissions.js`): a paperclip button with attachment count, visible when the submission has attachments and the user has read permission.
+- **Tabulator view** (`tabulatorLists.js`): a kebab menu item "Download Attachments (N)".
+- **DayPilot calendar** (`dayPilotCalendar.js`): a right-click context menu item "Download Attachments".
+
+Downloads run in parallel batches of 3 for better throughput.
 
 ### Configuration
 
-`CONFIG.UPLOAD` now supports:
+`CONFIG.UPLOAD` supports:
 
-- `MODE` (`local` default, `s3` optional)
-- `LOCAL_UPLOAD_URL`
-- `PRESIGN_URL`
-- `ENABLE_S3_FALLBACK`
+- `MODE` — `local` (default) or `s3`
+- `LOCAL_UPLOAD_URL` — endpoint for local file uploads
+- `PRESIGN_URL` — endpoint for S3 presigned URL requests
+- `ENABLE_S3_FALLBACK` — fall back to S3 if local upload fails (default `true`)
+- `OBJECT_URL` — base URL for authenticated file retrieval
+- `MAX_FILE_SIZE_MB` — maximum file size in MB (default `50`, applied on both frontend and backend)
 
-All new uploads are private by default; file retrieval is served through authenticated upload-service endpoints.
+All new uploads are private by default; file retrieval is served through authenticated upload-service endpoints. A `DELETE /api/v1/uploads/object/:key` endpoint is available for authenticated file deletion.
 
 ---
 

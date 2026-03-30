@@ -1,6 +1,6 @@
 # Radio Forms Portal
 
-Radio Forms Portal is a lightweight Single Page Application (SPA) + Form.io backend for managing forms, submissions, and role-based workflows for a small public radio station.
+Radio Forms Portal is a lightweight Single Page Application (SPA) + Form.io backend for managing forms, submissions, and role-based workflows for community radio stations.
 
 - **Frontend**: vanilla JS (ES6 modules) + Bootstrap (no build step)
 - **Backend**: Form.io Community Edition + MongoDB
