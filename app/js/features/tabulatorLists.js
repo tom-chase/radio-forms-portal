@@ -9,6 +9,17 @@ import { downloadSubmissionPdf } from '../services/pdfService.js';
 
 function $(id) { return document.getElementById(id); }
 
+function getAttachmentCount(submission) {
+    const rows = submission?.data?.attachments;
+    if (!Array.isArray(rows)) return 0;
+
+    return rows.filter((row) => {
+        const fileUrl = String(row?.fileUrl || row?.url || '').trim();
+        const storageKey = String(row?.storageKey || row?.key || row?.s3Key || '').trim();
+        return !!(fileUrl || storageKey);
+    }).length;
+}
+
 function applyAccessorDerivedFields(rows, columns) {
     if (!Array.isArray(rows) || !Array.isArray(columns)) return { rows, columns };
 
@@ -668,6 +679,7 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                     const canEditThis = permissions?.canUpdateAll || (permissions?.canUpdateOwn && isOwner);
                     const canDeleteThis = permissions?.canDeleteAll || (permissions?.canDeleteOwn && isOwner);
                     const canViewThis = permissions?.canReadAll || (permissions?.canReadOwn && isOwner);
+                    const attachmentCount = getAttachmentCount(rawSub);
 
                     const items = [];
 
@@ -683,18 +695,21 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         }
                     } else {
                         if (canViewThis) {
-                            items.push(`<button class="rfp-kebab-item" data-action="view" data-id="${rawSub._id}">View</button>`);
+                            items.push(`<button class="rfp-kebab-item" data-action="view" data-id="${rawSub._id}"><i class="bi bi-eye me-1"></i>View</button>`);
                         }
                         if (canEditThis) {
-                            items.push(`<button class="rfp-kebab-item" data-action="edit" data-id="${rawSub._id}">Edit</button>`);
+                            items.push(`<button class="rfp-kebab-item" data-action="edit" data-id="${rawSub._id}"><i class="bi bi-pencil-square me-1"></i>Edit</button>`);
                         }
                         if (state.adminMode) {
-                            items.push(`<button class="rfp-kebab-item" data-action="json" data-id="${rawSub._id}">View JSON</button>`);
+                            items.push(`<button class="rfp-kebab-item" data-action="json" data-id="${rawSub._id}"><i class="bi bi-code-slash me-1"></i>View JSON</button>`);
                         }
-                        items.push(`<button class="rfp-kebab-item" data-action="pdf" data-id="${rawSub._id}">Download PDF</button>`);
+                        if (canViewThis && attachmentCount > 0) {
+                            items.push(`<button class="rfp-kebab-item" data-action="download-attachments" data-id="${rawSub._id}"><i class="bi bi-paperclip me-1"></i>Download Attachments (${attachmentCount})</button>`);
+                        }
+                        items.push(`<button class="rfp-kebab-item" data-action="pdf" data-id="${rawSub._id}"><i class="bi bi-file-earmark-pdf me-1"></i>Download PDF</button>`);
                         if (canDeleteThis) {
                             if (items.length) items.push('<div class="rfp-kebab-divider"></div>');
-                            items.push(`<button class="rfp-kebab-item text-danger" data-action="delete" data-id="${rawSub._id}">Delete</button>`);
+                            items.push(`<button class="rfp-kebab-item text-danger" data-action="delete" data-id="${rawSub._id}"><i class="bi bi-trash me-1"></i>Delete</button>`);
                         }
                     }
 
@@ -785,6 +800,10 @@ export async function renderTabulatorList(submissions, formMeta, user, permissio
                         }
                     } else if (action === "pdf") {
                         downloadSubmissionPdf(rawSub, formMeta);
+                    } else if (action === "download-attachments") {
+                        const { downloadSubmissionAttachments } = await import('./submissions.js?v=2.19');
+                        const { actions } = getAppBridge();
+                        await downloadSubmissionAttachments(rawSub, actions);
                     } else if (action === "role-mgmt" || action === "role-mgmt-admin") {
                         if (action === 'role-mgmt' && !canManageRoles) return;
                         if (action === 'role-mgmt-admin' && !canManageAdminRoles) return;

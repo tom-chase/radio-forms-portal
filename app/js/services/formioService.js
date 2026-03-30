@@ -32,6 +32,10 @@ function normalizeJwtToken(token) {
   return raw.replace(/^Bearer\s+/i, '').trim();
 }
 
+function isFormDataPayload(value) {
+  return typeof FormData !== 'undefined' && value instanceof FormData;
+}
+
 /**
  * Build absolute URL from a relative Form.io path.
  * If you pass a full URL (http/https), it is returned unchanged.
@@ -227,6 +231,7 @@ export async function formioRequest(pathOrUrl, options = {}) {
     data = null,
     headers = {},
     query = null,
+    responseType = 'json',
     ...rest
   } = options;
 
@@ -291,7 +296,9 @@ export async function formioRequest(pathOrUrl, options = {}) {
       Object.assign(fetchHeaders, normalizedHeaders);
     }
 
-    if (!fetchHeaders.Accept) fetchHeaders.Accept = 'application/json';
+    if (!fetchHeaders.Accept) {
+      fetchHeaders.Accept = responseType === 'json' ? 'application/json' : '*/*';
+    }
 
     if (token) {
       const jwt = normalizeJwtToken(token);
@@ -300,14 +307,22 @@ export async function formioRequest(pathOrUrl, options = {}) {
       fetchHeaders['x-token'] = jwt;
     }
 
-    if ((method === 'POST' || method === 'PUT' || method === 'PATCH') && data && !fetchHeaders['Content-Type']) {
+    if ((method === 'POST' || method === 'PUT' || method === 'PATCH') && data && !isFormDataPayload(data) && !fetchHeaders['Content-Type']) {
       fetchHeaders['Content-Type'] = 'application/json';
     }
+
+    const requestBody = (() => {
+      if (method === 'GET' || method === 'HEAD') return undefined;
+      if (data === null || data === undefined) return undefined;
+      if (isFormDataPayload(data)) return data;
+      if (typeof data === 'string') return data;
+      return JSON.stringify(data);
+    })();
 
     const fetchResponse = await fetch(finalUrl, {
       method,
       headers: fetchHeaders,
-      body: (method === 'GET' || method === 'HEAD') ? undefined : (data ? JSON.stringify(data) : undefined)
+      body: requestBody
     });
 
     if (fetchResponse.ok) {
@@ -315,9 +330,8 @@ export async function formioRequest(pathOrUrl, options = {}) {
       if (jwtToken) setToken(jwtToken);
     }
 
-    const parsed = await parseFetchBody(fetchResponse);
-
     if (!fetchResponse.ok) {
+      const parsed = await parseFetchBody(fetchResponse);
       const message =
         (parsed && typeof parsed === 'object' && (parsed.message || parsed.error))
           ? String(parsed.message || parsed.error)
@@ -360,6 +374,16 @@ export async function formioRequest(pathOrUrl, options = {}) {
 
       throw err;
     }
+
+    if (responseType === 'blob') {
+      return await fetchResponse.blob();
+    }
+
+    if (responseType === 'text') {
+      return await fetchResponse.text();
+    }
+
+    const parsed = await parseFetchBody(fetchResponse);
 
     return parsed;
   } catch (err) {

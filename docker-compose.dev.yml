@@ -17,6 +17,24 @@ services:
     networks:
       - radio-forms-dev
 
+  uploads:
+    build:
+      context: ./deployment/uploads-service
+      dockerfile: Dockerfile
+    container_name: uploads-dev
+    restart: unless-stopped
+    depends_on:
+      - formio
+    environment:
+      - FORMIO_API_BASE=http://formio:3001
+      - UPLOADS_ROOT=/uploads
+      - UPLOADS_PORT=3002
+      - UPLOAD_S3_PRESIGN_URL=${UPLOAD_S3_PRESIGN_URL:-}
+    volumes:
+      - ${UPLOADS_PATH:-./uploads}:/uploads
+    networks:
+      - radio-forms-dev
+
   formio:
     image: formio/formio:4.6.0
     platform: linux/amd64  # Use AMD64 emulation for ARM64 compatibility
@@ -57,6 +75,7 @@ services:
       - SPA_ORIGIN=http://localhost:3000
     depends_on:
       - formio
+      - uploads
     networks:
       - radio-forms-dev
 

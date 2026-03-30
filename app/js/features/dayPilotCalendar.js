@@ -6,6 +6,7 @@ import { startEditSubmission, startViewSubmission } from './submissions.js?v=2.1
 import { renderViewToggle } from '../utils/viewUtils.js';
 import { showConfirm } from '../ui/modalUtils.js';
 import { decrementFormTotal } from '../services/badgeService.js';
+import { downloadSubmissionPdf } from '../services/pdfService.js';
 
 function $(id) { return document.getElementById(id); }
 
@@ -190,30 +191,42 @@ function createDefaultConfig() {
         contextMenu: new DayPilot.Menu({
             items: [
                 {
-                    text: "View",
+                    text: "👁 View",
                     onClick: async (args) => {
                         await handleEventAction(args.source, 'view');
                     }
                 },
                 {
-                    text: "Edit",
+                    text: "✏️ Edit",
                     onClick: async (args) => {
                         await handleEventAction(args.source, 'edit');
                     }
                 },
                 {
-                    text: "Delete",
-                    onClick: async (args) => {
-                        await handleEventAction(args.source, 'delete');
-                    }
-                },
-                { 
-                    text: "-" 
-                },
-                {
-                    text: "View JSON",
+                    text: "🧾 View JSON",
                     onClick: async (args) => {
                         await handleEventAction(args.source, 'json');
+                    }
+                },
+                {
+                    text: "📎 Download Attachments",
+                    onClick: async (args) => {
+                        await handleEventAction(args.source, 'download-attachments');
+                    }
+                },
+                {
+                    text: "📄 Download PDF",
+                    onClick: async (args) => {
+                        await handleEventAction(args.source, 'pdf');
+                    }
+                },
+                {
+                    text: "-"
+                },
+                {
+                    text: "🗑 Delete",
+                    onClick: async (args) => {
+                        await handleEventAction(args.source, 'delete');
                     }
                 }
             ]
@@ -299,6 +312,20 @@ async function handleEventAction(event, action) {
     // Handle different actions
     if (action === "json") {
         actions.showJsonModal?.(submission.data || {});
+    } else if (action === "download-attachments") {
+        if (!canViewThis) {
+            actions.showToast?.("You don't have permission to view this submission", "warning");
+            return;
+        }
+
+        const { downloadSubmissionAttachments } = await import('./submissions.js?v=2.19');
+        await downloadSubmissionAttachments(submission, actions);
+    } else if (action === "pdf") {
+        if (!canViewThis) {
+            actions.showToast?.("You don't have permission to view this submission", "warning");
+            return;
+        }
+        downloadSubmissionPdf(submission, formMeta);
     } else if (action === "view") {
         if (!canViewThis) {
             actions.showToast?.("You don't have permission to view this submission", "warning");

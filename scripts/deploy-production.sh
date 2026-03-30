@@ -137,7 +137,7 @@ ssh $SSH_OPTS $PROD_USER@$PROD_SERVER << EOF
 
     # Generate Frontend Configuration from server's .env values
     echo "🔧 Generating frontend configuration..."
-    printf '// Generated during deployment - DO NOT EDIT\nwindow.API_BASE_URL = '"'"'https://%s'"'"';\nwindow.SPA_ORIGIN = '"'"'https://%s'"'"';\nwindow.STATION_NAME = '"'"'%s'"'"';\nwindow.STATION_CALL_SIGN = '"'"'%s'"'"';\nwindow.STATION_ADDRESS = '"'"'%s'"'"';\nwindow.STATION_LOGO_URL = '"'"'%s'"'"';\nwindow.STATION_WEBSITE_URL = '"'"'%s'"'"';\n' "\$API_DOMAIN" "\$SPA_DOMAIN" "\${STATION_NAME:-Your Radio Station}" "\${STATION_CALL_SIGN:-[CALL SIGN]}" "\${STATION_ADDRESS:-}" "\${STATION_LOGO_URL:-}" "\${STATION_WEBSITE_URL:-}" > app/config.js
+    printf '// Generated during deployment - DO NOT EDIT\nwindow.API_BASE_URL = '"'"'https://%s'"'"';\nwindow.SPA_ORIGIN = '"'"'https://%s'"'"';\nwindow.UPLOAD_MODE = '"'"'%s'"'"';\nwindow.UPLOAD_ENABLE_S3_FALLBACK = '"'"'%s'"'"';\nwindow.UPLOAD_BASE_URL = '"'"'%s'"'"';\nwindow.STATION_NAME = '"'"'%s'"'"';\nwindow.STATION_CALL_SIGN = '"'"'%s'"'"';\nwindow.STATION_ADDRESS = '"'"'%s'"'"';\nwindow.STATION_LOGO_URL = '"'"'%s'"'"';\nwindow.STATION_WEBSITE_URL = '"'"'%s'"'"';\n' "\$API_DOMAIN" "\$SPA_DOMAIN" "\${UPLOAD_MODE:-local}" "\${UPLOAD_ENABLE_S3_FALLBACK:-true}" "\${UPLOAD_BASE_URL:-https://\$SPA_DOMAIN}" "\${STATION_NAME:-Your Radio Station}" "\${STATION_CALL_SIGN:-[CALL SIGN]}" "\${STATION_ADDRESS:-}" "\${STATION_LOGO_URL:-}" "\${STATION_WEBSITE_URL:-}" > app/config.js
     echo "   app/config.js -> API: https://\${API_DOMAIN}, SPA: https://\${SPA_DOMAIN}, Station: \${STATION_NAME:-Your Radio Station}"
 
     echo "✅ Configuration generated"

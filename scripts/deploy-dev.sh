@@ -76,6 +76,9 @@ cat > app/config.js << JS_EOF
 // Generated during deployment - DO NOT EDIT
 window.API_BASE_URL = 'http://localhost:3001';
 window.SPA_ORIGIN = 'http://localhost:3000';
+window.UPLOAD_MODE = '${UPLOAD_MODE:-local}';
+window.UPLOAD_ENABLE_S3_FALLBACK = '${UPLOAD_ENABLE_S3_FALLBACK:-true}';
+window.UPLOAD_BASE_URL = '${UPLOAD_BASE_URL:-http://localhost:3000}';
 window.STATION_NAME = '${STATION_NAME:-Your Radio Station}';
 window.STATION_CALL_SIGN = '${STATION_CALL_SIGN:-[CALL SIGN]}';
 window.STATION_ADDRESS = '${STATION_ADDRESS:-}';

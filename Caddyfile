@@ -4,6 +4,16 @@
 
 # 1. The Radio Forms Portal (Static SPA)
 forms.your-domain.com {
+    @uploads path /api/v1/uploads*
+    handle @uploads {
+        reverse_proxy uploads:3002 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
     root * /var/www/html
     encode gzip
     file_server
@@ -19,12 +29,24 @@ forms.your-domain.com {
 
 # 2. The Form.io API & Admin Portal
 api.forms.your-domain.com {
-    # Proxy all traffic directly to the formio container
-    reverse_proxy formio:3001 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-Proto {scheme}
-        header_up X-Forwarded-For {remote_host}
+    @uploads path /api/v1/uploads*
+    handle @uploads {
+        reverse_proxy uploads:3002 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
+    handle {
+        # Proxy all traffic directly to the formio container
+        reverse_proxy formio:3001 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-For {remote_host}
+        }
     }
 
     log {

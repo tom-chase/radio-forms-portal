@@ -2,15 +2,20 @@
 
 // Environment configuration loaded from environment variables
 // Fallback values are for local development only
-export const CONFIG = {
-  API_BASE: "${API_BASE_URL:-https://api.forms.your-domain.com}",
-  SPA_ORIGIN: "${SPA_ORIGIN:-https://forms.your-domain.com}",
+const API_BASE = "${API_BASE_URL:-https://api.forms.your-domain.com}";
+const SPA_ORIGIN = "${SPA_ORIGIN:-https://forms.your-domain.com}";
+const UPLOAD_BASE = "${UPLOAD_BASE_URL:-}" || SPA_ORIGIN;
 
-  // If upload service is on SPA origin behind Caddy, keep relative.
-  // If it lives on another origin, set absolute URL here.
+export const CONFIG = {
+  API_BASE,
+  SPA_ORIGIN,
+
   UPLOAD: {
-    PRESIGN_URL: "/api/v1/uploads/presign",
-    DOWNLOAD_URL: "/api/v1/uploads/download",
-    OBJECT_URL: "/api/v1/uploads/object"
+    MODE: "${UPLOAD_MODE:-local}",
+    ENABLE_S3_FALLBACK: "${UPLOAD_ENABLE_S3_FALLBACK:-true}" === "true",
+    LOCAL_UPLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/local`,
+    PRESIGN_URL: `${UPLOAD_BASE}/api/v1/uploads/presign`,
+    DOWNLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/download`,
+    OBJECT_URL: `${UPLOAD_BASE}/api/v1/uploads/object`
   }
 };

@@ -8,6 +8,7 @@ import {
 import { getCurrentUserWithRoles } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
 import { getAppBridge } from '../services/appBridge.js';
+import { CONFIG } from '../config.js';
 import { getUIState } from '../state/uiState.js';
 import { markSubmissionViewed, onSubmissionViewed, incrementFormTotal, decrementFormTotal } from '../services/badgeService.js';
 import { handleS3Upload } from '../services/uploadsService.js';
@@ -20,6 +21,127 @@ import { renderViewToggle } from '../utils/viewUtils.js';
 import { openInlineNotesView } from './inlineNotes.js';
 
 function $(id) { return document.getElementById(id); }
+
+export async function downloadSubmissionAttachments(submission, uiActions) {
+    const bridge = getAppBridge();
+    const actions = uiActions || bridge?.actions || {};
+    const attachments = getSubmissionAttachments(submission);
+
+    if (!attachments.length) {
+        actions.showToast?.("No attachments found for this submission.", "warning");
+        return { downloadCount: 0, directOpenCount: 0, total: 0 };
+    }
+
+    actions.showToast?.(`Downloading ${attachments.length} attachment(s)...`, "info");
+
+    let downloadCount = 0;
+    let directOpenCount = 0;
+
+    for (const attachment of attachments) {
+        try {
+            const usedDirectOpen = await downloadAttachmentWithAuth(attachment);
+            downloadCount += 1;
+            if (usedDirectOpen) directOpenCount += 1;
+        } catch (err) {
+            console.error('attachment download error', err, attachment);
+            actions.showToast?.(`Unable to download ${attachment.fileName}.`, "danger");
+        }
+    }
+
+    if (downloadCount === 0) {
+        actions.showToast?.("No attachments were downloaded.", "warning");
+    } else if (directOpenCount > 0) {
+        actions.showToast?.(`Downloaded ${downloadCount} attachment(s). ${directOpenCount} opened directly.`, "success");
+    } else {
+        actions.showToast?.(`Downloaded ${downloadCount} attachment(s).`, "success");
+    }
+
+    return { downloadCount, directOpenCount, total: attachments.length };
+}
+
+function normalizeAttachmentFilename(value, fallbackIndex) {
+    const name = String(value || '').trim();
+    return name || `attachment-${fallbackIndex}`;
+}
+
+function encodeStorageKey(storageKey) {
+    const raw = String(storageKey || '').trim();
+    if (!raw) return '';
+
+    try {
+        return encodeURIComponent(decodeURIComponent(raw));
+    } catch {
+        return encodeURIComponent(raw);
+    }
+}
+
+export function getSubmissionAttachments(submission) {
+    const rows = submission?.data?.attachments;
+    if (!Array.isArray(rows)) return [];
+
+    const objectBase = String(CONFIG.UPLOAD?.OBJECT_URL || '').replace(/\/+$/, '');
+
+    return rows
+        .map((row, index) => {
+            const fileName = normalizeAttachmentFilename(
+                row?.fileName || row?.name || row?.filename,
+                index + 1
+            );
+            const fileUrl = String(row?.fileUrl || row?.url || '').trim();
+            const storageKey = String(row?.storageKey || row?.key || row?.s3Key || '').trim();
+            const storage = String(row?.storage || (row?.s3Key ? 's3' : '')).toLowerCase();
+            const encodedKey = encodeStorageKey(storageKey);
+            const objectUrl = encodedKey && objectBase ? `${objectBase}/${encodedKey}` : '';
+            const downloadUrl = fileUrl || objectUrl;
+
+            if (!downloadUrl) return null;
+
+            return {
+                fileName,
+                storage,
+                downloadUrl,
+            };
+        })
+        .filter(Boolean);
+}
+
+function triggerBlobDownload(blob, fileName) {
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = fileName;
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(objectUrl);
+}
+
+async function downloadAttachmentWithAuth(attachment) {
+    const downloadUrl = String(attachment?.downloadUrl || '').trim();
+    if (!downloadUrl) {
+        throw new Error('Attachment is missing a download URL.');
+    }
+
+    try {
+        const blob = await formioRequest(downloadUrl, {
+            method: 'GET',
+            responseType: 'blob',
+        });
+        triggerBlobDownload(blob, attachment.fileName || 'attachment');
+        return false;
+    } catch (err) {
+        const canDirectOpen =
+            attachment?.storage === 's3' || /amazonaws\.com|cloudfront\.net/i.test(downloadUrl);
+
+        if (canDirectOpen) {
+            window.open(downloadUrl, '_blank', 'noopener');
+            return true;
+        }
+
+        throw err;
+    }
+}
 
 function cloneSubmission(submission) {
     try {
@@ -360,9 +482,22 @@ export async function renderSubmissionsTable(
         const canViewThis =
             perms.canReadAll ||
             (perms.canReadOwn && isOwner);
+        const attachments = getSubmissionAttachments(s);
 
         let actionsHtml =
             '<div class="btn-group btn-group-sm" role="group">';
+
+        if (canViewThis) {
+            actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="view" data-id="${encodedId}" title="View submission inline">
+                    <i class="bi bi-eye"></i>
+                </button>`;
+        }
+
+        if (canEditThis) {
+            actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="edit" data-id="${encodedId}" title="Edit submission inline">
+                    <i class="bi bi-pencil-square"></i>
+                </button>`;
+        }
 
         // Notes button (always available for viewing)
         actionsHtml += `<button type="button" class="btn btn-outline-info" data-action="notes" data-id="${encodedId}" title="View/Add Notes">
@@ -374,20 +509,17 @@ export async function renderSubmissionsTable(
                 <i class="bi bi-code-slash"></i>
             </button>`;
 
+        if (attachments.length > 0 && canViewThis) {
+            actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="download-attachments" data-id="${encodedId}" title="Download attachment(s)">
+                    <i class="bi bi-paperclip"></i>
+                    <span class="ms-1">${attachments.length}</span>
+                </button>`;
+        }
+
         // PDF download
         actionsHtml += `<button type="button" class="btn btn-outline-secondary" data-action="pdf" data-id="${encodedId}" title="Download PDF">
                 <i class="bi bi-file-earmark-pdf"></i>
             </button>`;
-
-        if (canEditThis) {
-            actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="edit" data-id="${encodedId}" title="Edit submission inline">
-                    <i class="bi bi-pencil-square"></i>
-                </button>`;
-        } else if (canViewThis) {
-            actionsHtml += `<button type="button" class="btn btn-outline-primary" data-action="view" data-id="${encodedId}" title="View submission inline">
-                    <i class="bi bi-eye"></i>
-                </button>`;
-        }
 
         if (canDeleteThis) {
             actionsHtml += `<button type="button" class="btn btn-outline-danger" data-action="delete" data-id="${encodedId}" title="Delete submission">
@@ -780,6 +912,8 @@ async function wireTableEventHandlers(subs, formMeta, user, permissions) {
                     }
                 } else if (action === "pdf") {
                     downloadSubmissionPdf(sub, formMeta);
+                } else if (action === "download-attachments") {
+                    await downloadSubmissionAttachments(sub, actions);
                 } else if (action === "notes") {
                     await openInlineNotesView(sub, formMeta, user);
                 } else if (action === "role-mgmt" || action === "role-mgmt-admin") {

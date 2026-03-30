@@ -38,12 +38,31 @@ services:
     networks:
       - radio-forms
 
+  uploads:
+    build:
+      context: ./deployment/uploads-service
+      dockerfile: Dockerfile
+    container_name: uploads
+    restart: unless-stopped
+    depends_on:
+      - formio
+    environment:
+      - FORMIO_API_BASE=http://formio:3001
+      - UPLOADS_ROOT=/uploads
+      - UPLOADS_PORT=3002
+      - UPLOAD_S3_PRESIGN_URL=${UPLOAD_S3_PRESIGN_URL:-}
+    volumes:
+      - ${UPLOADS_PATH:-/home/admin/radio-forms-portal/uploads}:/uploads
+    networks:
+      - radio-forms
+
   caddy:
     image: caddy:2
     container_name: caddy
     restart: unless-stopped
     depends_on:
       - formio
+      - uploads
     ports:
       - "80:80"
       - "443:443"

@@ -11376,6 +11376,15 @@
           "breadcrumb": "default"
         },
         {
+          "label": "Upload file(s)",
+          "key": "uploadAttachments",
+          "type": "button",
+          "action": "event",
+          "event": "s3Upload",
+          "theme": "secondary",
+          "input": true
+        },
+        {
           "label": "Attachments",
           "key": "attachments",
           "type": "datagrid",
@@ -13787,6 +13796,15 @@
               "description": "URL to audio file (for future upload/serving integration)"
             }
           ]
+        },
+        {
+          "label": "Upload file(s)",
+          "key": "uploadAttachments",
+          "type": "button",
+          "action": "event",
+          "event": "s3Upload",
+          "theme": "secondary",
+          "input": true
         },
         {
           "label": "Attachments",

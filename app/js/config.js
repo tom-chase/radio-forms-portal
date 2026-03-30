@@ -2,16 +2,21 @@
 
 // Environment configuration loaded from /config.js (generated during deployment)
 // Fallback values are for local development only
-export const CONFIG = {
-  API_BASE: window.API_BASE_URL || 'http://localhost:3001',
-  SPA_ORIGIN: window.SPA_ORIGIN || 'http://localhost:3000',
+const API_BASE = window.API_BASE_URL || 'http://localhost:3001';
+const SPA_ORIGIN = window.SPA_ORIGIN || 'http://localhost:3000';
+const UPLOAD_BASE = window.UPLOAD_BASE_URL || SPA_ORIGIN;
 
-  // If upload service is on SPA origin behind Caddy, keep relative.
-  // If it lives on another origin, set absolute URL here.
+export const CONFIG = {
+  API_BASE,
+  SPA_ORIGIN,
+
   UPLOAD: {
-    PRESIGN_URL: "/api/v1/uploads/presign",
-    DOWNLOAD_URL: "/api/v1/uploads/download",
-    OBJECT_URL: "/api/v1/uploads/object"
+    MODE: window.UPLOAD_MODE || 'local',
+    ENABLE_S3_FALLBACK: String(window.UPLOAD_ENABLE_S3_FALLBACK ?? 'true').toLowerCase() === 'true',
+    LOCAL_UPLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/local`,
+    PRESIGN_URL: `${UPLOAD_BASE}/api/v1/uploads/presign`,
+    DOWNLOAD_URL: `${UPLOAD_BASE}/api/v1/uploads/download`,
+    OBJECT_URL: `${UPLOAD_BASE}/api/v1/uploads/object`
   },
 
   STATION: {

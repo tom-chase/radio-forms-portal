@@ -2,6 +2,16 @@
 {$SPA_DOMAIN} {
     tls {$EMAIL}
 
+    @uploads path /api/v1/uploads*
+    handle @uploads {
+        reverse_proxy uploads:3002 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
     root * /var/www/html
     file_server
     encode gzip
@@ -19,11 +29,23 @@
 {$API_DOMAIN} {
     tls {$EMAIL}
 
-    # Proxy all traffic directly to the formio container
-    reverse_proxy formio:3001 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-Proto {scheme}
+    @uploads path /api/v1/uploads*
+    handle @uploads {
+        reverse_proxy uploads:3002 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
+    handle {
+        # Proxy all traffic directly to the formio container
+        reverse_proxy formio:3001 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
     }
 
     log {

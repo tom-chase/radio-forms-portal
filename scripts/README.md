@@ -32,9 +32,9 @@ Scripts for the Radio Forms Portal. Human-facing scripts live at the root; inter
 | Script | Purpose |
 |---|---|
 | `health-check.sh [env]` | System health check (containers, endpoints, disk) |
-| `backup.sh [env]` | Create MongoDB + config + app backup |
+| `backup.sh [env]` | Create MongoDB + config + app + uploads backup |
 | `cleanup.sh [env] [--deep\|--reset-data]` | Clean up containers, images, logs, temp files |
-| `backup-config.sh` | Archive recovery-critical config files to NAS |
+| `backup-config.sh` | Archive recovery-critical config + uploads to NAS |
 | `provision-infrastructure.sh [env] [key] [cidr]` | Deploy AWS CloudFormation stack |
 
 ## `lib/` — Internal Helpers

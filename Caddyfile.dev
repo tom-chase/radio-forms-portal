@@ -2,6 +2,16 @@
 # Serves the SPA locally - Form.io API accessed directly on port 3001
 
 :80 {
+    @uploads path /api/v1/uploads*
+    handle @uploads {
+        reverse_proxy uploads:3002 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-For {remote_host}
+        }
+    }
+
     # Enable CORS for development
     header {
         Access-Control-Allow-Origin "*"

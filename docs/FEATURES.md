@@ -11,7 +11,7 @@ This document covers implemented frontend features of the Radio Forms Portal tha
 1. [PDF Download](#pdf-download)
 2. [Sidebar Badges & "New" Counts](#sidebar-badges--new-counts)
 3. [Login Log](#login-log)
-4. [S3 File Uploads](#s3-file-uploads)
+4. [File Uploads (Local + S3 Fallback)](#file-uploads-local--s3-fallback)
 5. [Underwriting Onboarding Tour](#underwriting-onboarding-tour)
 6. [Revision History](#revision-history)
 7. [SMTP Email Notifications](#smtp-email-notifications)
@@ -132,24 +132,34 @@ Every authenticated session records a login event to the `loginLog` Form.io reso
 
 ---
 
-## S3 File Uploads
+## File Uploads (Local + S3 Fallback)
 
-File attachments can be uploaded directly to S3 via a Lambda presign URL. This is an optional integration — it requires a deployed Lambda function and `CONFIG.UPLOAD.PRESIGN_URL` set in the app config.
+File attachments are uploaded to local NUC storage by default via the `uploads` service. If local upload fails, optional S3 fallback can be enabled through the presign proxy endpoint.
 
 ### Service
 
 `app/js/services/uploadsService.js` — exports `handleS3Upload(formio, formMeta)`.
 
+`deployment/uploads-service/server.py` — local upload API and authenticated file serving.
+
 ### Flow
 
 1. A hidden `<input type="file" multiple>` is created and triggered programmatically.
-2. For each selected file, a `POST` to `CONFIG.UPLOAD.PRESIGN_URL` requests a presigned S3 URL (authenticated with the user's Form.io JWT).
-3. The file is `PUT` directly to S3 using the presigned URL.
-4. The resulting `{ name, type, s3Key, url, uploadedAt }` metadata object is appended to the form's attachment data via `actions.addAttachmentToFormData`.
+2. For each selected file, the SPA posts multipart file data to `CONFIG.UPLOAD.LOCAL_UPLOAD_URL` using `formioRequest()`.
+3. The uploads service validates the Form.io token via `/current`, stores the file in `/uploads/<formPath>/<submissionId-or-draft>/`, and returns metadata + object URL.
+4. The metadata object is appended to the form's `attachments` data grid via `actions.addAttachmentToFormData`.
+5. If local upload fails and `CONFIG.UPLOAD.ENABLE_S3_FALLBACK` is `true`, the client requests a presigned S3 URL from `CONFIG.UPLOAD.PRESIGN_URL` and uploads with `PUT`.
 
 ### Configuration
 
-`CONFIG.UPLOAD.PRESIGN_URL` must be set (via `UPLOAD_PRESIGN_URL` in `.env` → `app/config.js`). If not configured, the upload button should be conditionally hidden.
+`CONFIG.UPLOAD` now supports:
+
+- `MODE` (`local` default, `s3` optional)
+- `LOCAL_UPLOAD_URL`
+- `PRESIGN_URL`
+- `ENABLE_S3_FALLBACK`
+
+All new uploads are private by default; file retrieval is served through authenticated upload-service endpoints.
 
 ---
 

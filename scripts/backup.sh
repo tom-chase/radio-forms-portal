@@ -11,6 +11,19 @@ TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_DIR="$PROJECT_DIR/backups"
 BACKUP_NAME="backup-$ENVIRONMENT-$TIMESTAMP"
 
+# Load environment variables from .env if available
+if [ -f "$PROJECT_DIR/.env" ]; then
+    while IFS= read -r line; do
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "$line" ]] && continue
+        if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
+            export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+        fi
+    done < "$PROJECT_DIR/.env"
+fi
+
+UPLOADS_PATH="${UPLOADS_PATH:-$PROJECT_DIR/uploads}"
+
 echo "💾 Creating backup for $ENVIRONMENT environment..."
 
 # Create backup directory
@@ -49,6 +62,17 @@ tar czf "$APP_BACKUP" \
     tools/ \
     deployment/
 
+# Backup uploaded files if present
+if [ -d "$UPLOADS_PATH" ]; then
+    echo "📎 Backing up uploads..."
+    UPLOADS_BACKUP="$BACKUP_DIR/uploads-$BACKUP_NAME.tar.gz"
+    tar czf "$UPLOADS_BACKUP" \
+        -C "$UPLOADS_PATH" \
+        .
+else
+    echo "ℹ️ Uploads path not found, skipping uploads backup: $UPLOADS_PATH"
+fi
+
 # Create backup manifest
 echo "📋 Creating backup manifest..."
 cat > "$BACKUP_DIR/manifest-$BACKUP_NAME.txt" << EOF
@@ -62,6 +86,7 @@ Files Created:
 - mongo-$BACKUP_NAME.tar.gz (MongoDB data)
 - config-$BACKUP_NAME.tar.gz (Configuration)
 - app-$BACKUP_NAME.tar.gz (Application files)
+- uploads-$BACKUP_NAME.tar.gz (Uploaded files, if present)
 
 Restore Commands:
 1. Restore MongoDB: docker run --rm -v radio-forms-portal_mongo-data:/data -v \$(pwd):/backup alpine tar xzf /backup/mongo-$BACKUP_NAME.tar.gz -C /data
@@ -91,4 +116,5 @@ echo "📊 Backup summary:"
 echo "   MongoDB data: mongo-$BACKUP_NAME.tar.gz"
 echo "   Configuration: config-$BACKUP_NAME.tar.gz"
 echo "   Application: app-$BACKUP_NAME.tar.gz"
+echo "   Uploads: uploads-$BACKUP_NAME.tar.gz (if present)"
 echo "   Manifest: manifest-$BACKUP_NAME.txt"
