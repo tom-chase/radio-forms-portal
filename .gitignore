@@ -65,3 +65,6 @@ docs/pdf_outputs
 app/wpfwLogo_*.png
 app/wpfwLogo_*.jpg
 app/wpfwLogo_*.svg
+
+# local dev environment uploads
+uploads/
