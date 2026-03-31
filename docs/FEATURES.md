@@ -2,7 +2,7 @@
 
 This document covers implemented frontend features of the Radio Forms Portal that are not described elsewhere in the docs. For form schema and access control, see `GROUP_PERMISSIONS.md`. For deployment, see `DEPLOYMENT.md`.
 
-**Last Updated**: 2026-03-29
+**Last Updated**: 2026-03-31
 
 ---
 
@@ -124,7 +124,7 @@ Every authenticated session records a login event to the `loginLog` Form.io reso
 `app/js/services/loginLogService.js` — exports `recordLoginEvent(user)`.
 
 - **Deduplication**: uses `sessionStorage` flag (`rfp_login_recorded`) so that token refreshes and `initSession` re-runs within the same tab don't generate duplicate entries.
-- **Data captured**: `loginAt` (ISO timestamp), `userEmail`, `userId`, `userAgent`, `ipAddress` (fetched from `https://api.ipify.org?format=json` with a 3-second timeout; silently omitted on failure).
+- **Data captured**: `loginAt` (ISO timestamp), `userEmail`, `userId`, `userAgent`, `ipAddress` (fetched from the uploads service `/api/v1/uploads/whoami` endpoint using the user's Form.io token; falls back to `'unknown'` on failure or timeout).
 
 ### Backend Resource
 
@@ -183,7 +183,7 @@ Downloads run in parallel batches of 3 for better throughput.
 - `OBJECT_URL` — base URL for authenticated file retrieval
 - `MAX_FILE_SIZE_MB` — maximum file size in MB (default `50`, applied on both frontend and backend)
 
-All new uploads are private by default; file retrieval is served through authenticated upload-service endpoints. A `DELETE /api/v1/uploads/object/:key` endpoint is available for authenticated file deletion.
+All new uploads are private by default; file retrieval is served through authenticated upload-service endpoints. Both `GET` and `DELETE` on `/api/v1/uploads/object/:key` verify that the caller's Form.io token has read access to the submission that owns the file (by querying Form.io's submission API internally). This prevents authenticated users from accessing files belonging to submissions they lack permission for. A `/api/v1/uploads/whoami` endpoint returns the caller's IP address (used by `loginLogService`).
 
 ---
 

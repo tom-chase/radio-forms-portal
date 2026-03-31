@@ -4,7 +4,7 @@ trigger: always_on
 # Project Constraints
 
 ## Tech Stack (Invariants)
-- **Backend**: Form.io Community Edition (v4.6.0-rc.4) on Node.js 20+.
+- **Backend**: Form.io Community Edition (v4.6.1) on Node.js 20+.
 - **Database**: MongoDB 6.0.
 - **Web Server**: Caddy 2 (automatic HTTPS).
 - **Frontend**: Vanilla JS (ES6 Modules) + Bootstrap 5.3 + Tabulator.js + DayPilot Lite.

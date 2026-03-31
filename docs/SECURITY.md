@@ -2,7 +2,7 @@
 
 > **Current Production** (2026): ASUS NUC 14 on-prem server behind WireGuard VPN. EC2 is decommissioned — see the [AWS / EC2 Failover](#-aws--ec2-failover-path) section for the rebuild path and the remaining AWS surface (S3 + Route 53 only).
 
-**Last Updated**: 2026-03-29
+**Last Updated**: 2026-03-31
 
 ---
 
@@ -136,6 +136,24 @@ anonymous → authenticated → staff → management → administrator
 ```
 
 Department-scoped access (Engineering, Underwriting, Programming) and committee-scoped access (Technology) are implemented via client-side group permissions. Row-level security uses the share-settings model. See `docs/GROUP_PERMISSIONS.md` for full details.
+
+### File Upload Access Control
+
+The `uploads` service (`deployment/uploads-service/server.py`) enforces submission-level access on file retrieval and deletion. When a `GET` or `DELETE` request is made to `/api/v1/uploads/object/:key`, the service:
+
+1. Extracts the `formPath` and `submissionId` from the storage key (`formPath/submissionId/filename`).
+2. Queries Form.io (`GET /{formPath}/submission/{submissionId}`) using the caller's token.
+3. Denies the request (403) if Form.io returns 401/403/404 — i.e., the caller lacks `submissionAccess` for that submission.
+
+Draft uploads (submissionId = `draft`) and legacy/malformed keys are allowed through without a submission check.
+
+### IP Address Capture
+
+Login IP addresses are captured server-side via the uploads service `/api/v1/uploads/whoami` endpoint, which reads the client IP from the `X-Forwarded-For` header (set by Caddy). No third-party services are used for IP resolution.
+
+### Git History Hygiene
+
+Uploaded files that were accidentally committed to the repository have been purged from all branches using `git filter-repo`. The `uploads/` directory is in `.gitignore`.
 
 ---
 

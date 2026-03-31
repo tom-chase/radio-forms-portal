@@ -37,6 +37,13 @@ Use this workflow for initial setup, after code/script changes, or when you need
 ## ARM64 (Apple Silicon) Note
 The `docker-compose.dev.yml` uses `platform: linux/amd64` for the Form.io service. If you see platform errors, verify this setting is present.
 
+## Rebuilding the Uploads Service
+If you change `deployment/uploads-service/server.py`, the uploads container must be rebuilt:
+```bash
+docker compose -f docker-compose.dev.yml build uploads && docker compose -f docker-compose.dev.yml up -d uploads
+```
+The uploads service is a built image (not a volume mount), so code changes require a container rebuild.
+
 ## Troubleshooting
 - Container crash loop → `docker-compose -f docker-compose.dev.yml logs formio`
 - Port conflict → check nothing else is bound to 3000, 3001, or 27017

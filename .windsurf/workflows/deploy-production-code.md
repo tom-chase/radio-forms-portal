@@ -36,10 +36,14 @@ Pushes the SPA, scripts, and Docker configuration to the production server. Does
    docker exec formio node /app/run-migrations.js
    ```
 
-4. **Smoke test**:
+4. **Verify Caddyfile on server** (if uploads or new endpoints were added):
+   The production `Caddyfile` is excluded from the tarball. If the uploads service has new endpoints (e.g., `/api/v1/uploads/whoami`), ensure the server's `Caddyfile` includes the `@uploads path /api/v1/uploads*` proxy rule in both the SPA and API server blocks. The `--build` flag in `docker compose up` rebuilds the uploads container, but Caddy must proxy to it.
+
+5. **Smoke test**:
    - Confirm SPA loads and points at production API
    - Confirm list views render (Tabulator/DayPilot)
    - Test one create/edit/view flow on the most impacted form
+   - Verify file upload/download works (uploads container was rebuilt)
 
 ## Configuration Overrides
 You can override `PROD_SERVER`, `PROD_USER`, `PROD_APP_DIR`, and `PROD_BACKUP_DIR` via environment variables.

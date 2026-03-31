@@ -6,7 +6,7 @@
 
 - **Project**: Radio Forms Portal — open-source SPA + Form.io backend for a small public radio station.
 - **Philosophy**: Stability > Complexity. Simple, robust solutions preferred.
-- **Tech Stack**: Form.io CE (v4.6.0-rc.4), Node.js 20+, MongoDB 6.0, Caddy 2, Vanilla JS (ES6 Modules) + Bootstrap 5.3 + Tabulator.js + DayPilot Lite.
+- **Tech Stack**: Form.io CE (v4.6.1), Node.js 20+, MongoDB 6.0, Caddy 2, Vanilla JS (ES6 Modules) + Bootstrap 5.3 + Tabulator.js + DayPilot Lite.
 - **Production OS**: Debian 12 (Bookworm).
 - **Frontend**: No build step — served raw as ES modules.
 

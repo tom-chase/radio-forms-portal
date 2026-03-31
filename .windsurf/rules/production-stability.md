@@ -7,9 +7,10 @@ trigger: always_on
 Dynamic environment variable substitution in Caddy and frontend config proved unstable during production deployments. Production config files are now **generated on the server** from the server's `.env` during deployment.
 
 ## MUST
-- The deploy script (`scripts/deploy-production.sh`) **excludes** `app/config.js` and `config/env/production.json` from the tarball and regenerates them on the server.
+- The deploy script (`scripts/deploy-production.sh`) **excludes** `app/config.js`, `config/env/production.json`, and `Caddyfile` from the tarball and regenerates config files on the server.
+- The production `Caddyfile` **must** include `@uploads path /api/v1/uploads*` proxy rules in both SPA and API server blocks. Without this, upload endpoints (file GET/DELETE, `/whoami`) return 404 via the SPA fallback handler.
 - When changing domains or emails, update:
-  1. `Caddyfile` (on the production server): email and domain blocks.
+  1. `Caddyfile` (on the production server): email, domain blocks, and uploads proxy rules.
   2. Server `.env`: `SPA_DOMAIN`, `API_DOMAIN`, and related variables.
   3. `app/js/config.js`: fallback `API_BASE` and `SPA_ORIGIN` (for local dev only).
   4. `formio-config.json.template`: `trust proxy` stays `true`.
