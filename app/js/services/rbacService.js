@@ -264,3 +264,52 @@ export function getSubmissionPermissions(userOrRoles, formMeta, { isAdmin = fals
     canDeleteOwn: check(["delete_own"]),
   };
 }
+
+// ── Cached roleMgmt / roleMgmtAdmin permission loader ──
+// Fetches the form definitions once per call-site render cycle and caches
+// the result so that renderSubmissionsTable, wireTableEventHandlers, and
+// renderTabulatorList don't each fire their own requests.
+
+let _roleMgmtPermsPromise = null;
+
+export function clearRoleMgmtPermsCache() {
+  _roleMgmtPermsPromise = null;
+}
+
+export async function getRoleMgmtPermissions(currentUser, { isAdmin = false } = {}) {
+  if (_roleMgmtPermsPromise) return _roleMgmtPermsPromise;
+
+  _roleMgmtPermsPromise = _fetchRoleMgmtPermissions(currentUser, { isAdmin });
+
+  // Auto-expire after a short window so stale data doesn't persist across navigations
+  _roleMgmtPermsPromise.finally(() => {
+    setTimeout(() => { _roleMgmtPermsPromise = null; }, 5000);
+  });
+
+  return _roleMgmtPermsPromise;
+}
+
+async function _fetchRoleMgmtPermissions(currentUser, { isAdmin }) {
+  let roleMgmtPerms = { canCreateAll: false, canCreateOwn: false };
+  let roleMgmtAdminPerms = { canCreateAll: false, canCreateOwn: false };
+
+  try {
+    const roleMgmtForm = await formioRequest('/rolemgmt', { method: 'GET' });
+    if (roleMgmtForm) {
+      roleMgmtPerms = getSubmissionPermissions(currentUser, roleMgmtForm, { isAdmin });
+    }
+  } catch (e) {
+    log.debug('Could not fetch roleMgmt form for permission check', e);
+  }
+
+  try {
+    const roleMgmtAdminForm = await formioRequest('/rolemgmtadmin', { method: 'GET' });
+    if (roleMgmtAdminForm) {
+      roleMgmtAdminPerms = getSubmissionPermissions(currentUser, roleMgmtAdminForm, { isAdmin });
+    }
+  } catch (e) {
+    log.debug('Could not fetch roleMgmtAdmin form for permission check', e);
+  }
+
+  return { roleMgmtPerms, roleMgmtAdminPerms };
+}

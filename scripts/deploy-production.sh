@@ -11,7 +11,11 @@ if [ -f .env ]; then
     [[ "$line" =~ ^[[:space:]]*# ]] && continue
     [[ -z "$line" ]] && continue
     if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
-      export "${BASH_REMATCH[1]}=${BASH_REMATCH[2]}"
+      val="${BASH_REMATCH[2]}"
+      # Strip surrounding quotes (single or double)
+      val="${val#\"}" ; val="${val%\"}"
+      val="${val#\'}" ; val="${val%\'}"
+      export "${BASH_REMATCH[1]}=${val}"
     fi
   done < .env
 fi

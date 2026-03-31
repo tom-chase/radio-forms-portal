@@ -307,20 +307,24 @@ async function main() {
             }
 
             const currentForm = await formResp.json();
-            const templateForm = formsFromTemplate[formName];
+            // Normalize template role names → IDs *before* comparing so we
+            // don't always detect a diff between machine names and ObjectIds.
+            const templateForm = normalizeAccessRoles(
+                JSON.parse(JSON.stringify(formsFromTemplate[formName]))
+            );
             
             let updated = false;
 
             // Sync access rules
             if (templateForm.access && JSON.stringify(currentForm.access) !== JSON.stringify(templateForm.access)) {
-                currentForm.access = normalizeAccessRoles(templateForm).access;
+                currentForm.access = templateForm.access;
                 updated = true;
                 log(`Syncing access rules for ${formName}...`);
             }
 
             // Sync submissionAccess rules
             if (templateForm.submissionAccess && JSON.stringify(currentForm.submissionAccess) !== JSON.stringify(templateForm.submissionAccess)) {
-                currentForm.submissionAccess = normalizeAccessRoles(templateForm).submissionAccess;
+                currentForm.submissionAccess = templateForm.submissionAccess;
                 updated = true;
                 log(`Syncing submission access rules for ${formName}...`);
             }

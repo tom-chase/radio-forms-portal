@@ -510,7 +510,7 @@
         elements.loadingSpinner.classList.add('show');
         elements.formContainer.style.display = 'none';
 
-        // ── Fetch form definition (anonymous, no auth required) then render form ──
+        // ── Fetch form definition once, use for both marketing content and form render ──
         fetch(CONFIG.formDefUrl)
             .then(function(res) { return res.ok ? res.json() : Promise.reject(res.status); })
             .then(function(formDef) {
@@ -518,60 +518,63 @@
                     ? formDef.settings.ui.marketingContent
                     : {};
                 renderMarketingContent(mc);
+                return formDef;
             })
             .catch(function(err) {
                 console.warn('Could not load form definition for marketing content:', err);
                 renderMarketingContent({});
+                return null;
             })
-            .finally(function() {
-                // ── Create the embedded form ──
-                Formio.createForm(elements.formContainer, CONFIG.formDefUrl, {
+            .then(function(formDef) {
+                // ── Create the embedded form (reuse fetched JSON when available) ──
+                var formSrc = formDef || CONFIG.formDefUrl;
+                return Formio.createForm(elements.formContainer, formSrc, {
                     readOnly: false,
                     breadcrumbSettings: { clickable: false },
                     buttonSettings: { showCancel: false }
-                })
-                .then(function(form) {
-                    elements.loadingSpinner.classList.remove('show');
-                    elements.formContainer.style.display = 'block';
-
-                    form.on('submitDone', function(submission) {
-                        elements.formContainer.style.display = 'none';
-                        elements.successMessage.classList.add('show');
-
-                        if (CONFIG.enableAnalytics && typeof gtag !== 'undefined') {
-                            gtag('event', 'form_submit', {
-                                'event_category': 'Sponsorship Inquiry',
-                                'event_label': 'Contact Submission'
-                            });
-                        }
-
-                        setTimeout(function() {
-                            elements.successMessage.classList.remove('show');
-                            elements.formContainer.style.display = 'block';
-                            form.submission = { data: {} };
-                            elements.formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, CONFIG.resetDelay);
-                    });
-
-                    form.on('error', function(errors) {
-                        console.error('Form error:', errors);
-                        elements.errorMessage.classList.add('show');
-                        setTimeout(function() {
-                            elements.errorMessage.classList.remove('show');
-                        }, 5000);
-                    });
-                })
-                .catch(function(error) {
-                    console.error('Error loading form:', error);
-                    elements.loadingSpinner.classList.remove('show');
-                    elements.formContainer.style.display = 'block';
-                    elements.formContainer.innerHTML =
-                        '<div class="alert alert-danger" role="alert">' +
-                        '<i class="fas fa-exclamation-triangle me-2"></i>' +
-                        '<strong>Unable to load the form.</strong><br>' +
-                        'Please try refreshing the page or contact us directly if the problem persists.' +
-                        '</div>';
                 });
+            })
+            .then(function(form) {
+                elements.loadingSpinner.classList.remove('show');
+                elements.formContainer.style.display = 'block';
+
+                form.on('submitDone', function(submission) {
+                    elements.formContainer.style.display = 'none';
+                    elements.successMessage.classList.add('show');
+
+                    if (CONFIG.enableAnalytics && typeof gtag !== 'undefined') {
+                        gtag('event', 'form_submit', {
+                            'event_category': 'Sponsorship Inquiry',
+                            'event_label': 'Contact Submission'
+                        });
+                    }
+
+                    setTimeout(function() {
+                        elements.successMessage.classList.remove('show');
+                        elements.formContainer.style.display = 'block';
+                        form.submission = { data: {} };
+                        elements.formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, CONFIG.resetDelay);
+                });
+
+                form.on('error', function(errors) {
+                    console.error('Form error:', errors);
+                    elements.errorMessage.classList.add('show');
+                    setTimeout(function() {
+                        elements.errorMessage.classList.remove('show');
+                    }, 5000);
+                });
+            })
+            .catch(function(error) {
+                console.error('Error loading form:', error);
+                elements.loadingSpinner.classList.remove('show');
+                elements.formContainer.style.display = 'block';
+                elements.formContainer.innerHTML =
+                    '<div class="alert alert-danger" role="alert">' +
+                    '<i class="fas fa-exclamation-triangle me-2"></i>' +
+                    '<strong>Unable to load the form.</strong><br>' +
+                    'Please try refreshing the page or contact us directly if the problem persists.' +
+                    '</div>';
             });
     </script>
 </body>

@@ -279,7 +279,7 @@ if (domElements.subsSearchInput) {
                             s.owner || ""
                         ).toLowerCase();
                         const dataStr =
-                            JSON.stringify({});
+                            JSON.stringify(s.data || {});
 
                         return (
                             when.includes(
@@ -451,18 +451,18 @@ if (domElements.adminToolsBtn) {
                     loadLoginLog(true).catch(() => {});
                 });
             }
+            bootstrap.Collapse
+                    .getOrCreateInstance(domElements.adminToolsCollapseEl, { toggle: false })
+                    .show();
+            domElements.adminSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
         } else {
             hide(domElements.adminSection);
             show(domElements.appSection);
             domElements.adminToolsBtn.classList.remove("active");
         }
-        bootstrap.Collapse
-                .getOrCreateInstance(domElements.adminToolsCollapseEl, { toggle: false })
-                .show();
-        domElements.adminSection.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
     });
 }
 

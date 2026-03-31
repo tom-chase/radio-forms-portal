@@ -51,6 +51,13 @@ class UploadsHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-jwt-token, x-token")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
 
+    def _send_no_content(self):
+        """Send a 204 No Content response (no body, no Content-Type)."""
+        self.send_response(204)
+        self._send_cors_headers()
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode("utf-8")
         self.send_response(status)
@@ -140,6 +147,55 @@ class UploadsHandler(BaseHTTPRequestHandler):
             base = f"{scheme}://{host}"
         return f"{base}/api/v1/uploads/object/{quote(storage_key, safe='')}"
 
+    def _verify_submission_access(self, storage_key, auth_headers):
+        """Check the caller can access the submission that owns this file.
+
+        Storage keys follow the pattern ``formPath/submissionId/filename``.
+        We ask Form.io whether the caller's token can read the submission.
+        Returns True if access is granted, False otherwise (response already sent).
+        """
+        parts = str(storage_key or "").strip("/").split("/")
+        if len(parts) < 3:
+            # Key doesn't follow the expected structure — allow (legacy/draft files)
+            return True
+
+        form_path, submission_id = parts[0], parts[1]
+
+        # "draft" uploads aren't tied to a submission yet
+        if submission_id == "draft":
+            return True
+
+        url = f"{FORMIO_API_BASE}/{form_path}/submission/{submission_id}"
+        req = Request(url, headers={"Accept": "application/json", **auth_headers}, method="GET")
+        try:
+            with urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    return True
+        except HTTPError as exc:
+            status = exc.code
+            if status in (401, 403, 404):
+                self._send_json(403, {
+                    "error": "Forbidden",
+                    "message": "You do not have access to this file's submission.",
+                })
+                return False
+            # Other server errors — deny cautiously
+            self._send_json(502, {
+                "error": "UpstreamError",
+                "message": "Could not verify submission access.",
+            })
+            return False
+        except (URLError, Exception):
+            self._send_json(502, {
+                "error": "UpstreamError",
+                "message": "Could not verify submission access.",
+            })
+            return False
+
+        # Shouldn't reach here, but deny by default
+        self._send_json(403, {"error": "Forbidden", "message": "Access denied."})
+        return False
+
     def _resolve_storage_key(self, storage_key):
         normalized_key = str(storage_key or "").strip().lstrip("/")
         if not normalized_key:
@@ -184,6 +240,9 @@ class UploadsHandler(BaseHTTPRequestHandler):
         if path == "/api/v1/uploads/health":
             return self._send_json(200, {"status": "ok", "time": iso_now()})
 
+        if path == "/api/v1/uploads/whoami":
+            return self._handle_whoami()
+
         self._send_json(404, {"error": "NotFound"})
 
     def do_DELETE(self):
@@ -195,9 +254,27 @@ class UploadsHandler(BaseHTTPRequestHandler):
 
         self._send_json(404, {"error": "NotFound"})
 
+    def _handle_whoami(self):
+        """Return the caller's IP address as seen by the server."""
+        user, _ = self._require_authenticated_user()
+        if user is None:
+            return
+
+        # Prefer X-Forwarded-For (set by Caddy / reverse proxy), fall back to peer address
+        forwarded = self.headers.get("X-Forwarded-For")
+        if forwarded:
+            ip = forwarded.split(",")[0].strip()
+        else:
+            ip = self.client_address[0] if self.client_address else "unknown"
+
+        self._send_json(200, {"ip": ip})
+
     def _handle_object_delete(self, storage_key):
-        _, _auth_headers = self._require_authenticated_user()
-        if _auth_headers is None:
+        _, auth_headers = self._require_authenticated_user()
+        if auth_headers is None:
+            return
+
+        if not self._verify_submission_access(storage_key, auth_headers):
             return
 
         abs_path = self._resolve_storage_key(storage_key)
@@ -210,7 +287,7 @@ class UploadsHandler(BaseHTTPRequestHandler):
             return
 
         os.remove(abs_path)
-        self._send_json(204, {})
+        self._send_no_content()
 
     def _handle_local_upload(self):
         user, _ = self._require_authenticated_user()
@@ -301,9 +378,6 @@ class UploadsHandler(BaseHTTPRequestHandler):
         file_url = self._build_file_url(storage_key)
         file_content_type = file_part.content_type or "application/octet-stream"
 
-        for part in parser.parts():
-            part.close()
-
         self._send_json(201, {
             "fileName": original_name,
             "fileUrl": file_url,
@@ -369,8 +443,11 @@ class UploadsHandler(BaseHTTPRequestHandler):
             })
 
     def _handle_object_get(self, storage_key):
-        _, _auth_headers = self._require_authenticated_user()
-        if _auth_headers is None:
+        _, auth_headers = self._require_authenticated_user()
+        if auth_headers is None:
+            return
+
+        if not self._verify_submission_access(storage_key, auth_headers):
             return
 
         abs_path = self._resolve_storage_key(storage_key)

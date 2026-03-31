@@ -3,7 +3,8 @@
 import {
     getSubmissionPermissions,
     hasShareSettings,
-    checkSubmissionRowAccess
+    checkSubmissionRowAccess,
+    getRoleMgmtPermissions
     } from '../services/rbacService.js';
 import { getCurrentUserWithRoles } from '../services/sessionService.js';
 import { formioRequest, buildUrl } from '../services/formioService.js';
@@ -367,50 +368,9 @@ export async function renderSubmissionsTable(
 
     const isUserResource = String(formMeta?.path || "").toLowerCase() === "user";
     
-    // Check if current user can create role management forms
+    // Check if current user can create role management forms (cached — shared with wireTableEventHandlers)
     const currentUser = await getCurrentUserWithRoles();
-    
-    // Get permissions for roleMgmt and roleMgmtAdmin forms
-    const { getSubmissionPermissions, getFormPermissions } = await import('../services/rbacService.js');
-    const { formioRequest } = await import('../services/formioService.js');
-    
-    // Fetch actual form definitions to get real permissions
-    let roleMgmtPerms = { canCreateAll: false, canCreateOwn: false };
-    let roleMgmtAdminPerms = { canCreateAll: false, canCreateOwn: false };
-    
-    try {
-        // Try to fetch roleMgmt form
-        const roleMgmtForm = await formioRequest('/rolemgmt', { method: 'GET' });
-        if (roleMgmtForm) {
-            roleMgmtPerms = getSubmissionPermissions(currentUser, roleMgmtForm, { isAdmin: state.adminMode });
-        }
-    } catch (e) {
-        console.warn('Could not fetch roleMgmt form, using defaults:', e);
-        // Fallback to defaults
-        roleMgmtPerms = getSubmissionPermissions(currentUser, {
-            submissionAccess: [
-                { type: "create_all", roles: ["management", "staff", "administrator"] },
-                { type: "create_own", roles: ["management", "staff", "administrator"] }
-            ]
-        }, { isAdmin: state.adminMode });
-    }
-    
-    try {
-        // Try to fetch roleMgmtAdmin form
-        const roleMgmtAdminForm = await formioRequest('/rolemgmtadmin', { method: 'GET' });
-        if (roleMgmtAdminForm) {
-            roleMgmtAdminPerms = getSubmissionPermissions(currentUser, roleMgmtAdminForm, { isAdmin: state.adminMode });
-        }
-    } catch (e) {
-        console.warn('Could not fetch roleMgmtAdmin form, using defaults:', e);
-        // Fallback to defaults
-        roleMgmtAdminPerms = getSubmissionPermissions(currentUser, {
-            submissionAccess: [
-                { type: "create_all", roles: ["administrator"] },
-                { type: "create_own", roles: ["administrator"] }
-            ]
-        }, { isAdmin: state.adminMode });
-    }
+    const { roleMgmtPerms, roleMgmtAdminPerms } = await getRoleMgmtPermissions(currentUser, { isAdmin: state.adminMode });
     
     const canManageRoles = isUserResource && (roleMgmtPerms.canCreateAll || roleMgmtPerms.canCreateOwn);
     const canManageAdminRoles = isUserResource && (roleMgmtAdminPerms.canCreateAll || roleMgmtAdminPerms.canCreateOwn);
@@ -845,48 +805,9 @@ async function wireTableEventHandlers(subs, formMeta, user, permissions) {
 
     const isUserResource = String(formMeta?.path || "").toLowerCase() === "user";
     
-    // Check if current user can create role management forms
+    // Check if current user can create role management forms (cached — shared with renderSubmissionsTable)
     const currentUser = await getCurrentUserWithRoles();
-    
-    // Get permissions for roleMgmt and roleMgmtAdmin forms
-    const { getSubmissionPermissions } = await import('../services/rbacService.js');
-    const { formioRequest } = await import('../services/formioService.js');
-    
-    // Fetch actual form definitions to get real permissions
-    let roleMgmtPerms = { canCreateAll: false, canCreateOwn: false };
-    let roleMgmtAdminPerms = { canCreateAll: false, canCreateOwn: false };
-    
-    try {
-        // Try to fetch roleMgmt form
-        const roleMgmtForm = await formioRequest('/rolemgmt', { method: 'GET' });
-        if (roleMgmtForm) {
-            roleMgmtPerms = getSubmissionPermissions(currentUser, roleMgmtForm, { isAdmin: state.adminMode });
-        }
-    } catch (e) {
-        console.warn('Could not fetch roleMgmt form, using defaults:', e);
-        roleMgmtPerms = getSubmissionPermissions(currentUser, {
-            submissionAccess: [
-                { type: "create_all", roles: ["management", "staff", "administrator"] },
-                { type: "create_own", roles: ["management", "staff", "administrator"] }
-            ]
-        }, { isAdmin: state.adminMode });
-    }
-    
-    try {
-        // Try to fetch roleMgmtAdmin form
-        const roleMgmtAdminForm = await formioRequest('/rolemgmtadmin', { method: 'GET' });
-        if (roleMgmtAdminForm) {
-            roleMgmtAdminPerms = getSubmissionPermissions(currentUser, roleMgmtAdminForm, { isAdmin: state.adminMode });
-        }
-    } catch (e) {
-        console.warn('Could not fetch roleMgmtAdmin form, using defaults:', e);
-        roleMgmtAdminPerms = getSubmissionPermissions(currentUser, {
-            submissionAccess: [
-                { type: "create_all", roles: ["administrator"] },
-                { type: "create_own", roles: ["administrator"] }
-            ]
-        }, { isAdmin: state.adminMode });
-    }
+    const { roleMgmtPerms, roleMgmtAdminPerms } = await getRoleMgmtPermissions(currentUser, { isAdmin: state.adminMode });
     
     const canManageRoles = isUserResource && (roleMgmtPerms.canCreateAll || roleMgmtPerms.canCreateOwn);
     const canManageAdminRoles = isUserResource && (roleMgmtAdminPerms.canCreateAll || roleMgmtAdminPerms.canCreateOwn);

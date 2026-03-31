@@ -2,19 +2,26 @@
 
 import { formioRequest } from './formioService.js';
 import { log } from '../utils/logger.js';
+import { CONFIG } from '../config.js';
 
 const SESSION_FLAG_KEY = 'rfp_login_recorded';
 const IP_FETCH_TIMEOUT_MS = 3000;
 
 /**
- * Fetch the client's public IP address via ipify.
+ * Fetch the client's IP address from the uploads service /whoami endpoint.
  * Returns 'unknown' on any error or timeout.
  */
 async function fetchIpAddress() {
     try {
+        const uploadBase = CONFIG.UPLOAD?.LOCAL_UPLOAD_URL?.replace(/\/local$/, '') || '';
+        const whoamiUrl = uploadBase ? `${uploadBase.replace(/\/uploads\/.*$/, '/uploads/whoami')}` : '/api/v1/uploads/whoami';
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), IP_FETCH_TIMEOUT_MS);
-        const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+        const token = sessionStorage.getItem('formioToken') || localStorage.getItem('formioToken') || '';
+        const res = await fetch(whoamiUrl, {
+            signal: controller.signal,
+            headers: token ? { 'x-jwt-token': token } : {}
+        });
         clearTimeout(timer);
         if (!res.ok) return 'unknown';
         const json = await res.json();
