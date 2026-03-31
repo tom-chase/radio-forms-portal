@@ -35,6 +35,7 @@ import { attachFormioErrorHandler, attachUserAdminSubmitGuards, addAttachmentToF
 import { rebuildBuilder, mergeForSave } from './ui/builderUI.js';
 import { maybeStartUwTour } from './features/uwOnboarding.js';
 import { recordLoginEvent } from './services/loginLogService.js';
+import { initPasswordReset, destroyPasswordResetForms } from './features/passwordReset.js';
 
 initDebugFlag();
 log.debug('Debug logging enabled');
@@ -180,6 +181,7 @@ domElements.logoutBtn.addEventListener("click", async () => {
     destroyInlineForm();
     destroyMainForm();
     destroyBuilder();
+    destroyPasswordResetForms();
 
     // Reset UI state
     domElements.formsList.innerHTML = "";
@@ -937,4 +939,8 @@ setAppBridge({
 });
 
 // Kick things off
-initSession();
+// If a password reset token is in the URL, show the reset view instead of normal session init.
+const isResetFlow = initPasswordReset({ onBackToLogin: () => initSession() });
+if (!isResetFlow) {
+    initSession();
+}

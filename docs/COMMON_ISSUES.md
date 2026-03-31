@@ -89,3 +89,90 @@ This document covers common issues encountered during development and their stan
 
 - **Solution**: Ensure strict sanitization of column definitions before passing them to the Tabulator constructor. Remove any keys where the value is not a valid string or boolean.
 
+---
+
+### 6. Password Reset Email Contains Malformed URL (`$SPA_DOMAIN`)
+
+- **Symptom**: Password reset emails contain a literal `https://$SPA_DOMAIN/?x-jwt-token=...` instead of the actual domain.
+
+- **Cause**: The `SPA_DOMAIN` environment variable is not being loaded into the Form.io container, or the `resetpass` action's URL setting contains a literal variable reference instead of the expanded value.
+
+- **Root Causes**:
+  1. Container started before `.env` file was updated
+  2. The `resetpass` action in the database has a stale URL value
+  3. `post-bootstrap.js` didn't patch the action URL during deployment
+
+- **Solution**:
+  1. **Verify environment variable in container**:
+     ```bash
+     docker exec formio printenv | grep SPA_DOMAIN
+     ```
+     Should show: `SPA_DOMAIN=your-actual-domain.com` (not `$SPA_DOMAIN`)
+
+  2. **If variable is wrong, restart the container**:
+     ```bash
+     cd ~/radio-forms-portal
+     docker compose restart formio
+     ```
+
+  3. **Run post-bootstrap to patch the action**:
+     ```bash
+     docker exec formio node /app/post-bootstrap.js
+     ```
+     Look for: `Patching resetpass url from https://$SPA_DOMAIN/ to https://your-domain.com/`
+
+  4. **Verify the action was updated**:
+     ```bash
+     # Get admin token and check action settings
+     TOKEN=$(curl -s -D /dev/stdout -X POST "https://api.your-domain.com/admin/login" \
+       -H "Content-Type: application/json" \
+       -d '{"data":{"email":"admin@example.com","password":"yourpass"}}' | \
+       grep -i "x-jwt-token:" | sed 's/x-jwt-token: //i' | tr -d '\r\n')
+     
+     curl -s "https://api.your-domain.com/form/passwordReset/action" \
+       -H "x-jwt-token: $TOKEN" | jq '.[] | select(.name=="resetpass") | .settings.url'
+     ```
+     Should show: `"https://your-actual-domain.com/"`
+
+---
+
+### 7. Safari Browser: Password Reset Form Not Rendering
+
+- **Symptom**: Password reset form works in Firefox/Chrome but doesn't render in Safari. Console shows: `SyntaxError: Importing binding name 'bindAttachmentsDatagridUpload' is not found.`
+
+- **Cause**: Safari doesn't support the optional chaining operator (`?.`) which was used in `uploadsService.js`. This causes the entire module to fail parsing, blocking all imports including `passwordReset.js`.
+
+- **Solution**: All optional chaining operators have been replaced with standard null checks for Safari compatibility. If you encounter similar issues in new code:
+
+  - **Avoid**: `const value = obj?.prop?.nested;`
+  - **Use**: `const value = obj && obj.prop && obj.prop.nested;`
+  
+  - **Avoid**: `func?.();`
+  - **Use**: `func && func();`
+
+- **Browser Support**: The codebase now supports Safari 13.0+ (March 2020 and later).
+
+---
+
+### 8. Docker Container Environment Variables Not Updating
+
+- **Symptom**: After updating `.env` file on the server, environment variables inside containers still show old values or literal variable names (e.g., `$SPA_DOMAIN`).
+
+- **Cause**: Docker Compose reads `.env` at container creation time. Updating the file doesn't affect running containers.
+
+- **Solution**:
+  ```bash
+  # Stop and recreate containers to pick up new .env values
+  cd ~/radio-forms-portal
+  docker compose up -d
+  
+  # Verify the variable is now correct
+  docker exec formio printenv | grep SPA_DOMAIN
+  ```
+
+- **For selective restarts** (to avoid Caddy certificate re-requests):
+  ```bash
+  # Restart only the formio service
+  docker compose restart formio
+  ```
+

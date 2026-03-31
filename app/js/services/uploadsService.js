@@ -6,12 +6,12 @@ import { formioRequest } from './formioService.js';
 import { getAppBridge } from './appBridge.js';
 
 function getUploadMode() {
-    const mode = String(CONFIG.UPLOAD?.MODE || "local").toLowerCase();
+    const mode = String((CONFIG.UPLOAD && CONFIG.UPLOAD.MODE) || "local").toLowerCase();
     return mode === "s3" ? "s3" : "local";
 }
 
 function shouldUseS3Fallback() {
-    return !!CONFIG.UPLOAD?.ENABLE_S3_FALLBACK;
+    return !!(CONFIG.UPLOAD && CONFIG.UPLOAD.ENABLE_S3_FALLBACK);
 }
 
 function stripTrailingSlash(value) {
@@ -19,7 +19,7 @@ function stripTrailingSlash(value) {
 }
 
 function getLocalUploadUrlCandidates() {
-    const primaryUrl = String(CONFIG.UPLOAD?.LOCAL_UPLOAD_URL || "").trim();
+    const primaryUrl = String((CONFIG.UPLOAD && CONFIG.UPLOAD.LOCAL_UPLOAD_URL) || "").trim();
     const apiBase = stripTrailingSlash(CONFIG.API_BASE);
     const apiUploadUrl = apiBase
         ? `${apiBase}/api/v1/uploads/local`
@@ -35,7 +35,7 @@ function getLocalUploadUrlCandidates() {
 }
 
 function isRetryableLocalUploadError(err) {
-    const status = Number(err?.status || err?.original?.status || 0);
+    const status = Number((err && err.status) || (err && err.original && err.original.status) || 0);
     return [0, 404, 405, 502, 503, 504].includes(status);
 }
 
@@ -49,12 +49,12 @@ function formatFileSize(bytes) {
 }
 
 function buildAttachmentMeta(file, uploadSpec, storage) {
-    const uploadedAt = uploadSpec?.uploadedAt || new Date().toISOString();
-    const objectUrl = uploadSpec?.fileUrl || uploadSpec?.url || "";
-    const storageKey = uploadSpec?.storageKey || uploadSpec?.key || null;
+    const uploadedAt = (uploadSpec && uploadSpec.uploadedAt) || new Date().toISOString();
+    const objectUrl = (uploadSpec && uploadSpec.fileUrl) || (uploadSpec && uploadSpec.url) || "";
+    const storageKey = (uploadSpec && uploadSpec.storageKey) || (uploadSpec && uploadSpec.key) || null;
 
     return {
-        fileName: uploadSpec?.fileName || file.name,
+        fileName: (uploadSpec && uploadSpec.fileName) || file.name,
         fileUrl: objectUrl,
         description: "",
         name: file.name,
@@ -102,13 +102,13 @@ async function uploadFileToS3(file, uploadUrl) {
 }
 
 async function uploadFileToLocal(formio, file, formMeta) {
-    const submissionId = formio?.submission?._id;
+    const submissionId = formio && formio.submission && formio.submission._id;
     const uploadUrls = getLocalUploadUrlCandidates();
 
     const buildFormData = () => {
         const formData = new FormData();
         formData.append("file", file, file.name);
-        formData.append("formPath", String(formMeta?.path || "unknown"));
+        formData.append("formPath", String((formMeta && formMeta.path) || "unknown"));
         if (submissionId) {
             formData.append("submissionId", String(submissionId));
         }
@@ -143,8 +143,8 @@ async function uploadFileToLocal(formio, file, formMeta) {
             log.warn("Local upload URL failed; retrying alternate URL", {
                 failedUploadUrl: uploadUrl,
                 nextUploadUrl: uploadUrls[index + 1],
-                status: Number(err?.status || err?.original?.status || 0),
-                error: err?.message || String(err),
+                status: Number((err && err.status) || (err && err.original && err.original.status) || 0),
+                error: (err && err.message) || String(err),
             });
         }
     }
@@ -173,8 +173,8 @@ async function uploadWithConfiguredProvider(formio, file, formMeta) {
         }
 
         log.warn("Local upload failed, attempting S3 fallback", {
-            fileName: file?.name,
-            error: err?.message || String(err),
+            fileName: file && file.name,
+            error: (err && err.message) || String(err),
         });
 
         return uploadFileToS3WithMetadata(file, formMeta);
@@ -182,10 +182,10 @@ async function uploadWithConfiguredProvider(formio, file, formMeta) {
 }
 
 function isAttachmentsAddButtonClick(formio, target) {
-    const rootElement = formio?.element;
-    const attachmentsComponent = formio?.getComponent?.("attachments");
-    const attachmentsRoot = attachmentsComponent?.element
-        || rootElement?.querySelector?.(".formio-component-attachments");
+    const rootElement = formio && formio.element;
+    const attachmentsComponent = formio && formio.getComponent && formio.getComponent("attachments");
+    const attachmentsRoot = (attachmentsComponent && attachmentsComponent.element)
+        || (rootElement && rootElement.querySelector && rootElement.querySelector(".formio-component-attachments"));
 
     if (!attachmentsRoot || !target || typeof target.closest !== "function") {
         return false;
@@ -229,9 +229,9 @@ function isAttachmentsAddButtonClick(formio, target) {
 }
 
 export function bindAttachmentsDatagridUpload(formio, formMeta) {
-    const rootElement = formio?.element;
-    const hasAttachmentsDatagrid = !!formio?.getComponent?.("attachments");
-    const isReadOnly = !!formio?.options?.readOnly;
+    const rootElement = formio && formio.element;
+    const hasAttachmentsDatagrid = !!(formio && formio.getComponent && formio.getComponent("attachments"));
+    const isReadOnly = !!(formio && formio.options && formio.options.readOnly);
 
     if (!rootElement || typeof rootElement.addEventListener !== "function") {
         return;
@@ -242,7 +242,7 @@ export function bindAttachmentsDatagridUpload(formio, formMeta) {
     }
 
     const onClick = (event) => {
-        if (!isAttachmentsAddButtonClick(formio, event?.target)) {
+        if (!isAttachmentsAddButtonClick(formio, event && event.target)) {
             return;
         }
 
@@ -264,7 +264,7 @@ export async function deleteAttachment(storageKey) {
         throw new Error("No storageKey provided for deletion.");
     }
     const encodedKey = encodeURIComponent(storageKey);
-    const objectBase = String(CONFIG.UPLOAD?.OBJECT_URL || "").replace(/\/+$/, "");
+    const objectBase = String((CONFIG.UPLOAD && CONFIG.UPLOAD.OBJECT_URL) || "").replace(/\/+$/, "");
     const deleteUrl = `${objectBase}/${encodedKey}`;
     return formioRequest(deleteUrl, { method: "DELETE" });
 }
@@ -311,13 +311,13 @@ export async function handleFileUpload(formio, formMeta) {
         }
 
         // Validate file sizes before uploading
-        const maxSizeMB = Number(CONFIG.UPLOAD?.MAX_FILE_SIZE_MB) || 50;
+        const maxSizeMB = Number((CONFIG.UPLOAD && CONFIG.UPLOAD.MAX_FILE_SIZE_MB)) || 50;
         const maxSizeBytes = maxSizeMB * 1024 * 1024;
         const validFiles = [];
         for (const file of files) {
             if (file.size > maxSizeBytes) {
                 const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-                actions.showToast?.(
+                actions.showToast && actions.showToast(
                     `${file.name} (${sizeMB} MB) exceeds the ${maxSizeMB} MB limit.`,
                     "danger"
                 );
@@ -342,7 +342,7 @@ export async function handleFileUpload(formio, formMeta) {
         for (let i = 0; i < totalFiles; i += 1) {
             const file = validFiles[i];
             if (totalFiles > 1) {
-                actions.showToast?.(
+                actions.showToast && actions.showToast(
                     `Uploading ${i + 1} of ${totalFiles}: ${file.name}`,
                     "primary"
                 );
@@ -354,14 +354,14 @@ export async function handleFileUpload(formio, formMeta) {
                     formMeta
                 );
 
-                actions.addAttachmentToFormData?.(formio, fileMeta);
+                actions.addAttachmentToFormData && actions.addAttachmentToFormData(formio, fileMeta);
                 uploadedCount += 1;
             } catch (err) {
                 console.error(
                     "File upload error:",
                     err
                 );
-                actions.showToast?.(
+                actions.showToast && actions.showToast(
                     `Error uploading attachment ${file.name}: ${
                         err.message || "Unknown error"
                     }`,
@@ -371,12 +371,12 @@ export async function handleFileUpload(formio, formMeta) {
         }
 
         if (uploadedCount > 0) {
-            actions.showToast?.(
+            actions.showToast && actions.showToast(
                 "Attachment upload complete. Remember to submit the form.",
                 "success"
             );
         } else {
-            actions.showToast?.(
+            actions.showToast && actions.showToast(
                 "No attachments were uploaded.",
                 "warning"
             );

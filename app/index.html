@@ -132,16 +132,47 @@
                     <div class="col-sm-10 col-md-7 col-lg-5 col-xl-4">
                         <div class="card shadow-sm">
                             <div class="card-header">
-                                <h5 class="mb-0">
+                                <h5 class="mb-0" id="loginCardTitle">
                                     <i class="bi bi-person-lock me-2"></i>Sign in
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <p class="small text-muted">
+                                <p class="small text-muted" id="loginHelpText">
                                     Use your Radio Forms Portal user credentials to access and manage
                                     station forms.
                                 </p>
                                 <div id="loginFormContainer"></div>
+                                <div class="text-center mt-2">
+                                    <a href="#" id="forgotPasswordLink" class="small text-muted">Forgot your password?</a>
+                                </div>
+                                <div id="forgotPasswordContainer" class="d-none">
+                                    <div id="forgotPasswordFormHost"></div>
+                                    <div id="forgotPasswordSuccess" class="d-none">
+                                        <div class="alert alert-success small mb-2">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            If an account exists with that email, a password reset link has been sent. Please check your inbox.
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <a href="#" id="backToLoginFromForgot" class="small text-muted">
+                                            <i class="bi bi-arrow-left me-1"></i>Back to sign in
+                                        </a>
+                                    </div>
+                                </div>
+                                <div id="resetPasswordContainer" class="d-none">
+                                    <div id="resetPasswordFormHost"></div>
+                                    <div id="resetPasswordSuccess" class="d-none">
+                                        <div class="alert alert-success small mb-2">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Your password has been changed successfully.
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <a href="#" id="backToLoginFromReset" class="small text-muted">
+                                            <i class="bi bi-arrow-left me-1"></i>Back to sign in
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

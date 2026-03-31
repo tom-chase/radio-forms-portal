@@ -352,6 +352,7 @@ async function main() {
 
     await createFormFromTemplate('department');
     await createFormFromTemplate('committee');
+    await createFormFromTemplate('passwordReset');
     await ensureUserGroupFields();
 
     // Sync permissions from template for all forms
@@ -710,6 +711,115 @@ show = Array.isArray(user.roles) &&
             } catch (e) {
                 log(`ERROR: Exception patching contactIntake marketingContent: ${e.message}`);
             }
+        }
+    }
+
+    // --- Task 6: Wire built-in resetpass action on passwordReset form ---
+    // The resetpass action (built into CE 4.6.1) handles token generation, email, and password update.
+    const pwResetId = formMap['passwordReset'];
+    if (pwResetId) {
+        log('Checking passwordReset form actions...');
+        log(`resetpass env: SPA_DOMAIN=${process.env.SPA_DOMAIN || '(empty)'}, SMTP_USER=${process.env.SMTP_USER || '(empty)'}`);
+        try {
+            const actionsResp = await fetch(`${API_BASE}/form/${pwResetId}/action?limit=100`, { headers });
+            if (actionsResp.ok) {
+                const actions = await actionsResp.json();
+                const hasResetpass = actions.some(a => a.name === 'resetpass');
+
+                // Remove stale actions that shouldn't be on this form
+                for (const action of actions.filter(a => ['save', 'email', 'sendPasswordResetEmail'].includes(a.name))) {
+                    log(`Removing stale ${action.name} action ${action._id} from passwordReset...`);
+                    await fetch(`${API_BASE}/form/${pwResetId}/action/${action._id}`, { method: 'DELETE', headers });
+                }
+
+                // Resolve the user resource ID for the action settings
+                const userResourceId = formMap['user'];
+                if (!userResourceId) {
+                    log('WARNING: User resource not found. Cannot wire resetpass action.');
+                } else if (!hasResetpass) {
+                    const spaUrl = spaDomain ? `https://${spaDomain}/` : 'http://localhost:3000/';
+                    const fromAddr = smtpUser || 'noreply@example.com';
+
+                    log(`Creating resetpass action with url=${spaUrl}, from=${fromAddr}`);
+
+                    log('Adding resetpass action to passwordReset form...');
+                    const createResp = await fetch(`${API_BASE}/form/${pwResetId}/action`, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify({
+                            title: 'Reset Password',
+                            name: 'resetpass',
+                            form: pwResetId,
+                            settings: {
+                                resources: [userResourceId],
+                                username: 'email',
+                                password: 'password',
+                                label: 'Send Reset Link',
+                                url: spaUrl,
+                                transport: 'smtp',
+                                from: fromAddr,
+                                subject: 'Password Reset Request',
+                                message: '<p>You requested a password reset for your Forms Portal account.</p><p>Please click the link below to reset your password. This link expires in 5 minutes.</p><p><a href="{{ resetlink }}">Reset Your Password</a></p><p>If you did not request this, you can safely ignore this email.</p>'
+                            },
+                            priority: 1,
+                            method: ['create'],
+                            handler: ['before', 'after']
+                        })
+                    });
+                    if (createResp.ok) {
+                        log('resetpass action created on passwordReset form.');
+                    } else {
+                        const text = await createResp.text();
+                        log(`ERROR: Failed to create resetpass action: ${createResp.status} ${text}`);
+                    }
+                } else {
+                    // Patch existing resetpass action settings (url, from) if they contain placeholder values
+                    const resetpassAction = actions.find(a => a.name === 'resetpass');
+                    if (resetpassAction) {
+                        const s = resetpassAction.settings || {};
+                        let changed = false;
+
+                        log(`Existing resetpass settings before patch: url=${s.url || '(empty)'}, from=${s.from || '(empty)'}, resources=${JSON.stringify(s.resources || [])}`);
+                        log(`Resolved desired resetpass values: spaDomain=${spaDomain || '(empty)'}, smtpUser=${smtpUser || '(empty)'}`);
+
+                        if (spaDomain && s.url && (s.url.includes('your-domain.com') || s.url.includes('$spa_domain') || s.url.includes('$SPA_DOMAIN') || s.url.includes('localhost'))) {
+                            log(`Patching resetpass url from ${s.url} to https://${spaDomain}/`);
+                            s.url = `https://${spaDomain}/`;
+                            changed = true;
+                        }
+                        if (smtpUser && s.from && s.from.includes('your-domain.com')) {
+                            log(`Patching resetpass from-address from ${s.from} to ${smtpUser}`);
+                            s.from = smtpUser;
+                            changed = true;
+                        }
+                        // Ensure resources contains the actual user resource ID
+                        const userResourceId = formMap['user'];
+                        if (userResourceId && Array.isArray(s.resources) && s.resources.includes('user')) {
+                            log(`Patching resetpass resources from ${JSON.stringify(s.resources)} to ${JSON.stringify([userResourceId])}`);
+                            s.resources = [userResourceId];
+                            changed = true;
+                        }
+
+                        if (changed) {
+                            resetpassAction.settings = s;
+                            const patchResp = await fetch(`${API_BASE}/form/${pwResetId}/action/${resetpassAction._id}`, {
+                                method: 'PUT',
+                                headers,
+                                body: JSON.stringify(resetpassAction)
+                            });
+                            if (patchResp.ok) {
+                                log(`Patched resetpass action settings: url=${s.url}, from=${s.from}`);
+                            } else {
+                                log(`ERROR: Failed to patch resetpass action: ${patchResp.status}`);
+                            }
+                        } else {
+                            log(`resetpass action settings already resolved. Current url=${s.url || '(empty)'}, from=${s.from || '(empty)'}`);
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            log(`ERROR: Exception wiring passwordReset actions: ${e.message}`);
         }
     }
 

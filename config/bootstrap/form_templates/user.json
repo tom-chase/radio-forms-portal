@@ -350,6 +350,12 @@
       ]
     },
     {
+      "type": "update_own",
+      "roles": [
+        "authenticated"
+      ]
+    },
+    {
       "type": "create_all",
       "roles": [
         "management",

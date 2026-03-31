@@ -56,6 +56,66 @@ Two production targets are supported — both use the same script:
 | **ASUS NUC 14** (on-prem, via WireGuard) | **Active** | `docs/NUC_DEPLOYMENT.md` · `.windsurf/workflows/deploy-nuc.md` |
 | **AWS EC2** | Decommissioned (rebuild via CloudFormation) | Below |
 
+### Selective Deployment Modes
+
+The deployment script supports three modes to optimize deployment speed and avoid unnecessary service restarts (especially Caddy certificate re-requests):
+
+#### 1. Code-Only Mode (`--code-only`)
+
+**Usage**: `./scripts/deploy-production.sh --code-only ~/.ssh/key`
+
+- Pushes code changes and regenerates config files
+- **Skips all Docker operations** (no container restarts)
+- Best for: Frontend changes in `app/` directory (HTML, CSS, JS)
+- Rationale: `app/` is mounted into Caddy, so file changes are immediately visible
+- **Zero downtime** - no certificate requests
+
+#### 2. Selective Service Restart (`--services <list>`)
+
+**Usage**: `./scripts/deploy-production.sh --services formio,uploads ~/.ssh/key`
+
+- Pushes code changes and regenerates config files
+- Restarts **only** specified services (comma-separated)
+- Uses `docker compose restart` (no rebuild)
+- Runs `post-bootstrap.js` only if formio is restarted
+- Valid services: `mongo`, `formio`, `uploads`, `caddy`, `mongo-backup`
+- Best for: Backend changes requiring specific service restarts
+- **Avoids Caddy restarts** when not needed
+
+#### 3. Full Deployment (default, no flags)
+
+**Usage**: `./scripts/deploy-production.sh ~/.ssh/key`
+
+- Current behavior: full restart with `--build`
+- Best for: Major changes, initial deployment, or when unsure
+
+#### Examples
+
+```bash
+# Frontend fix - no downtime, no cert requests
+./scripts/deploy-production.sh --code-only ~/.ssh/mac-to-nuc
+
+# Backend Form.io change - only restart formio
+./scripts/deploy-production.sh --services formio ~/.ssh/mac-to-nuc
+
+# Restart multiple services
+./scripts/deploy-production.sh --services formio,uploads ~/.ssh/mac-to-nuc
+
+# Full deployment (current behavior)
+./scripts/deploy-production.sh ~/.ssh/mac-to-nuc
+```
+
+#### When to Use Each Mode
+
+| Change Type | Recommended Mode | Reason |
+|-------------|------------------|--------|
+| Frontend JS/CSS/HTML | `--code-only` | Files mounted, instant update |
+| Form.io config/scripts | `--services formio` | Only restart Form.io |
+| Uploads service code | `--services uploads` | Only restart uploads |
+| Caddy config | `--services caddy` | Only restart Caddy (triggers cert if domain changed) |
+| Docker Compose changes | Full deployment | Rebuild all containers |
+| Major infrastructure | Full deployment | Safest option |
+
 ### 1) On your laptop
  
 - Ensure your local checkout is exactly what you want deployed.

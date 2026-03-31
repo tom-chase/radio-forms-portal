@@ -85,7 +85,20 @@ export const domElements = {
   // Roles elements
   rolesList: document.getElementById("rolesList"),
   rolesRefreshBtn: document.getElementById("rolesRefreshBtn"),
-  rolesNewBtn: document.getElementById("rolesNewBtn")
+  rolesNewBtn: document.getElementById("rolesNewBtn"),
+  
+  // Password reset elements
+  loginCardTitle: document.getElementById("loginCardTitle"),
+  loginHelpText: document.getElementById("loginHelpText"),
+  forgotPasswordLink: document.getElementById("forgotPasswordLink"),
+  forgotPasswordContainer: document.getElementById("forgotPasswordContainer"),
+  forgotPasswordFormHost: document.getElementById("forgotPasswordFormHost"),
+  forgotPasswordSuccess: document.getElementById("forgotPasswordSuccess"),
+  backToLoginFromForgot: document.getElementById("backToLoginFromForgot"),
+  resetPasswordContainer: document.getElementById("resetPasswordContainer"),
+  resetPasswordFormHost: document.getElementById("resetPasswordFormHost"),
+  resetPasswordSuccess: document.getElementById("resetPasswordSuccess"),
+  backToLoginFromReset: document.getElementById("backToLoginFromReset")
 };
 
 // Bootstrap collapse instances

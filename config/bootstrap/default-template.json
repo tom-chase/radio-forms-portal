@@ -2511,6 +2511,66 @@
         "saveDraft": true,
         "saveDraftThrottle": 3000
       }
+    },
+    "passwordReset": {
+      "title": "Password Reset",
+      "type": "form",
+      "name": "passwordReset",
+      "path": "passwordreset",
+      "display": "form",
+      "tags": [],
+      "settings": {
+        "ui": {
+          "formsList": {
+            "hidden": true
+          }
+        }
+      },
+      "components": [
+        {
+          "label": "Email",
+          "tableView": true,
+          "key": "email",
+          "type": "email",
+          "input": true,
+          "persistent": true,
+          "id": "epwr_email",
+          "placeholder": "Enter your email address",
+          "validate": {
+            "required": true
+          }
+        },
+        {
+          "type": "button",
+          "theme": "primary",
+          "disableOnInvalid": true,
+          "action": "submit",
+          "block": true,
+          "size": "md",
+          "key": "submit",
+          "tableView": false,
+          "label": "Send Reset Link",
+          "input": true
+        }
+      ],
+      "access": [
+        {
+          "type": "read_all",
+          "roles": [
+            "anonymous",
+            "authenticated"
+          ]
+        }
+      ],
+      "submissionAccess": [
+        {
+          "type": "create_own",
+          "roles": [
+            "anonymous",
+            "authenticated"
+          ]
+        }
+      ]
     }
   },
   "actions": {
@@ -3272,6 +3332,30 @@
       "handler": [
         "after"
       ]
+    },
+    "passwordReset:resetpass": {
+      "title": "Reset Password",
+      "name": "resetpass",
+      "form": "passwordReset",
+      "settings": {
+        "resources": ["user"],
+        "username": "email",
+        "password": "password",
+        "label": "Send Reset Link",
+        "url": "https://forms.your-domain.com/",
+        "transport": "smtp",
+        "from": "noreply@your-domain.com",
+        "subject": "Password Reset Request",
+        "message": "<p>You requested a password reset for your Forms Portal account.</p><p>Please click the link below to reset your password. This link expires in 5 minutes.</p><p><a href=\"{{ resetlink }}\">Reset Your Password</a></p><p>If you did not request this, you can safely ignore this email.</p>"
+      },
+      "priority": 1,
+      "method": [
+        "create"
+      ],
+      "handler": [
+        "before",
+        "after"
+      ]
     }
   },
   "resources": {
@@ -3624,6 +3708,12 @@
             "staff",
             "management",
             "administrator"
+          ]
+        },
+        {
+          "type": "update_own",
+          "roles": [
+            "authenticated"
           ]
         },
         {
