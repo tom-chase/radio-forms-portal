@@ -1,6 +1,6 @@
 // app/js/services/loginLogService.js
 
-import { formioRequest } from './formioService.js';
+import { formioRequest, getToken } from './formioService.js';
 import { log } from '../utils/logger.js';
 import { CONFIG } from '../config.js';
 
@@ -13,11 +13,11 @@ const IP_FETCH_TIMEOUT_MS = 3000;
  */
 async function fetchIpAddress() {
     try {
-        const uploadBase = CONFIG.UPLOAD?.LOCAL_UPLOAD_URL?.replace(/\/local$/, '') || '';
-        const whoamiUrl = uploadBase ? `${uploadBase.replace(/\/uploads\/.*$/, '/uploads/whoami')}` : '/api/v1/uploads/whoami';
+        const uploadsBase = (CONFIG.UPLOAD?.OBJECT_URL || '').replace(/\/object$/, '');
+        const whoamiUrl = `${uploadsBase}/whoami`;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), IP_FETCH_TIMEOUT_MS);
-        const token = sessionStorage.getItem('formioToken') || localStorage.getItem('formioToken') || '';
+        const token = getToken() || '';
         const res = await fetch(whoamiUrl, {
             signal: controller.signal,
             headers: token ? { 'x-jwt-token': token } : {}
