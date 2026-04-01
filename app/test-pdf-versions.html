@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>html2pdf.js Version Comparison Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .test-content {
+            border: 2px solid #0d6efd;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+        }
+        .header-test {
+            background: #e9ecef;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #0d6efd;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        .comparison-table {
+            font-size: 12px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: left;
+        }
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>html2pdf.js Version Comparison Test</h1>
+        
+        <div class="alert alert-info">
+            <strong>Testing Instructions:</strong>
+            <ol>
+                <li>Open this page with different versions using URL parameters:</li>
+                <li><code>?html2pdf=0.10.2</code> - Test current version</li>
+                <li><code>?html2pdf=0.14.0</code> - Test new version</li>
+                <li>Or use console: <code>localStorage.setItem('html2pdfVersion', '0.14.0')</code></li>
+                <li>Generate PDFs and compare the outputs</li>
+            </ol>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Version Controls</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Current Version:</label>
+                            <div class="input-group">
+                                <input type="text" id="currentVersion" class="form-control" readonly>
+                                <button class="btn btn-outline-secondary" onclick="checkVersion()">Check</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Switch Version:</label>
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-primary" onclick="setVersion('0.10.2')">0.10.2 (Current)</button>
+                                <button class="btn btn-success" onclick="setVersion('0.14.0')">0.14.0 (New)</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-warning w-100" onclick="clearVersion()">Clear Override (Use Default)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test Scenarios</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="testBasicPDF()">Basic PDF Test</button>
+                            <button class="btn btn-primary" onclick="testTablePDF()">Table Layout Test</button>
+                            <button class="btn btn-primary" onclick="testPageNumbers()">Page Numbering Test</button>
+                            <button class="btn btn-primary" onclick="testLongContent()">Long Content (Page Breaks)</button>
+                            <button class="btn btn-info" onclick="showComparison()">Show Comparison Matrix</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Content Area -->
+        <div id="testContent">
+            <div class="header-test">
+                <h2>Test Document Header</h2>
+                <p>Created: <span id="testDate"></span> | Version: <span id="versionDisplay"></span></p>
+            </div>
+
+            <div class="test-content">
+                <h3>Basic Content Test</h3>
+                <p>This is a test paragraph with <strong>bold text</strong>, <em>italic text</em>, and <a href="#">links</a>.</p>
+                <ul>
+                    <li>List item 1</li>
+                    <li>List item 2</li>
+                    <li>List item 3</li>
+                </ul>
+            </div>
+
+            <div class="test-content">
+                <h3>Table Layout Test</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>0.10.2 Result</th>
+                            <th>0.14.0 Result</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Text Rendering</td>
+                            <td>✓ Good</td>
+                            <td>?</td>
+                            <td>Check font clarity</td>
+                        </tr>
+                        <tr>
+                            <td>Layout Positioning</td>
+                            <td>✓ Accurate</td>
+                            <td>?</td>
+                            <td>Compare alignment</td>
+                        </tr>
+                        <tr>
+                            <td>Page Breaks</td>
+                            <td>✓ Working</td>
+                            <td>?</td>
+                            <td>Test long content</td>
+                        </tr>
+                        <tr>
+                            <td>Image Support</td>
+                            <td>✓ Working</td>
+                            <td>?</td>
+                            <td>Check logo rendering</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="test-content">
+                <h3>Styling Test</h3>
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0;">
+                    <strong>Warning Box:</strong> This should have a light yellow background.
+                </div>
+                <div style="background: #d1ecf1; border: 1px solid #bee5eb; padding: 10px; margin: 10px 0;">
+                    <strong>Info Box:</strong> This should have a light blue background.
+                </div>
+            </div>
+
+            <!-- Long content for page break testing -->
+            <div id="longContent" style="display: none;">
+                <div class="page-break">
+                    <h3>Page 2 - Long Content Test</h3>
+                    <p>This content spans multiple pages to test page break behavior.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                </div>
+                <div class="page-break">
+                    <h3>Page 3 - Continued Content</h3>
+                    <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
+                    <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Matrix -->
+        <div id="comparisonMatrix" style="display: none;" class="mt-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Version Comparison Matrix</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Test Scenario</th>
+                                <th>0.10.2 Status</th>
+                                <th>0.14.0 Status</th>
+                                <th>Visual Differences</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Basic PDF Generation</td>
+                                <td><span class="badge bg-success">✓ Working</span></td>
+                                <td><span class="badge bg-secondary">?</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Table Layout</td>
+                                <td><span class="badge bg-success">✓ Good</span></td>
+                                <td><span class="badge bg-secondary">?</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Page Numbering</td>
+                                <td><span class="badge bg-success">✓ Working</span></td>
+                                <td><span class="badge bg-secondary">?</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Page Breaks</td>
+                                <td><span class="badge bg-success">✓ Working</span></td>
+                                <td><span class="badge bg-secondary">?</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Contract Template</td>
+                                <td><span class="badge bg-success">✓ Good</span></td>
+                                <td><span class="badge bg-secondary">?</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- html2pdf.js loaded dynamically -->
+    <script>
+        // Load html2pdf.js dynamically based on version
+        (function() {
+            function getHtml2PdfVersion() {
+                const stored = localStorage.getItem('html2pdfVersion');
+                if (stored && ['0.10.2', '0.14.0'].includes(stored)) {
+                    return stored;
+                }
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlVersion = urlParams.get('html2pdf');
+                if (urlVersion && ['0.10.2', '0.14.0'].includes(urlVersion)) {
+                    return urlVersion;
+                }
+                return '0.10.2';
+            }
+            
+            const version = getHtml2PdfVersion();
+            const script = document.createElement('script');
+            script.src = `/js/vendor/html2pdf@${version}/html2pdf.bundle.min.js`;
+            script.onload = function() {
+                console.log(`[html2pdf] Loaded version: ${version}`);
+                document.getElementById('versionDisplay').textContent = version;
+            };
+            script.onerror = function() {
+                console.error(`[html2pdf] Failed to load version: ${version}`);
+                alert(`Failed to load html2pdf.js version ${version}`);
+            };
+            document.head.appendChild(script);
+        })();
+
+        // Helper functions for version testing
+
+        function setVersion(version) {
+            localStorage.setItem('html2pdfVersion', version);
+            alert(`Version set to ${version}. Refresh the page to apply.`);
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function clearVersion() {
+            localStorage.removeItem('html2pdfVersion');
+            alert('Version override cleared. Refresh to use default.');
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        function checkVersion() {
+            document.getElementById('currentVersion').value = getHtml2PdfVersion();
+        }
+
+        function testBasicPDF() {
+            if (typeof html2pdf === 'undefined') {
+                alert('html2pdf not loaded. Check console for errors.');
+                return;
+            }
+            
+            const element = document.getElementById('testContent');
+            const opt = {
+                margin:       1,
+                filename:     `basic-test-${getHtml2PdfVersion()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function testTablePDF() {
+            if (typeof html2pdf === 'undefined') {
+                alert('html2pdf not loaded. Check console for errors.');
+                return;
+            }
+            
+            const element = document.querySelector('.comparison-table').closest('.test-content');
+            const opt = {
+                margin:       0.5,
+                filename:     `table-test-${getHtml2PdfVersion()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function testPageNumbers() {
+            if (typeof html2pdf === 'undefined') {
+                alert('html2pdf not loaded. Check console for errors.');
+                return;
+            }
+            
+            const element = document.getElementById('testContent');
+            const opt = {
+                margin:       1,
+                filename:     `page-numbers-test-${getHtml2PdfVersion()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            // Two-pass generation for page numbers
+            html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+                const totalPages = pdf.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    pdf.setPage(i);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(150);
+                    pdf.text(`Page ${i} of ${totalPages}`, pdf.internal.pageSize.getWidth() / 2, 
+                             pdf.internal.pageSize.getHeight() - 0.5, { align: 'center' });
+                }
+            }).save();
+        }
+
+        function testLongContent() {
+            if (typeof html2pdf === 'undefined') {
+                alert('html2pdf not loaded. Check console for errors.');
+                return;
+            }
+            
+            // Show long content
+            document.getElementById('longContent').style.display = 'block';
+            
+            const element = document.getElementById('testContent');
+            const opt = {
+                margin:       0.5,
+                filename:     `long-content-test-${getHtml2PdfVersion()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function showComparison() {
+            const matrix = document.getElementById('comparisonMatrix');
+            matrix.style.display = matrix.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('testDate').textContent = new Date().toLocaleString();
+            document.getElementById('versionDisplay').textContent = getHtml2PdfVersion();
+            checkVersion();
+        });
+    </script>
+</body>
+</html>

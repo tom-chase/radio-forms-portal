@@ -62,7 +62,43 @@
         <script src="/js/vendor/tabulator@6.4.0/tabulator.min.js"></script>
 
         <!-- html2pdf.js (client-side PDF generation) -->
-        <script src="/js/vendor/html2pdf@0.10.2/html2pdf.bundle.min.js"></script>
+        <script>
+            // Dynamic version loading for parallel testing
+            (function() {
+                function getHtml2PdfVersion() {
+                    // Allow manual override via localStorage for testing
+                    const stored = localStorage.getItem('html2pdfVersion');
+                    if (stored && ['0.10.2', '0.14.0'].includes(stored)) {
+                        return stored;
+                    }
+                    
+                    // Allow URL parameter override
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const urlVersion = urlParams.get('html2pdf');
+                    if (urlVersion && ['0.10.2', '0.14.0'].includes(urlVersion)) {
+                        return urlVersion;
+                    }
+                    
+                    // Default to current production version
+                    return '0.10.2';
+                }
+                
+                const version = getHtml2PdfVersion();
+                const script = document.createElement('script');
+                script.src = `/js/vendor/html2pdf@${version}/html2pdf.bundle.min.js`;
+                script.onload = function() {
+                    console.log(`[html2pdf] Loaded version: ${version}`);
+                };
+                script.onerror = function() {
+                    console.error(`[html2pdf] Failed to load version: ${version}`);
+                    // Fallback to production version
+                    const fallback = document.createElement('script');
+                    fallback.src = '/js/vendor/html2pdf@0.10.2/html2pdf.bundle.min.js';
+                    document.head.appendChild(fallback);
+                };
+                document.head.appendChild(script);
+            })();
+        </script>
 
         <!-- Bootstrap JS Bundle -->
         <script

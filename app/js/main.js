@@ -938,6 +938,40 @@ setAppBridge({
   }
 });
 
+// Developer helpers for html2pdf.js testing (dev environment only)
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    window.html2pdfHelper = {
+        setVersion: (version) => {
+            if (['0.10.2', '0.14.0'].includes(version)) {
+                localStorage.setItem('html2pdfVersion', version);
+                console.log(`html2pdf version set to ${version}. Refresh to apply.`);
+                return true;
+            }
+            console.error('Invalid version. Use 0.10.2 or 0.14.0');
+            return false;
+        },
+        getVersion: () => {
+            const stored = localStorage.getItem('html2pdfVersion');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlVersion = urlParams.get('html2pdf');
+            return urlVersion || stored || '0.10.2';
+        },
+        clearVersion: () => {
+            localStorage.removeItem('html2pdfVersion');
+            console.log('html2pdf version override cleared. Refresh to use default.');
+        },
+        openTestPage: () => {
+            window.open('/test-pdf-versions.html', '_blank');
+        }
+    };
+    
+    console.log('html2pdf testing helpers available:');
+    console.log('  html2pdfHelper.setVersion("0.14.0")');
+    console.log('  html2pdfHelper.getVersion()');
+    console.log('  html2pdfHelper.clearVersion()');
+    console.log('  html2pdfHelper.openTestPage()');
+}
+
 // Kick things off
 // If a password reset token is in the URL, show the reset view instead of normal session init.
 const isResetFlow = initPasswordReset({ onBackToLogin: () => initSession() });

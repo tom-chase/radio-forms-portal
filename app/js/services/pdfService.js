@@ -8,6 +8,28 @@
 import { getAppBridge } from './appBridge.js';
 import { getCurrentUserWithRoles } from './sessionService.js';
 
+/**
+ * Get the currently loaded html2pdf.js version for testing purposes.
+ * Checks localStorage override, then URL params, then defaults to 0.10.2.
+ */
+function getHtml2PdfVersion() {
+    // Allow manual override via localStorage for testing
+    const stored = localStorage.getItem('html2pdfVersion');
+    if (stored && ['0.10.2', '0.14.0'].includes(stored)) {
+        return stored;
+    }
+    
+    // Allow URL parameter override
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlVersion = urlParams.get('html2pdf');
+    if (urlVersion && ['0.10.2', '0.14.0'].includes(urlVersion)) {
+        return urlVersion;
+    }
+    
+    // Default to current production version
+    return '0.10.2';
+}
+
 const PDF_OPTIONS = {
     margin:      [10, 10, 14, 10], // mm: top, left, bottom, right (extra bottom for page numbers)
     filename:    'submission.pdf',
@@ -121,6 +143,12 @@ export async function downloadSubmissionPdf(submission, formMeta, formRenderEl) 
     if (typeof html2pdf === 'undefined') {
         actions.showToast?.('PDF library not loaded. Please refresh and try again.', 'danger');
         return;
+    }
+
+    // Show current html2pdf version in dev mode for testing
+    const version = getHtml2PdfVersion();
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log(`[pdfService] Using html2pdf.js version: ${version}`);
     }
 
     actions.showToast?.('Generating PDF…', 'info');
