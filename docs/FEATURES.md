@@ -20,7 +20,7 @@ This document covers implemented frontend features of the Radio Forms Portal tha
 
 ## PDF Download
 
-Client-side PDF generation using [html2pdf.js](https://github.com/eKoopmans/html2pdf.js) (html2canvas + jsPDF), vendored at `app/js/vendor/html2pdf@0.10.2/html2pdf.bundle.min.js`.
+Client-side PDF generation using [html2pdf.js](https://github.com/eKoopmans/html2pdf.js) (html2canvas + jsPDF), vendored at `app/js/vendor/html2pdf@0.14.0/html2pdf.bundle.min.js`.
 
 ### Service
 
